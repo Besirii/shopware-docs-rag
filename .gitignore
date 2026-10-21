@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Local config & secrets
+.env
+
+# Downloaded corpus (no redistribution - see README "Data & license")
+data/raw/
+data/manifest.json
+
+# Generated
+data/index_stats/
+logs/
+eval/.cache/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

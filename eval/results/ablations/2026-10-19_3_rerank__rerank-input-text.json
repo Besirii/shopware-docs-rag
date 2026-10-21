@@ -1,0 +1,6088 @@
+{
+  "experiment": "3_rerank",
+  "tag": "rerank-input-text",
+  "label": "+ cross-encoder reranker",
+  "config": {
+    "chunking": "heading",
+    "mode": "hybrid_rerank",
+    "sparse_weight": 0.5,
+    "label": "+ cross-encoder reranker",
+    "top_k": 6,
+    "generate": false
+  },
+  "created_at": "2026-10-19T20:52:16+00:00",
+  "duration_s": 122.8,
+  "docs_commit_sha": "7ab78da5845834c1d45cfcbd4df39d9bc224f967",
+  "embedding_model": "ibm-granite/granite-embedding-small-english-r2",
+  "llm_model": null,
+  "judge_model": null,
+  "judge_usage": null,
+  "dataset": {
+    "path": "eval/questions.jsonl",
+    "n": 47,
+    "sha256": "9ccaa05d9097bb10"
+  },
+  "settings": {
+    "embedding_provider": "fastembed",
+    "embedding_model": "ibm-granite/granite-embedding-small-english-r2",
+    "sparse_model": "Qdrant/bm25",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "rerank_input": "text",
+    "rerank_threshold": null,
+    "retrieval_candidates": 30,
+    "rrf_k": 60,
+    "hybrid_sparse_weight": 1.0,
+    "fusion_backend": "python",
+    "chunk_max_tokens": 600,
+    "chunk_min_tokens": 120,
+    "chunk_overlap_tokens": 80,
+    "baseline_chunk_tokens": 512,
+    "baseline_overlap_tokens": 64,
+    "llm_provider": "ollama",
+    "llm_model": "qwen2.5:3b",
+    "collection_name": "shopware_docs"
+  },
+  "summary": {
+    "n_questions": 47,
+    "n_errors": 0,
+    "n_answerable": 42,
+    "hit@1": 0.5952,
+    "hit@3": 0.9524,
+    "hit@5": 0.9762,
+    "hit@10": 1.0,
+    "mrr@10": 0.7589,
+    "ci95": {
+      "hit@1": [
+        0.452,
+        0.738
+      ],
+      "hit@5": [
+        0.929,
+        1.0
+      ],
+      "mrr@10": [
+        0.663,
+        0.845
+      ],
+      "evidence@k": [
+        0.734,
+        0.901
+      ]
+    },
+    "doc_recall@5": 0.9286,
+    "evidence@k": 0.8214,
+    "citation_hit": null,
+    "latency_ms": {
+      "retrieve": {
+        "p50": 112.8,
+        "p95": 219.9
+      },
+      "rerank": {
+        "p50": 2029.8,
+        "p95": 3975.9
+      },
+      "generate": {
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "total": {
+        "p50": 2152.9,
+        "p95": 4044.3
+      },
+      "wall": {
+        "p50": 2153.5,
+        "p95": 4044.7
+      }
+    },
+    "context_tokens_mean": 2036.2766,
+    "tokens_mean": {
+      "input": 0,
+      "output": 0
+    },
+    "hit@5_by_category": {
+      "api": 1.0,
+      "cli-config": 0.8571,
+      "concepts": 1.0,
+      "dal": 1.0,
+      "plugin-dev": 1.0,
+      "storefront": 1.0
+    },
+    "misses@10": []
+  },
+  "questions": [
+    {
+      "id": "q01",
+      "category": "plugin-dev",
+      "question": "I wrote an event subscriber class in my plugin but Shopware never calls it. How do I register it correctly?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/event/listening-to-events.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.905949115753174,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/using-database-events.md",
+          "heading": "Event classes",
+          "score": 0.022427,
+          "dense_rank": 5,
+          "sparse_rank": 11,
+          "rerank_score": 4.9059
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Registering your subscriber via services.php",
+          "score": 0.023821,
+          "dense_rank": 2,
+          "sparse_rank": 5,
+          "rerank_score": 4.3498
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Creating your new subscriber class",
+          "score": 0.02407,
+          "dense_rank": 3,
+          "sparse_rank": 1,
+          "rerank_score": 4.2814
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Overview",
+          "score": 0.021307,
+          "dense_rank": 4,
+          "sparse_rank": 28,
+          "rerank_score": 4.0343
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/extension/finding-extensions.md",
+          "heading": "Using Extensions in Your Plugin",
+          "score": 0.019548,
+          "dense_rank": 22,
+          "sparse_rank": 8,
+          "rerank_score": 4.0044
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 3.664
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/event/finding-events.md",
+          "heading": "General PHP events",
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": 3.1123
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/event/finding-events.md",
+          "heading": null,
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": 3.0019
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/lifecycle/webhook.md",
+          "heading": null,
+          "score": 0.0125,
+          "dense_rank": 20,
+          "sparse_rank": null,
+          "rerank_score": 2.7706
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": "Reading the configuration",
+          "score": 0.011765,
+          "dense_rank": 25,
+          "sparse_rank": null,
+          "rerank_score": 1.6303
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 242.4,
+        "rerank": 2588.5,
+        "generate": 0.0,
+        "total": 2830.9,
+        "wall": 2833.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1725
+    },
+    {
+      "id": "q02",
+      "category": "plugin-dev",
+      "question": "Which bin/console commands install and activate a plugin I just created?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/install-activate-plugin.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 5.873471260070801,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/mcp-server.md",
+          "heading": "Step 5: Install and verify",
+          "score": 0.022059,
+          "dense_rank": 8,
+          "sparse_rank": 8,
+          "rerank_score": 5.8735
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/install-activate-plugin.md",
+          "heading": null,
+          "score": 0.023856,
+          "dense_rank": 1,
+          "sparse_rank": 7,
+          "rerank_score": 5.4298
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/apps/app-base-guide.md",
+          "heading": "Install and refresh (CLI)",
+          "score": 0.022482,
+          "dense_rank": 10,
+          "sparse_rank": 1,
+          "rerank_score": 5.1667
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/themes/create-a-theme.md",
+          "heading": "Name your plugin theme",
+          "score": 0.019048,
+          "dense_rank": 29,
+          "sparse_rank": 4,
+          "rerank_score": 5.1236
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.022708,
+          "dense_rank": 2,
+          "sparse_rank": 16,
+          "rerank_score": 5.1129
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/hosting/installation-updates/security-plugin.md",
+          "heading": "Installation",
+          "score": 0.019931,
+          "dense_rank": 17,
+          "sparse_rank": 12,
+          "rerank_score": 4.762
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": "Activate",
+          "score": 0.012346,
+          "dense_rank": 21,
+          "sparse_rank": null,
+          "rerank_score": 4.2884
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": 3.7119
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.020109,
+          "dense_rank": 13,
+          "sparse_rank": 18,
+          "rerank_score": 2.8505
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "score": 0.012821,
+          "dense_rank": 18,
+          "sparse_rank": null,
+          "rerank_score": 2.3349
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 483.2,
+        "rerank": 4208.3,
+        "generate": 0.0,
+        "total": 4691.5,
+        "wall": 4691.9
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1763
+    },
+    {
+      "id": "q03",
+      "category": "plugin-dev",
+      "question": "How can I scaffold a new plugin from the CLI, and which files are always generated?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/creating-plugins.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 2.5612292289733887,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-base-guide.md",
+          "heading": null,
+          "score": 0.023336,
+          "dense_rank": 3,
+          "sparse_rank": 7,
+          "rerank_score": 2.5612
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.02369,
+          "dense_rank": 4,
+          "sparse_rank": 2,
+          "rerank_score": 1.7719
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "Skipping optional scaffold files",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 1.4868
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.019825,
+          "dense_rank": 16,
+          "sparse_rank": 15,
+          "rerank_score": 0.8384
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/tooling/shopware-toolbox.md",
+          "heading": null,
+          "score": 0.022069,
+          "dense_rank": 9,
+          "sparse_rank": 6,
+          "rerank_score": 0.2425
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "Skipping optional scaffold files",
+          "score": 0.024066,
+          "dense_rank": 2,
+          "sparse_rank": 3,
+          "rerank_score": -1.4232
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/tooling/shopware-toolbox.md",
+          "heading": null,
+          "score": 0.020513,
+          "dense_rank": 18,
+          "sparse_rank": 5,
+          "rerank_score": -1.5055
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "heading": "Build the Administration",
+          "score": 0.018482,
+          "dense_rank": 29,
+          "sparse_rank": 9,
+          "rerank_score": -1.7252
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "score": 0.012195,
+          "dense_rank": 22,
+          "sparse_rank": null,
+          "rerank_score": -2.7215
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/index.md",
+          "heading": null,
+          "score": 0.011494,
+          "dense_rank": 27,
+          "sparse_rank": null,
+          "rerank_score": -3.3605
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 577.8,
+        "rerank": 1289.9,
+        "generate": 0.0,
+        "total": 1867.8,
+        "wall": 1868.2
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1740
+    },
+    {
+      "id": "q04",
+      "category": "plugin-dev",
+      "question": "Where does the config.xml for a plugin settings page go and what is the minimum it has to contain?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 3.9468767642974854,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": "Fill your plugin configuration with settings",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 3.9469
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/apps/lifecycle/configuration.md",
+          "heading": null,
+          "score": 0.023562,
+          "dense_rank": 4,
+          "sparse_rank": 3,
+          "rerank_score": 1.1234
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": null,
+          "score": 0.023942,
+          "dense_rank": 2,
+          "sparse_rank": 4,
+          "rerank_score": 0.7501
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": null,
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": -0.6838
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": "Input field settings",
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": -1.8438
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/adr/2026-07-30-migrate-container-configuration-from-xml-to-php.md",
+          "heading": null,
+          "score": 0.021578,
+          "dense_rank": 14,
+          "sparse_rank": 2,
+          "rerank_score": -2.2715
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -3.3715
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "Skipping optional scaffold files",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": -3.5115
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": "Reading the configuration",
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": -4.1232
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2026-07-30-migrate-container-configuration-from-xml-to-php.md",
+          "heading": null,
+          "score": 0.021242,
+          "dense_rank": 12,
+          "sparse_rank": 8,
+          "rerank_score": -4.548
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 216.6,
+        "rerank": 1967.0,
+        "generate": 0.0,
+        "total": 2183.6,
+        "wall": 2184.1
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2421
+    },
+    {
+      "id": "q05",
+      "category": "plugin-dev",
+      "question": "How do I read a value from my plugin's configuration inside a PHP service?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 6.442730903625488,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": null,
+          "score": 0.022278,
+          "dense_rank": 7,
+          "sparse_rank": 8,
+          "rerank_score": 6.4427
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-scss-variables-via-subscriber.md",
+          "heading": "Plugin config values as SCSS variables",
+          "score": 0.019829,
+          "dense_rank": 25,
+          "sparse_rank": 2,
+          "rerank_score": 6.2652
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": "Reading the configuration",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 5.803
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/apps/lifecycle/configuration.md",
+          "heading": "Reading the configuration values",
+          "score": 0.023201,
+          "dense_rank": 4,
+          "sparse_rank": 6,
+          "rerank_score": 3.9791
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": "Reading the configuration",
+          "score": 0.023942,
+          "dense_rank": 2,
+          "sparse_rank": 4,
+          "rerank_score": 3.2209
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-scss-variables-via-subscriber.md",
+          "heading": "Plugin config values as SCSS variables",
+          "score": 0.020038,
+          "dense_rank": 21,
+          "sparse_rank": 5,
+          "rerank_score": 3.1818
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/mcp-server.md",
+          "heading": "Adding resources",
+          "score": 0.012195,
+          "dense_rank": 22,
+          "sparse_rank": null,
+          "rerank_score": 2.4677
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/services/add-custom-service.md",
+          "heading": "Register a service",
+          "score": 0.021636,
+          "dense_rank": 9,
+          "sparse_rank": 10,
+          "rerank_score": 2.3848
+        },
+        {
+          "rank": 9,
+          "doc_path": "resources/references/app-reference/script-reference/miscellaneous-script-services-reference.md",
+          "heading": "services.config (Shopware\\Core\\System\\SystemConfig\\Facade\\SystemConfigFacade)",
+          "score": 0.022329,
+          "dense_rank": 5,
+          "sparse_rank": 12,
+          "rerank_score": 2.2545
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/services/add-custom-service.md",
+          "heading": null,
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": 1.4699
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 120.3,
+        "rerank": 2061.6,
+        "generate": 0.0,
+        "total": 2181.8,
+        "wall": 2182.2
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 3108
+    },
+    {
+      "id": "q06",
+      "category": "plugin-dev",
+      "question": "What classes and service tags do I need to create a scheduled task in a plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 6.251550674438477,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Registering a scheduled task in the DI container",
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 6.2516
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/services/add-custom-service.md",
+          "heading": null,
+          "score": 0.021849,
+          "dense_rank": 8,
+          "sparse_rank": 10,
+          "rerank_score": 4.3057
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+          "heading": null,
+          "score": 0.019172,
+          "dense_rank": 29,
+          "sparse_rank": 3,
+          "rerank_score": 4.1745
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "ScheduledTask and its handler",
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 4.1608
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.022614,
+          "dense_rank": 6,
+          "sparse_rank": 7,
+          "rerank_score": 3.0349
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "score": 0.022978,
+          "dense_rank": 4,
+          "sparse_rank": 8,
+          "rerank_score": 2.4571
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.022915,
+          "dense_rank": 3,
+          "sparse_rank": 11,
+          "rerank_score": 2.4367
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/plugin-base-guide.md",
+          "heading": null,
+          "score": 0.019056,
+          "dense_rank": 28,
+          "sparse_rank": 5,
+          "rerank_score": 2.0508
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "score": 0.019044,
+          "dense_rank": 22,
+          "sparse_rank": 13,
+          "rerank_score": 1.7747
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.018094,
+          "dense_rank": 25,
+          "sparse_rank": 19,
+          "rerank_score": 1.6695
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 171.0,
+        "rerank": 2032.4,
+        "generate": 0.0,
+        "total": 2203.5,
+        "wall": 2203.8
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1652
+    },
+    {
+      "id": "q07",
+      "category": "plugin-dev",
+      "question": "How do I add my own command to bin/console from a plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 5.107675075531006,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+          "heading": null,
+          "score": 0.024086,
+          "dense_rank": 1,
+          "sparse_rank": 5,
+          "rerank_score": 5.1077
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.022204,
+          "dense_rank": 4,
+          "sparse_rank": 16,
+          "rerank_score": 4.7456
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.024066,
+          "dense_rank": 2,
+          "sparse_rank": 3,
+          "rerank_score": 4.2362
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": 2.3265
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "Skipping optional scaffold files",
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": 2.0686
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/mcp-server.md",
+          "heading": "Step 5: Install and verify",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": 1.6959
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/themes/create-a-theme.md",
+          "heading": "Name your plugin theme",
+          "score": 0.011236,
+          "dense_rank": 29,
+          "sparse_rank": null,
+          "rerank_score": 1.6369
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": 1.3922
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": 1.048
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/tooling/shopware-toolbox.md",
+          "heading": null,
+          "score": 0.012195,
+          "dense_rank": 22,
+          "sparse_rank": null,
+          "rerank_score": 0.8819
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 84.7,
+        "rerank": 2027.4,
+        "generate": 0.0,
+        "total": 2112.0,
+        "wall": 2112.4
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1704
+    },
+    {
+      "id": "q08",
+      "category": "plugin-dev",
+      "question": "How can I change what an existing core service does without touching core code?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/services/adjusting-service.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 2.3001227378845215,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/services/adjusting-service.md",
+          "heading": "Decoration in a shared codebase",
+          "score": 0.022398,
+          "dense_rank": 6,
+          "sparse_rank": 9,
+          "rerank_score": 2.3001
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/services/adjusting-service.md",
+          "heading": "Decoration in a shared codebase",
+          "score": 0.022282,
+          "dense_rank": 8,
+          "sparse_rank": 6,
+          "rerank_score": -0.2353
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/services/adjusting-service.md",
+          "heading": "Adding new functions to an existing service",
+          "score": 0.022141,
+          "dense_rank": 1,
+          "sparse_rank": 27,
+          "rerank_score": -2.5178
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/extension/index.md",
+          "heading": null,
+          "score": 0.013158,
+          "dense_rank": 16,
+          "sparse_rank": null,
+          "rerank_score": -4.921
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/services/adjusting-service.md",
+          "heading": null,
+          "score": 0.023088,
+          "dense_rank": 4,
+          "sparse_rank": 7,
+          "rerank_score": -4.9481
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/adr/2026-09-25-remove-deprecated-services-with-major-feature-flags.md",
+          "heading": "Decision",
+          "score": 0.020008,
+          "dense_rank": 22,
+          "sparse_rank": 4,
+          "rerank_score": -5.1509
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/services/adjusting-service.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -5.3039
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/adr/2026-09-25-remove-deprecated-services-with-major-feature-flags.md",
+          "heading": "Consequences",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": -5.492
+        },
+        {
+          "rank": 9,
+          "doc_path": "resources/references/app-reference/script-reference/custom-endpoint-script-services-reference.md",
+          "heading": "services.writer (Shopware\\Core\\Framework\\DataAbstractionLayer\\Facade\\RepositoryWriterFacade)",
+          "score": 0.011364,
+          "dense_rank": 28,
+          "sparse_rank": null,
+          "rerank_score": -5.7077
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/app-reference/script-reference/miscellaneous-script-services-reference.md",
+          "heading": "services.config (Shopware\\Core\\System\\SystemConfig\\Facade\\SystemConfigFacade)",
+          "score": 0.012821,
+          "dense_rank": 18,
+          "sparse_rank": null,
+          "rerank_score": -5.9906
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 68.4,
+        "rerank": 3975.9,
+        "generate": 0.0,
+        "total": 4044.3,
+        "wall": 4044.7
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1680
+    },
+    {
+      "id": "q09",
+      "category": "plugin-dev",
+      "question": "What should my plugin's uninstall method do when the merchant wants to keep the plugin data?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.897741317749023,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 4.8977
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": null,
+          "score": 0.023705,
+          "dense_rank": 2,
+          "sparse_rank": 6,
+          "rerank_score": 3.052
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Setting up the new payment method",
+          "score": 0.021547,
+          "dense_rank": 11,
+          "sparse_rank": 7,
+          "rerank_score": 1.7947
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/testing/store/installation-and-cleanup.md",
+          "heading": "Uninstall options",
+          "score": 0.023822,
+          "dense_rank": 4,
+          "sparse_rank": 1,
+          "rerank_score": 1.0463
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": "Deactivate",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": -1.026
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/remove-unnecessary-js-plugin.md",
+          "heading": null,
+          "score": 0.013699,
+          "dense_rank": 13,
+          "sparse_rank": null,
+          "rerank_score": -1.1803
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Setting up the new payment method",
+          "score": 0.019566,
+          "dense_rank": 17,
+          "sparse_rank": 16,
+          "rerank_score": -1.2428
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": null,
+          "score": 0.021135,
+          "dense_rank": 10,
+          "sparse_rank": 13,
+          "rerank_score": -1.5421
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": "Update",
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": -1.6575
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Execute migration",
+          "score": 0.0125,
+          "dense_rank": 20,
+          "sparse_rank": null,
+          "rerank_score": -1.9539
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 184.0,
+        "rerank": 1664.1,
+        "generate": 0.0,
+        "total": 1848.1,
+        "wall": 1848.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1309
+    },
+    {
+      "id": "q10",
+      "category": "plugin-dev",
+      "question": "How do I create a database migration for my plugin and which method should contain the schema changes?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/database/database-migrations.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 6.555905342102051,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "concepts/framework/migrations.md",
+          "heading": null,
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 6.5559
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Execute migration",
+          "score": 0.023449,
+          "dense_rank": 3,
+          "sparse_rank": 6,
+          "rerank_score": 5.7637
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": null,
+          "score": 0.024086,
+          "dense_rank": 1,
+          "sparse_rank": 5,
+          "rerank_score": 5.4967
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/plugin-lifecycle.md",
+          "heading": "Update",
+          "score": 0.021331,
+          "dense_rank": 11,
+          "sparse_rank": 9,
+          "rerank_score": 5.4503
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/database/index.md",
+          "heading": null,
+          "score": 0.022429,
+          "dense_rank": 9,
+          "sparse_rank": 3,
+          "rerank_score": 5.2561
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "Creating the database table",
+          "score": 0.019317,
+          "dense_rank": 13,
+          "sparse_rank": 29,
+          "rerank_score": 4.7777
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/index.md",
+          "heading": null,
+          "score": 0.021035,
+          "dense_rank": 8,
+          "sparse_rank": 19,
+          "rerank_score": 4.7493
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "score": 0.023449,
+          "dense_rank": 5,
+          "sparse_rank": 2,
+          "rerank_score": 4.4241
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "score": 0.02173,
+          "dense_rank": 6,
+          "sparse_rank": 16,
+          "rerank_score": 4.0786
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/checkout/documents/legacy/add-custom-document-type.md",
+          "heading": null,
+          "score": 0.012048,
+          "dense_rank": 23,
+          "sparse_rank": null,
+          "rerank_score": 3.8539
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 166.5,
+        "rerank": 1969.9,
+        "generate": 0.0,
+        "total": 2136.4,
+        "wall": 2136.8
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1374
+    },
+    {
+      "id": "q11",
+      "category": "plugin-dev",
+      "question": "My plugin needs an extra PHP library from Packagist. How do I add it so it also works when the plugin is installed from a zip?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/dependencies/using-composer-dependencies.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 3.4447951316833496,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/dependencies/using-composer-dependencies.md",
+          "heading": null,
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 3.4448
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.022642,
+          "dense_rank": 8,
+          "sparse_rank": 3,
+          "rerank_score": 1.0993
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/dependencies/using-composer-dependencies.md",
+          "heading": "Executing composer commands during plugin installation",
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": 0.1908
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-custom-assets.md",
+          "heading": "Adding custom assets to your plugin",
+          "score": 0.012346,
+          "dense_rank": 21,
+          "sparse_rank": null,
+          "rerank_score": -0.1785
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "Depending on other plugins",
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -0.2917
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/dependencies/add-plugin-dependencies.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -0.301
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.023197,
+          "dense_rank": 5,
+          "sparse_rank": 4,
+          "rerank_score": -0.4496
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.011765,
+          "dense_rank": 25,
+          "sparse_rank": null,
+          "rerank_score": -0.9099
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": -0.9931
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/dependencies/using-composer-dependencies.md",
+          "heading": null,
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": -1.0448
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 112.8,
+        "rerank": 3825.8,
+        "generate": 0.0,
+        "total": 3938.7,
+        "wall": 3939.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1443
+    },
+    {
+      "id": "q12",
+      "category": "plugin-dev",
+      "question": "How do I give my plugin its own log channel?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/logging.md"
+      ],
+      "first_relevant_rank": 3,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.3333333333333333,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 1.093569278717041,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": null,
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": 1.0936
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": -1.9486
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/logging.md",
+          "heading": null,
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": -2.6157
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": "Advanced custom input fields",
+          "score": 0.011364,
+          "dense_rank": 28,
+          "sparse_rank": null,
+          "rerank_score": -2.9679
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "score": 0.012987,
+          "dense_rank": 17,
+          "sparse_rank": null,
+          "rerank_score": -3.1628
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Configuring your plugins",
+          "score": 0.012048,
+          "dense_rank": 23,
+          "sparse_rank": null,
+          "rerank_score": -3.6778
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": null,
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": -4.9866
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": -5.7527
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": -6.2642
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": -6.5545
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 75.2,
+        "rerank": 1776.3,
+        "generate": 0.0,
+        "total": 1851.5,
+        "wall": 1851.8
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2405
+    },
+    {
+      "id": "q13",
+      "category": "storefront",
+      "question": "How can I pass extra data from my plugin to a storefront pagelet like the footer and show it in Twig?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 3.625075340270996,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-header-footer.md",
+          "heading": null,
+          "score": 0.02381,
+          "dense_rank": 3,
+          "sparse_rank": 3,
+          "rerank_score": 3.6251
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md",
+          "heading": "Displaying the data in the Storefront",
+          "score": 0.023536,
+          "dense_rank": 1,
+          "sparse_rank": 10,
+          "rerank_score": 2.8963
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md",
+          "heading": null,
+          "score": 0.023942,
+          "dense_rank": 2,
+          "sparse_rank": 4,
+          "rerank_score": 1.6596
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/apps/app-scripts/data-loading.md",
+          "heading": null,
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": 1.647
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Configuring your plugins",
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": 1.5841
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md",
+          "heading": "Adding data to the Storefront",
+          "score": 0.023317,
+          "dense_rank": 4,
+          "sparse_rank": 5,
+          "rerank_score": 1.3405
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-header-footer.md",
+          "heading": "Customizing by bypassing the ESI loading",
+          "score": 0.020934,
+          "dense_rank": 11,
+          "sparse_rank": 13,
+          "rerank_score": 1.0522
+        },
+        {
+          "rank": 8,
+          "doc_path": "concepts/framework/architecture/storefront-concept.md",
+          "heading": "Main concerns",
+          "score": 0.019204,
+          "dense_rank": 26,
+          "sparse_rank": 6,
+          "rerank_score": 0.9673
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-dynamic-content-via-ajax-calls.md",
+          "heading": null,
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": 0.5881
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-pagelet.md",
+          "heading": "Adding custom pagelet",
+          "score": 0.021355,
+          "dense_rank": 16,
+          "sparse_rank": 1,
+          "rerank_score": 0.4615
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 139.2,
+        "rerank": 1975.5,
+        "generate": 0.0,
+        "total": 2114.7,
+        "wall": 2115.1
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2435
+    },
+    {
+      "id": "q14",
+      "category": "dal",
+      "question": "How do I define a custom entity for my own database table with the DAL?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 6.980481147766113,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Add custom fields to an entity",
+          "score": 0.022305,
+          "dense_rank": 9,
+          "sparse_rank": 4,
+          "rerank_score": 6.9805
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": null,
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": 6.4
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/index.md",
+          "heading": null,
+          "score": 0.023822,
+          "dense_rank": 4,
+          "sparse_rank": 1,
+          "rerank_score": 6.1786
+        },
+        {
+          "rank": 4,
+          "doc_path": "resources/references/adr/2021-09-14-technical-concept-custom-entities.md",
+          "heading": "Decision",
+          "score": 0.02299,
+          "dense_rank": 7,
+          "sparse_rank": 2,
+          "rerank_score": 5.8887
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Supporting custom fields with your entity",
+          "score": 0.020738,
+          "dense_rank": 12,
+          "sparse_rank": 13,
+          "rerank_score": 5.8511
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "Creating an entity",
+          "score": 0.022817,
+          "dense_rank": 3,
+          "sparse_rank": 12,
+          "rerank_score": 4.9171
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/apps/custom-data/custom-entities.md",
+          "heading": "Overview",
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": 3.9038
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": null,
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": 2.9474
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "score": 0.019314,
+          "dense_rank": 18,
+          "sparse_rank": 17,
+          "rerank_score": 2.8409
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "EntityCollection",
+          "score": 0.012658,
+          "dense_rank": 19,
+          "sparse_rank": null,
+          "rerank_score": 2.1494
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 133.5,
+        "rerank": 2036.5,
+        "generate": 0.0,
+        "total": 2170.0,
+        "wall": 2170.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2219
+    },
+    {
+      "id": "q15",
+      "category": "dal",
+      "question": "How do I fetch products by name using the product repository?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/reading-data.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.0,
+      "top_rerank_score": 5.946599960327148,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Reading data",
+          "score": 0.020513,
+          "dense_rank": 18,
+          "sparse_rank": 5,
+          "rerank_score": 5.9466
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/05-http-client.md",
+          "heading": null,
+          "score": 0.023348,
+          "dense_rank": 6,
+          "sparse_rank": 1,
+          "rerank_score": 5.518
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the RepositoryIterator",
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": 4.4093
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Working with the criteria class",
+          "score": 0.019701,
+          "dense_rank": 25,
+          "sparse_rank": 3,
+          "rerank_score": 4.2023
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/fetching-data-from-entity-selection.md",
+          "heading": "Fetching data",
+          "score": 0.023942,
+          "dense_rank": 2,
+          "sparse_rank": 4,
+          "rerank_score": 4.1447
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 4.0832
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Working with local associations",
+          "score": 0.012346,
+          "dense_rank": 21,
+          "sparse_rank": null,
+          "rerank_score": 3.3335
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/fetching-data-from-entity-selection.md",
+          "heading": "Fetching data",
+          "score": 0.022871,
+          "dense_rank": 4,
+          "sparse_rank": 9,
+          "rerank_score": 3.3028
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": null,
+          "score": 0.021504,
+          "dense_rank": 7,
+          "sparse_rank": 16,
+          "rerank_score": 2.5068
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.022527,
+          "dense_rank": 5,
+          "sparse_rank": 10,
+          "rerank_score": 2.506
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 112.7,
+        "rerank": 3803.1,
+        "generate": 0.0,
+        "total": 3915.8,
+        "wall": 3916.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2451
+    },
+    {
+      "id": "q16",
+      "category": "dal",
+      "question": "I want to load products together with only their reviews that have at least 4 points. How do I filter the association?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/reading-data.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 2.0852789878845215,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 2.0853
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.024194,
+          "dense_rank": 2,
+          "sparse_rank": 2,
+          "rerank_score": 1.2875
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/integrations-api/search-criteria.md",
+          "heading": "Parameters",
+          "score": 0.023321,
+          "dense_rank": 5,
+          "sparse_rank": 3,
+          "rerank_score": 0.9719
+        },
+        {
+          "rank": 4,
+          "doc_path": "resources/references/adr/2020-11-19-dal-join-filter.md",
+          "heading": "Consequences",
+          "score": 0.022871,
+          "dense_rank": 4,
+          "sparse_rank": 9,
+          "rerank_score": -1.2708
+        },
+        {
+          "rank": 5,
+          "doc_path": "resources/references/adr/2020-11-19-dal-join-filter.md",
+          "heading": "Context",
+          "score": 0.022283,
+          "dense_rank": 3,
+          "sparse_rank": 18,
+          "rerank_score": -2.2306
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Working with associations",
+          "score": 0.011236,
+          "dense_rank": 29,
+          "sparse_rank": null,
+          "rerank_score": -3.7718
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": -4.4157
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/adr/2020-11-19-dal-join-filter.md",
+          "heading": "Decision",
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": -5.5645
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/deleting-associated-data.md",
+          "heading": "Deleting associated data",
+          "score": 0.017536,
+          "dense_rank": 28,
+          "sparse_rank": 21,
+          "rerank_score": -6.2491
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": -6.4303
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 87.7,
+        "rerank": 1632.5,
+        "generate": 0.0,
+        "total": 1720.2,
+        "wall": 1720.5
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2734
+    },
+    {
+      "id": "q17",
+      "category": "dal",
+      "question": "When should I use addPostFilter instead of addFilter on a Criteria?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/reading-data.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 5.683100700378418,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.023348,
+          "dense_rank": 6,
+          "sparse_rank": 1,
+          "rerank_score": 5.6831
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.019428,
+          "dense_rank": 28,
+          "sparse_rank": 2,
+          "rerank_score": 2.2123
+        },
+        {
+          "rank": 3,
+          "doc_path": "resources/references/adr/2020-11-19-dal-join-filter.md",
+          "heading": "Consequences",
+          "score": 0.021274,
+          "dense_rank": 13,
+          "sparse_rank": 6,
+          "rerank_score": 1.1256
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.019118,
+          "dense_rank": 25,
+          "sparse_rank": 8,
+          "rerank_score": 0.6398
+        },
+        {
+          "rank": 5,
+          "doc_path": "resources/references/adr/2026-09-24-replace-abstract-route-classes-with-extension-events.md",
+          "heading": null,
+          "score": 0.018756,
+          "dense_rank": 21,
+          "sparse_rank": 18,
+          "rerank_score": 0.1221
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Working with the criteria class",
+          "score": 0.019237,
+          "dense_rank": 17,
+          "sparse_rank": 20,
+          "rerank_score": 0.1129
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/troubleshooting/dal-reference/filters-reference.md",
+          "heading": "Not",
+          "score": 0.022388,
+          "dense_rank": 7,
+          "sparse_rank": 7,
+          "rerank_score": -0.9497
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/development/troubleshooting/dal-reference/filters-reference.md",
+          "heading": null,
+          "score": 0.023536,
+          "dense_rank": 1,
+          "sparse_rank": 10,
+          "rerank_score": -1.66
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/storefront/howto/add-listing-filters.md",
+          "heading": "Create new Filter",
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": -1.8348
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/troubleshooting/dal-reference/filters-reference.md",
+          "heading": null,
+          "score": 0.023077,
+          "dense_rank": 5,
+          "sparse_rank": 5,
+          "rerank_score": -1.8519
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 57.0,
+        "rerank": 3362.1,
+        "generate": 0.0,
+        "total": 3419.2,
+        "wall": 3419.5
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2745
+    },
+    {
+      "id": "q18",
+      "category": "dal",
+      "question": "How can I write an entity so that it is created if missing and updated if it already exists?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/writing-data.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 6.906853199005127,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "resources/references/app-reference/script-reference/custom-endpoint-script-services-reference.md",
+          "heading": "upsert()",
+          "score": 0.023705,
+          "dense_rank": 2,
+          "sparse_rank": 6,
+          "rerank_score": 6.9069
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "heading": "Writing data",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 6.0448
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "heading": "Creating data",
+          "score": 0.020976,
+          "dense_rank": 14,
+          "sparse_rank": 7,
+          "rerank_score": 2.6648
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "heading": null,
+          "score": 0.02277,
+          "dense_rank": 8,
+          "sparse_rank": 2,
+          "rerank_score": 2.3309
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Create an entity",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": 2.2492
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/versioning-entities.md",
+          "heading": "Create and merge version",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 1.7462
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/using-database-events.md",
+          "heading": "General event overview",
+          "score": 0.020183,
+          "dense_rank": 15,
+          "sparse_rank": 13,
+          "rerank_score": 0.9125
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "heading": "Assigning associated data",
+          "score": 0.022292,
+          "dense_rank": 4,
+          "sparse_rank": 15,
+          "rerank_score": 0.4263
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": null,
+          "score": 0.012048,
+          "dense_rank": 23,
+          "sparse_rank": null,
+          "rerank_score": 0.0791
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Update an entity",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": -0.0244
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 112.8,
+        "rerank": 1810.3,
+        "generate": 0.0,
+        "total": 1923.2,
+        "wall": 1923.5
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2877
+    },
+    {
+      "id": "q19",
+      "category": "dal",
+      "question": "How do I add my own field to the existing product entity from a plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 7.5817766189575195,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": null,
+          "score": 0.024194,
+          "dense_rank": 2,
+          "sparse_rank": 2,
+          "rerank_score": 7.5818
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/integrations/elasticsearch/add-product-entity-extension-to-elasticsearch.md",
+          "heading": null,
+          "score": 0.02171,
+          "dense_rank": 14,
+          "sparse_rank": 1,
+          "rerank_score": 6.1219
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "score": 0.02296,
+          "dense_rank": 5,
+          "sparse_rank": 6,
+          "rerank_score": 5.8468
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-field.md",
+          "heading": null,
+          "score": 0.017988,
+          "dense_rank": 27,
+          "sparse_rank": 17,
+          "rerank_score": 5.5464
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": "Advanced custom input fields",
+          "score": 0.018278,
+          "dense_rank": 29,
+          "sparse_rank": 11,
+          "rerank_score": 5.5293
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Supporting custom fields with your entity",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 5.4906
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-custom-fields.md",
+          "heading": "Prerequisites",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": 5.409
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/fetching-data-from-entity-selection.md",
+          "heading": null,
+          "score": 0.018015,
+          "dense_rank": 25,
+          "sparse_rank": 20,
+          "rerank_score": 5.1217
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Add a custom field to the Administration",
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": 4.7475
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Add custom fields to an entity",
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": 4.6681
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 81.5,
+        "rerank": 1881.3,
+        "generate": 0.0,
+        "total": 1962.9,
+        "wall": 1964.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2654
+    },
+    {
+      "id": "q20",
+      "category": "dal",
+      "question": "How do I compute the average review rating of products with a DAL aggregation?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/reading-data.md",
+        "guides/development/troubleshooting/dal-reference/aggregations-reference.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 3.581350803375244,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.021052,
+          "dense_rank": 17,
+          "sparse_rank": 2,
+          "rerank_score": 3.5814
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/development/integrations-api/search-criteria.md",
+          "heading": null,
+          "score": 0.021895,
+          "dense_rank": 13,
+          "sparse_rank": 1,
+          "rerank_score": 3.5717
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": null,
+          "score": 0.024206,
+          "dense_rank": 1,
+          "sparse_rank": 4,
+          "rerank_score": 1.7595
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": "Range aggregations",
+          "score": 0.022388,
+          "dense_rank": 7,
+          "sparse_rank": 7,
+          "rerank_score": 1.681
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": "Avg aggregation",
+          "score": 0.024066,
+          "dense_rank": 2,
+          "sparse_rank": 3,
+          "rerank_score": -0.3454
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": "Terms aggregation",
+          "score": 0.021035,
+          "dense_rank": 8,
+          "sparse_rank": 19,
+          "rerank_score": -1.9768
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": "Nesting aggregations",
+          "score": 0.021482,
+          "dense_rank": 5,
+          "sparse_rank": 22,
+          "rerank_score": -2.1309
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": "Stats aggregation",
+          "score": 0.022474,
+          "dense_rank": 4,
+          "sparse_rank": 13,
+          "rerank_score": -2.2996
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/troubleshooting/dal-reference/aggregations-reference.md",
+          "heading": "Sum aggregation",
+          "score": 0.022844,
+          "dense_rank": 6,
+          "sparse_rank": 5,
+          "rerank_score": -2.5295
+        },
+        {
+          "rank": 10,
+          "doc_path": "concepts/framework/data-abstraction-layer.md",
+          "heading": "Database access",
+          "score": 0.018445,
+          "dense_rank": 22,
+          "sparse_rank": 20,
+          "rerank_score": -2.7178
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 84.3,
+        "rerank": 3629.2,
+        "generate": 0.0,
+        "total": 3713.5,
+        "wall": 3714.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2451
+    },
+    {
+      "id": "q21",
+      "category": "storefront",
+      "question": "How do I override a block of the storefront header logo template in my plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/templates/customize-templates.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 7.333929061889648,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-templates.md",
+          "heading": "Getting started",
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": 7.3339
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/apps/storefront/customize-templates.md",
+          "heading": null,
+          "score": 0.023686,
+          "dense_rank": 3,
+          "sparse_rank": 4,
+          "rerank_score": 7.0193
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-templates.md",
+          "heading": "Getting started",
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 6.2053
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/apps/storefront/customize-templates.md",
+          "heading": "Getting started",
+          "score": 0.02277,
+          "dense_rank": 8,
+          "sparse_rank": 2,
+          "rerank_score": 5.9159
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Configuring your plugins",
+          "score": 0.020218,
+          "dense_rank": 12,
+          "sparse_rank": 19,
+          "rerank_score": 5.6978
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md",
+          "heading": "Displaying the data in the Storefront",
+          "score": 0.018862,
+          "dense_rank": 22,
+          "sparse_rank": 15,
+          "rerank_score": 5.3112
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-header-footer.md",
+          "heading": null,
+          "score": 0.022727,
+          "dense_rank": 6,
+          "sparse_rank": 6,
+          "rerank_score": 4.0478
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/customizing-components.md",
+          "heading": "Customize a component template",
+          "score": 0.02085,
+          "dense_rank": 16,
+          "sparse_rank": 5,
+          "rerank_score": 3.7452
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-templates.md",
+          "heading": null,
+          "score": 0.023088,
+          "dense_rank": 4,
+          "sparse_rank": 7,
+          "rerank_score": 3.2837
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/storefront/index.md",
+          "heading": null,
+          "score": 0.012658,
+          "dense_rank": 19,
+          "sparse_rank": null,
+          "rerank_score": 3.1878
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 148.9,
+        "rerank": 1887.2,
+        "generate": 0.0,
+        "total": 2036.2,
+        "wall": 2036.7
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2800
+    },
+    {
+      "id": "q22",
+      "category": "storefront",
+      "question": "What are the steps to create a new theme and assign it to my sales channel?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/themes/create-a-theme.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 6.813043594360352,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/themes/inheritance/add-theme-inheritance.md",
+          "heading": null,
+          "score": 0.022557,
+          "dense_rank": 9,
+          "sparse_rank": 2,
+          "rerank_score": 6.813
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/themes/create-a-theme.md",
+          "heading": "Name your plugin theme",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 5.1313
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/themes/configuration/theme-configuration.md",
+          "heading": null,
+          "score": 0.022398,
+          "dense_rank": 8,
+          "sparse_rank": 5,
+          "rerank_score": 4.5297
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/themes/styling/add-css-js-to-theme.md",
+          "heading": null,
+          "score": 0.020192,
+          "dense_rank": 13,
+          "sparse_rank": 17,
+          "rerank_score": 3.4337
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/storefront/templates/customize-templates.md",
+          "heading": "Getting started",
+          "score": 0.011494,
+          "dense_rank": 27,
+          "sparse_rank": null,
+          "rerank_score": 1.968
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/themes/inheritance/add-theme-inheritance.md",
+          "heading": "Overview",
+          "score": 0.022141,
+          "dense_rank": 5,
+          "sparse_rank": 14,
+          "rerank_score": 1.8023
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/themes/index.md",
+          "heading": null,
+          "score": 0.021748,
+          "dense_rank": 10,
+          "sparse_rank": 7,
+          "rerank_score": 1.0698
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/themes/theme-base-guide.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 0.4742
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/themes/configuration/theme-inheritance-configuration.md",
+          "heading": null,
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": -1.2807
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/themes/index.md",
+          "heading": null,
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": -1.5525
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 85.9,
+        "rerank": 1988.2,
+        "generate": 0.0,
+        "total": 2074.1,
+        "wall": 2074.4
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2210
+    },
+    {
+      "id": "q23",
+      "category": "storefront",
+      "question": "How do I override Bootstrap SCSS variables such as $border-radius in my theme?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 6.539369583129883,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md",
+          "heading": null,
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": 6.5394
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md",
+          "heading": "Overview",
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": 6.4789
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md",
+          "heading": null,
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 5.9891
+        },
+        {
+          "rank": 4,
+          "doc_path": "resources/references/adr/2023-10-19-bootstrap-css-utils.md",
+          "heading": null,
+          "score": 0.022068,
+          "dense_rank": 7,
+          "sparse_rank": 10,
+          "rerank_score": 3.9823
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/themes/styling/override-theme-breakpoints.md",
+          "heading": null,
+          "score": 0.020841,
+          "dense_rank": 11,
+          "sparse_rank": 14,
+          "rerank_score": 3.9389
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/themes/styling/override-theme-breakpoints.md",
+          "heading": "Overriding Bootstrap default Breakpoints",
+          "score": 0.021135,
+          "dense_rank": 12,
+          "sparse_rank": 9,
+          "rerank_score": 3.723
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-custom-styling.md",
+          "heading": "Adding \\(S\\)CSS files",
+          "score": 0.019771,
+          "dense_rank": 22,
+          "sparse_rank": 6,
+          "rerank_score": 3.5902
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/themes/inheritance/add-theme-inheritance.md",
+          "heading": null,
+          "score": 0.020313,
+          "dense_rank": 20,
+          "sparse_rank": 4,
+          "rerank_score": 2.0467
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/themes/theme-base-guide.md",
+          "heading": null,
+          "score": 0.019808,
+          "dense_rank": 21,
+          "sparse_rank": 7,
+          "rerank_score": 2.0212
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/themes/configuration/theme-configuration.md",
+          "heading": null,
+          "score": 0.020351,
+          "dense_rank": 19,
+          "sparse_rank": 5,
+          "rerank_score": 1.8779
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 93.9,
+        "rerank": 3946.6,
+        "generate": 0.0,
+        "total": 4040.5,
+        "wall": 4041.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2076
+    },
+    {
+      "id": "q24",
+      "category": "storefront",
+      "question": "How do I register a storefront JavaScript plugin that only runs on elements with a specific data attribute?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 5.438409805297852,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Binding your plugin to the DOM",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 5.4384
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Registering your plugin",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 4.722
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": null,
+          "score": 0.02173,
+          "dense_rank": 6,
+          "sparse_rank": 16,
+          "rerank_score": 4.0709
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-dynamic-content-via-ajax-calls.md",
+          "heading": "Preparing the Plugin",
+          "score": 0.017938,
+          "dense_rank": 25,
+          "sparse_rank": 21,
+          "rerank_score": 3.9287
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/override-existing-javascript.md",
+          "heading": null,
+          "score": 0.019151,
+          "dense_rank": 24,
+          "sparse_rank": 9,
+          "rerank_score": 3.7766
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Registering an async plugin",
+          "score": 0.02369,
+          "dense_rank": 4,
+          "sparse_rank": 2,
+          "rerank_score": 3.4989
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/reacting-to-cookie-consent-changes.md",
+          "heading": "Step 4: Loading the JavaScript Plugin",
+          "score": 0.011111,
+          "dense_rank": 30,
+          "sparse_rank": null,
+          "rerank_score": 3.3274
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Configuring your plugins",
+          "score": 0.022305,
+          "dense_rank": 9,
+          "sparse_rank": 4,
+          "rerank_score": 3.0148
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/reacting-to-javascript-events.md",
+          "heading": null,
+          "score": 0.012658,
+          "dense_rank": 19,
+          "sparse_rank": null,
+          "rerank_score": 1.5549
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Writing a JavaScript plugin",
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": 1.1939
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 116.7,
+        "rerank": 1794.4,
+        "generate": 0.0,
+        "total": 1911.1,
+        "wall": 1911.5
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1785
+    },
+    {
+      "id": "q25",
+      "category": "storefront",
+      "question": "How do I add a custom storefront route with its own controller and template?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/controllers/add-custom-controller.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 7.7344746589660645,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "heading": null,
+          "score": 0.02407,
+          "dense_rank": 3,
+          "sparse_rank": 1,
+          "rerank_score": 7.7345
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-dynamic-content-via-ajax-calls.md",
+          "heading": null,
+          "score": 0.020313,
+          "dense_rank": 20,
+          "sparse_rank": 4,
+          "rerank_score": 6.8829
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/content/seo/add-custom-seo-url.md",
+          "heading": "Static SEO URLs",
+          "score": 0.019441,
+          "dense_rank": 22,
+          "sparse_rank": 9,
+          "rerank_score": 6.3689
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "heading": null,
+          "score": 0.018771,
+          "dense_rank": 26,
+          "sparse_rank": 10,
+          "rerank_score": 6.3198
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Make the route available for the Storefront",
+          "score": 0.021285,
+          "dense_rank": 8,
+          "sparse_rank": 16,
+          "rerank_score": 6.2354
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "heading": "Adding custom Storefront controller",
+          "score": 0.024086,
+          "dense_rank": 1,
+          "sparse_rank": 5,
+          "rerank_score": 6.0117
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-page.md",
+          "heading": "Adding custom page",
+          "score": 0.022504,
+          "dense_rank": 6,
+          "sparse_rank": 8,
+          "rerank_score": 5.9977
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-pagelet.md",
+          "heading": null,
+          "score": 0.020396,
+          "dense_rank": 18,
+          "sparse_rank": 6,
+          "rerank_score": 5.7789
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-page.md",
+          "heading": "Creating the pageloader",
+          "score": 0.018675,
+          "dense_rank": 21,
+          "sparse_rank": 19,
+          "rerank_score": 5.5616
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-page.md",
+          "heading": null,
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": 5.4522
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 159.0,
+        "rerank": 4077.0,
+        "generate": 0.0,
+        "total": 4236.0,
+        "wall": 4236.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2450
+    },
+    {
+      "id": "q26",
+      "category": "storefront",
+      "question": "I changed SCSS in my theme but nothing changes in the browser. Which command do I need to run?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md",
+        "guides/plugins/themes/create-a-theme.md",
+        "guides/plugins/plugins/storefront/styling/add-custom-styling.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.6666666666666666,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.250360488891602,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/themes/create-a-theme.md",
+          "heading": null,
+          "score": 0.023565,
+          "dense_rank": 3,
+          "sparse_rank": 5,
+          "rerank_score": 4.2504
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/themes/styling/add-css-js-to-theme.md",
+          "heading": null,
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 3.8753
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md",
+          "heading": null,
+          "score": 0.022429,
+          "dense_rank": 9,
+          "sparse_rank": 3,
+          "rerank_score": 1.7965
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/themes/styling/add-css-js-to-theme.md",
+          "heading": null,
+          "score": 0.024194,
+          "dense_rank": 2,
+          "sparse_rank": 2,
+          "rerank_score": 1.1162
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-scss-variables.md",
+          "heading": null,
+          "score": 0.021649,
+          "dense_rank": 4,
+          "sparse_rank": 23,
+          "rerank_score": 0.8459
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/themes/styling/override-bootstrap-variables-in-a-theme.md",
+          "heading": null,
+          "score": 0.022282,
+          "dense_rank": 8,
+          "sparse_rank": 6,
+          "rerank_score": 0.5601
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-custom-styling.md",
+          "heading": "Adding \\(S\\)CSS files",
+          "score": 0.020067,
+          "dense_rank": 18,
+          "sparse_rank": 9,
+          "rerank_score": 0.014
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/themes/configuration/theme-configuration.md",
+          "heading": null,
+          "score": 0.02013,
+          "dense_rank": 17,
+          "sparse_rank": 10,
+          "rerank_score": -0.4151
+        },
+        {
+          "rank": 9,
+          "doc_path": "resources/references/adr/2023-04-03-disable-css-autoprefixer.md",
+          "heading": null,
+          "score": 0.020008,
+          "dense_rank": 22,
+          "sparse_rank": 4,
+          "rerank_score": -0.6121
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/themes/configuration/theme-configuration.md",
+          "heading": null,
+          "score": 0.022194,
+          "dense_rank": 6,
+          "sparse_rank": 11,
+          "rerank_score": -0.9729
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 114.2,
+        "rerank": 1825.3,
+        "generate": 0.0,
+        "total": 1939.5,
+        "wall": 1940.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2167
+    },
+    {
+      "id": "q27",
+      "category": "api",
+      "question": "How does a backend integration get an access token for the Admin API?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/development/integrations-api/index.md",
+        "guides/development/integrations-api/auth-api-requests.md",
+        "concepts/api/admin-api.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 7.762929439544678,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/development/integrations-api/index.md",
+          "heading": "Step 2: Get an Admin API access token",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 7.7629
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/development/integrations-api/index.md",
+          "heading": "Step 3: Make an authenticated API request",
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": 4.357
+        },
+        {
+          "rank": 3,
+          "doc_path": "concepts/api/admin-api.md",
+          "heading": null,
+          "score": 0.02381,
+          "dense_rank": 3,
+          "sparse_rank": 3,
+          "rerank_score": 3.977
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/integrations-api/flows/create-product.md",
+          "heading": null,
+          "score": 0.022738,
+          "dense_rank": 7,
+          "sparse_rank": 4,
+          "rerank_score": 3.2357
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/integrations-api/auth-api-requests.md",
+          "heading": null,
+          "score": 0.023482,
+          "dense_rank": 2,
+          "sparse_rank": 8,
+          "rerank_score": 2.7904
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/development/integrations-api/index.md",
+          "heading": "API overview",
+          "score": 0.020376,
+          "dense_rank": 15,
+          "sparse_rank": 11,
+          "rerank_score": 2.2307
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/integrations-api/auth-api-requests.md",
+          "heading": "Impersonate a customer",
+          "score": 0.022096,
+          "dense_rank": 6,
+          "sparse_rank": 12,
+          "rerank_score": 2.0888
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/development/integrations-api/auth-api-requests.md",
+          "heading": "Download the OpenAPI schema",
+          "score": 0.012821,
+          "dense_rank": 18,
+          "sparse_rank": null,
+          "rerank_score": 1.9392
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/integrations-api/auth-api-requests.md",
+          "heading": "Prefer search endpoints for real requests",
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": 1.0627
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/apps/lifecycle/app-registration-setup.md",
+          "heading": "Confirmation request",
+          "score": 0.018741,
+          "dense_rank": 27,
+          "sparse_rank": 9,
+          "rerank_score": 0.1043
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 90.7,
+        "rerank": 3346.1,
+        "generate": 0.0,
+        "total": 3436.8,
+        "wall": 3437.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1583
+    },
+    {
+      "id": "q28",
+      "category": "api",
+      "question": "Which header must a headless frontend send to authenticate against the Store API?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/development/integrations-api/index.md",
+        "concepts/api/store-api.md",
+        "guides/development/integrations-api/request-headers.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.6666666666666666,
+      "evidence@k": 1.0,
+      "top_rerank_score": 3.4609692096710205,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/development/integrations-api/index.md",
+          "heading": "Step 4: Access the Store API",
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": 3.461
+        },
+        {
+          "rank": 2,
+          "doc_path": "concepts/api/store-api.md",
+          "heading": null,
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 3.4512
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/integrations-api/flows/create-product.md",
+          "heading": "Step 6: Create a Store API context",
+          "score": 0.021908,
+          "dense_rank": 6,
+          "sparse_rank": 14,
+          "rerank_score": 3.1797
+        },
+        {
+          "rank": 4,
+          "doc_path": "resources/references/adr/2025-09-15-store-api-cache-strategy.md",
+          "heading": null,
+          "score": 0.018717,
+          "dense_rank": 28,
+          "sparse_rank": 8,
+          "rerank_score": 1.9194
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/07-external-frontend.md",
+          "heading": null,
+          "score": 0.019466,
+          "dense_rank": 14,
+          "sparse_rank": 24,
+          "rerank_score": 0.3707
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/lifecycle/clientside-to-app-backend.md",
+          "heading": "Generate JSON Web Token",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": -0.0471
+        },
+        {
+          "rank": 7,
+          "doc_path": "concepts/framework/architecture/storefront-concept.md",
+          "heading": "Main concerns",
+          "score": 0.018524,
+          "dense_rank": 22,
+          "sparse_rank": 19,
+          "rerank_score": -0.297
+        },
+        {
+          "rank": 8,
+          "doc_path": "concepts/api/index.md",
+          "heading": null,
+          "score": 0.022501,
+          "dense_rank": 7,
+          "sparse_rank": 6,
+          "rerank_score": -1.4041
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/integrations-api/auth-api-requests.md",
+          "heading": "Impersonate a customer",
+          "score": 0.021739,
+          "dense_rank": 9,
+          "sparse_rank": 9,
+          "rerank_score": -1.4504
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/integrations-api/request-headers.md",
+          "heading": null,
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": -1.8767
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 144.3,
+        "rerank": 1749.0,
+        "generate": 0.0,
+        "total": 1893.4,
+        "wall": 1893.7
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1896
+    },
+    {
+      "id": "q29",
+      "category": "api",
+      "question": "How do I create my own Store API endpoint in a plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/store-api/add-store-api-route.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 5.951207160949707,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": 5.9512
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/administration/services-utilities/making-api-requests.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 5.1247
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/apps/app-scripts/add-api-endpoint.md",
+          "heading": "Create the script",
+          "score": 0.022482,
+          "dense_rank": 10,
+          "sparse_rank": 1,
+          "rerank_score": 4.3699
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/store-api/index.md",
+          "heading": null,
+          "score": 0.022081,
+          "dense_rank": 2,
+          "sparse_rank": 24,
+          "rerank_score": 4.1048
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/apps/app-scripts/add-api-endpoint.md",
+          "heading": "Create the script",
+          "score": 0.021763,
+          "dense_rank": 13,
+          "sparse_rank": 2,
+          "rerank_score": 3.9046
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/app-scripts/add-api-endpoint.md",
+          "heading": null,
+          "score": 0.021326,
+          "dense_rank": 14,
+          "sparse_rank": 4,
+          "rerank_score": 3.6283
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/apps/app-scripts/custom-endpoints.md",
+          "heading": "Storefront endpoints",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": 3.4312
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Create route class",
+          "score": 0.022194,
+          "dense_rank": 6,
+          "sparse_rank": 11,
+          "rerank_score": 3.2667
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/app-scripts/custom-endpoints.md",
+          "heading": "Custom Endpoints",
+          "score": 0.020757,
+          "dense_rank": 18,
+          "sparse_rank": 3,
+          "rerank_score": 3.1965
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/store-api/override-existing-route.md",
+          "heading": null,
+          "score": 0.011236,
+          "dense_rank": 29,
+          "sparse_rank": null,
+          "rerank_score": 3.0811
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 75.7,
+        "rerank": 2029.8,
+        "generate": 0.0,
+        "total": 2105.5,
+        "wall": 2105.9
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1475
+    },
+    {
+      "id": "q30",
+      "category": "api",
+      "question": "How can I change the response of an existing Store API route from my plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/store-api/override-existing-route.md"
+      ],
+      "first_relevant_rank": 3,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.3333333333333333,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.807191371917725,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Make the route available for the Storefront",
+          "score": 0.024194,
+          "dense_rank": 2,
+          "sparse_rank": 2,
+          "rerank_score": 4.8072
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/store-api/index.md",
+          "heading": null,
+          "score": 0.023348,
+          "dense_rank": 6,
+          "sparse_rank": 1,
+          "rerank_score": 4.6402
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/store-api/override-existing-route.md",
+          "heading": null,
+          "score": 0.023016,
+          "dense_rank": 3,
+          "sparse_rank": 10,
+          "rerank_score": 3.4932
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": null,
+          "score": 0.022011,
+          "dense_rank": 1,
+          "sparse_rank": 29,
+          "rerank_score": 2.698
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": null,
+          "score": 0.019703,
+          "dense_rank": 12,
+          "sparse_rank": 26,
+          "rerank_score": 1.5941
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Create route class",
+          "score": 0.021463,
+          "dense_rank": 8,
+          "sparse_rank": 14,
+          "rerank_score": 1.239
+        },
+        {
+          "rank": 7,
+          "doc_path": "resources/references/adr/2022-01-06-custom-app-api-endpoints.md",
+          "heading": "Storefront",
+          "score": 0.011111,
+          "dense_rank": 30,
+          "sparse_rank": null,
+          "rerank_score": 1.2119
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/app-reference/script-reference/custom-endpoint-script-services-reference.md",
+          "heading": "redirect()",
+          "score": 0.012658,
+          "dense_rank": 19,
+          "sparse_rank": null,
+          "rerank_score": 0.7848
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Add Store API route",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": 0.5848
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2022-01-06-custom-app-api-endpoints.md",
+          "heading": "Storefront",
+          "score": 0.013699,
+          "dense_rank": 13,
+          "sparse_rank": null,
+          "rerank_score": 0.4023
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 84.7,
+        "rerank": 3990.5,
+        "generate": 0.0,
+        "total": 4075.2,
+        "wall": 4075.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2173
+    },
+    {
+      "id": "q31",
+      "category": "api",
+      "question": "How do I send a search request with filters to the Admin API, for example only active products?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/development/integrations-api/search-criteria.md",
+        "guides/development/integrations-api/index.md",
+        "guides/development/integrations-api/auth-api-requests.md"
+      ],
+      "first_relevant_rank": 3,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.3333333333333333,
+      "doc_recall@5": 0.6666666666666666,
+      "evidence@k": 0.5,
+      "top_rerank_score": 3.2809042930603027,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/development/integrations-api/flows/create-product.md",
+          "heading": "Step 7: Read the product with the Store API",
+          "score": 0.021897,
+          "dense_rank": 11,
+          "sparse_rank": 4,
+          "rerank_score": 3.2809
+        },
+        {
+          "rank": 2,
+          "doc_path": "resources/references/adr/2026-01-28-apply-opensearch-in-admin-api.md",
+          "heading": "Conditions to forward a search request to opensearch",
+          "score": 0.02407,
+          "dense_rank": 3,
+          "sparse_rank": 1,
+          "rerank_score": 3.153
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/integrations-api/index.md",
+          "heading": "Step 3: Make an authenticated API request",
+          "score": 0.02315,
+          "dense_rank": 1,
+          "sparse_rank": 14,
+          "rerank_score": 2.2275
+        },
+        {
+          "rank": 4,
+          "doc_path": "resources/references/adr/2026-01-28-apply-opensearch-in-admin-api.md",
+          "heading": "Decision",
+          "score": 0.023562,
+          "dense_rank": 4,
+          "sparse_rank": 3,
+          "rerank_score": 2.1279
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/integrations-api/auth-api-requests.md",
+          "heading": "Prefer search endpoints for real requests",
+          "score": 0.024194,
+          "dense_rank": 2,
+          "sparse_rank": 2,
+          "rerank_score": 1.4638
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/development/integrations-api/index.md",
+          "heading": null,
+          "score": 0.022172,
+          "dense_rank": 7,
+          "sparse_rank": 9,
+          "rerank_score": 1.3839
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/elasticsearch-setup.md",
+          "heading": "Apply OpenSearch globally in Admin API",
+          "score": 0.020382,
+          "dense_rank": 12,
+          "sparse_rank": 17,
+          "rerank_score": 1.2205
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/adr/2026-01-28-apply-opensearch-in-admin-api.md",
+          "heading": "Conditions to forward a search request to opensearch",
+          "score": 0.022504,
+          "dense_rank": 6,
+          "sparse_rank": 8,
+          "rerank_score": 0.8116
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/integrations-api/search-criteria.md",
+          "heading": "Parameters",
+          "score": 0.020976,
+          "dense_rank": 14,
+          "sparse_rank": 7,
+          "rerank_score": 0.416
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/integrations-api/flows/create-product.md",
+          "heading": "Step 4: Create a category with the Admin API",
+          "score": 0.022427,
+          "dense_rank": 5,
+          "sparse_rank": 11,
+          "rerank_score": 0.1827
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 147.9,
+        "rerank": 1774.3,
+        "generate": 0.0,
+        "total": 1922.1,
+        "wall": 1922.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1637
+    },
+    {
+      "id": "q32",
+      "category": "api",
+      "question": "How can I make the API return only a few fields of an entity, and how is that different from includes?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/development/integrations-api/partial-data-loading.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 6.092984199523926,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/development/integrations-api/partial-data-loading.md",
+          "heading": null,
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 6.093
+        },
+        {
+          "rank": 2,
+          "doc_path": "resources/references/adr/2023-08-03-collecting-entity-data.md",
+          "heading": "Including entities and fields",
+          "score": 0.022194,
+          "dense_rank": 6,
+          "sparse_rank": 11,
+          "rerank_score": 2.536
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/integrations-api/partial-data-loading.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 2.2087
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/integrations-api/search-criteria.md",
+          "heading": "Parameters",
+          "score": 0.023562,
+          "dense_rank": 4,
+          "sparse_rank": 3,
+          "rerank_score": 1.3098
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/entities-via-attributes.md",
+          "heading": "API encoding",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 1.1231
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/custom-data/custom-entities.md",
+          "heading": "Overview",
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": -0.7615
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/integrations-api/request-headers.md",
+          "heading": "sw-inheritance",
+          "score": 0.012346,
+          "dense_rank": 21,
+          "sparse_rank": null,
+          "rerank_score": -0.9888
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/app-reference/entities-reference.md",
+          "heading": null,
+          "score": 0.020234,
+          "dense_rank": 19,
+          "sparse_rank": 6,
+          "rerank_score": -1.5596
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "score": 0.011364,
+          "dense_rank": 28,
+          "sparse_rank": null,
+          "rerank_score": -1.9016
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/apps/custom-data/custom-entities.md",
+          "heading": null,
+          "score": 0.018379,
+          "dense_rank": 29,
+          "sparse_rank": 10,
+          "rerank_score": -2.159
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 61.0,
+        "rerank": 1978.7,
+        "generate": 0.0,
+        "total": 2039.8,
+        "wall": 2040.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2156
+    },
+    {
+      "id": "q33",
+      "category": "api",
+      "question": "Which request header selects the language in which entities are returned by the API?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/development/integrations-api/request-headers.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 6.272564888000488,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/development/integrations-api/request-headers.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 6.2726
+        },
+        {
+          "rank": 2,
+          "doc_path": "concepts/framework/translations/plain-vs-translated-fields.md",
+          "heading": null,
+          "score": 0.023822,
+          "dense_rank": 4,
+          "sparse_rank": 1,
+          "rerank_score": 4.8491
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/integrations-api/request-headers.md",
+          "heading": "sw-version-id",
+          "score": 0.023197,
+          "dense_rank": 5,
+          "sparse_rank": 4,
+          "rerank_score": 4.6446
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/integrations-api/request-headers.md",
+          "heading": "sw-inheritance",
+          "score": 0.021465,
+          "dense_rank": 12,
+          "sparse_rank": 6,
+          "rerank_score": 1.6763
+        },
+        {
+          "rank": 5,
+          "doc_path": "resources/references/adr/2025-09-15-store-api-cache-strategy.md",
+          "heading": "Decision",
+          "score": 0.019048,
+          "dense_rank": 30,
+          "sparse_rank": 3,
+          "rerank_score": 0.8561
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/lifecycle/product-translator.md",
+          "heading": "Fetching data from the shop",
+          "score": 0.021029,
+          "dense_rank": 11,
+          "sparse_rank": 12,
+          "rerank_score": 0.7404
+        },
+        {
+          "rank": 7,
+          "doc_path": "resources/references/app-reference/script-reference/miscellaneous-script-services-reference.md",
+          "heading": "services.request (Shopware\\Core\\Framework\\Routing\\Facade\\RequestFacade)",
+          "score": 0.019746,
+          "dense_rank": 20,
+          "sparse_rank": 9,
+          "rerank_score": 0.1877
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/administration/services-utilities/making-api-requests.md",
+          "heading": "Working with authentication",
+          "score": 0.022504,
+          "dense_rank": 6,
+          "sparse_rank": 8,
+          "rerank_score": -0.1733
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/integrations-api/request-headers.md",
+          "heading": null,
+          "score": 0.021755,
+          "dense_rank": 3,
+          "sparse_rank": 25,
+          "rerank_score": -0.2136
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2021-09-14-technical-concept-custom-entities.md",
+          "heading": "Decision",
+          "score": 0.013699,
+          "dense_rank": 13,
+          "sparse_rank": null,
+          "rerank_score": -0.9918
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 59.7,
+        "rerank": 2093.2,
+        "generate": 0.0,
+        "total": 2152.9,
+        "wall": 2153.5
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1716
+    },
+    {
+      "id": "q34",
+      "category": "cli-config",
+      "question": "How should the message queue be processed on a production server?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/infrastructure/message-queue.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 6.213460922241211,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/installation-updates/cluster-setup.md",
+          "heading": "Message queue",
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": 6.2135
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "score": 0.023942,
+          "dense_rank": 2,
+          "sparse_rank": 4,
+          "rerank_score": 5.6136
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/elasticsearch-setup.md",
+          "heading": "Indexing",
+          "score": 0.021355,
+          "dense_rank": 16,
+          "sparse_rank": 1,
+          "rerank_score": 3.8794
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/index.md",
+          "heading": null,
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": 2.837
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "score": 0.023088,
+          "dense_rank": 4,
+          "sparse_rank": 7,
+          "rerank_score": 2.4714
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": "Changing the transport",
+          "score": 0.02173,
+          "dense_rank": 6,
+          "sparse_rank": 16,
+          "rerank_score": 0.3
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": null,
+          "score": 0.021135,
+          "dense_rank": 12,
+          "sparse_rank": 9,
+          "rerank_score": -0.3958
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-handler.md",
+          "heading": null,
+          "score": 0.019489,
+          "dense_rank": 21,
+          "sparse_rank": 10,
+          "rerank_score": -0.5332
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": "Execution methods",
+          "score": 0.021337,
+          "dense_rank": 5,
+          "sparse_rank": 24,
+          "rerank_score": -0.5873
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2025-01-31-move-flow-execution-after-business-process.md",
+          "heading": null,
+          "score": 0.018406,
+          "dense_rank": 28,
+          "sparse_rank": 11,
+          "rerank_score": -0.7205
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 180.1,
+        "rerank": 3704.2,
+        "generate": 0.0,
+        "total": 3884.4,
+        "wall": 3884.8
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1695
+    },
+    {
+      "id": "q35",
+      "category": "cli-config",
+      "question": "How are scheduled tasks triggered on a production system?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/infrastructure/scheduled-task.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.5,
+      "top_rerank_score": 4.565286159515381,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.023822,
+          "dense_rank": 4,
+          "sparse_rank": 1,
+          "rerank_score": 4.5653
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.022068,
+          "dense_rank": 7,
+          "sparse_rank": 10,
+          "rerank_score": 3.1617
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": 1.6933
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/installation-updates/deployments/deployment-helper/one-time-tasks.md",
+          "heading": "Best practices for one-time tasks",
+          "score": 0.019924,
+          "dense_rank": 14,
+          "sparse_rank": 18,
+          "rerank_score": 0.8919
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.022847,
+          "dense_rank": 5,
+          "sparse_rank": 7,
+          "rerank_score": 0.6304
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "score": 0.022504,
+          "dense_rank": 6,
+          "sparse_rank": 8,
+          "rerank_score": 0.6188
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "score": 0.0125,
+          "dense_rank": 20,
+          "sparse_rank": null,
+          "rerank_score": 0.5793
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": "Debugging scheduled tasks",
+          "score": 0.023449,
+          "dense_rank": 3,
+          "sparse_rank": 6,
+          "rerank_score": 0.4771
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "ScheduledTask and its handler",
+          "score": 0.020779,
+          "dense_rank": 10,
+          "sparse_rank": 17,
+          "rerank_score": 0.017
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Dynamic rescheduling",
+          "score": 0.020956,
+          "dense_rank": 8,
+          "sparse_rank": 20,
+          "rerank_score": -0.1486
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 81.6,
+        "rerank": 1925.6,
+        "generate": 0.0,
+        "total": 2007.3,
+        "wall": 2007.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1180
+    },
+    {
+      "id": "q36",
+      "category": "cli-config",
+      "question": "How can I run one specific scheduled task right now for debugging, without the queue?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/infrastructure/scheduled-task.md",
+        "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 7.919205665588379,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": "Debugging scheduled tasks",
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 7.9192
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "score": 0.024194,
+          "dense_rank": 2,
+          "sparse_rank": 2,
+          "rerank_score": 7.9112
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.02381,
+          "dense_rank": 3,
+          "sparse_rank": 3,
+          "rerank_score": 4.2258
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": "Using the symfony scheduler to run tasks",
+          "score": 0.022978,
+          "dense_rank": 4,
+          "sparse_rank": 8,
+          "rerank_score": 2.0035
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/performance/performance-tweaks.md",
+          "heading": "Disable Scheduled Sitemap Generation",
+          "score": 0.019056,
+          "dense_rank": 28,
+          "sparse_rank": 5,
+          "rerank_score": 1.4419
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.021908,
+          "dense_rank": 6,
+          "sparse_rank": 14,
+          "rerank_score": 1.2197
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.022501,
+          "dense_rank": 7,
+          "sparse_rank": 6,
+          "rerank_score": 1.0919
+        },
+        {
+          "rank": 8,
+          "doc_path": "concepts/framework/translations/automated-translation-updates.md",
+          "heading": "The translation.update scheduled task",
+          "score": 0.0208,
+          "dense_rank": 17,
+          "sparse_rank": 4,
+          "rerank_score": 0.8967
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Dynamic rescheduling",
+          "score": 0.020743,
+          "dense_rank": 9,
+          "sparse_rank": 20,
+          "rerank_score": -0.4596
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/hosting/installation-updates/deployments/deployment-helper/one-time-tasks.md",
+          "heading": "Best practices for one-time tasks",
+          "score": 0.020556,
+          "dense_rank": 12,
+          "sparse_rank": 15,
+          "rerank_score": -2.5097
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 110.8,
+        "rerank": 2078.0,
+        "generate": 0.0,
+        "total": 2188.8,
+        "wall": 2189.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1104
+    },
+    {
+      "id": "q37",
+      "category": "cli-config",
+      "question": "Which environment variable turns Shopware's HTTP cache on or off?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/configurations/shopware/environment-variables.md",
+        "guides/hosting/performance/caches.md"
+      ],
+      "first_relevant_rank": 8,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 1.0,
+      "rr@10": 0.125,
+      "doc_recall@5": 0.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 3.461019515991211,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/infrastructure/reverse-http-cache.md",
+          "heading": "Configure Shopware",
+          "score": 0.02034,
+          "dense_rank": 17,
+          "sparse_rank": 8,
+          "rerank_score": 3.461
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/hosting/performance/performance-tweaks.md",
+          "heading": null,
+          "score": 0.019441,
+          "dense_rank": 22,
+          "sparse_rank": 9,
+          "rerank_score": 2.947
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/installation/legacy-setups/devenv-setup.md",
+          "heading": "Database connection and environment variables",
+          "score": 0.018344,
+          "dense_rank": 27,
+          "sparse_rank": 13,
+          "rerank_score": 2.802
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/infrastructure/reverse-http-cache.md",
+          "heading": "Overview",
+          "score": 0.020723,
+          "dense_rank": 19,
+          "sparse_rank": 2,
+          "rerank_score": 2.5362
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/tooling/using-watchers.md",
+          "heading": "Environment variables",
+          "score": 0.018568,
+          "dense_rank": 18,
+          "sparse_rank": 27,
+          "rerank_score": 2.143
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/hosting/performance/performance-tweaks.md",
+          "heading": null,
+          "score": 0.021206,
+          "dense_rank": 14,
+          "sparse_rank": 5,
+          "rerank_score": 1.9964
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/installation-updates/deployments/deployment-helper/environment.md",
+          "heading": "Environment variables",
+          "score": 0.017604,
+          "dense_rank": 23,
+          "sparse_rank": 30,
+          "rerank_score": 1.488
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/performance/caches.md",
+          "heading": "How to change the cache storage",
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": 1.0525
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/hosting/configurations/shopware/environment-variables.md",
+          "heading": null,
+          "score": 0.024066,
+          "dense_rank": 2,
+          "sparse_rank": 3,
+          "rerank_score": 0.9139
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/hosting/performance/caches.md",
+          "heading": null,
+          "score": 0.022972,
+          "dense_rank": 1,
+          "sparse_rank": 16,
+          "rerank_score": 0.6161
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 98.4,
+        "rerank": 2100.4,
+        "generate": 0.0,
+        "total": 2198.9,
+        "wall": 2199.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1744
+    },
+    {
+      "id": "q38",
+      "category": "cli-config",
+      "question": "What is the expected format of the DATABASE_URL environment variable?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/configurations/shopware/environment-variables.md"
+      ],
+      "first_relevant_rank": 4,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.25,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.0,
+      "top_rerank_score": 1.4427967071533203,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/installation/legacy-setups/devenv-setup.md",
+          "heading": "Database connection and environment variables",
+          "score": 0.023348,
+          "dense_rank": 6,
+          "sparse_rank": 1,
+          "rerank_score": 1.4428
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/hosting/infrastructure/database.md",
+          "heading": "SSL/TLS Connection",
+          "score": 0.021825,
+          "dense_rank": 12,
+          "sparse_rank": 3,
+          "rerank_score": -0.8466
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/hosting/installation-updates/deployments/deployment-helper/environment.md",
+          "heading": "Environment variables",
+          "score": 0.023449,
+          "dense_rank": 3,
+          "sparse_rank": 6,
+          "rerank_score": -2.9206
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/configurations/shopware/environment-variables.md",
+          "heading": null,
+          "score": 0.021747,
+          "dense_rank": 2,
+          "sparse_rank": 29,
+          "rerank_score": -3.3588
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/installation-updates/docker.md",
+          "heading": "Environment Variables",
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": -3.3892
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/adr/2026-03-18-app-url-verify-utils.md",
+          "heading": "Decision",
+          "score": 0.011628,
+          "dense_rank": 26,
+          "sparse_rank": null,
+          "rerank_score": -3.8505
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/installation-updates/docker.md",
+          "heading": "Environment Variables",
+          "score": 0.021463,
+          "dense_rank": 8,
+          "sparse_rank": 14,
+          "rerank_score": -3.9214
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/installation/legacy-setups/symfony-cli-setup.md",
+          "heading": "Configure database connection",
+          "score": 0.018001,
+          "dense_rank": 23,
+          "sparse_rank": 24,
+          "rerank_score": -4.5099
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/hosting/configurations/shopware/environment-variables.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": -5.0942
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/hosting/performance/performance-tweaks.md",
+          "heading": ".env.local.php",
+          "score": 0.019071,
+          "dense_rank": 18,
+          "sparse_rank": 20,
+          "rerank_score": -5.2618
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 98.2,
+        "rerank": 3824.4,
+        "generate": 0.0,
+        "total": 3922.7,
+        "wall": 3923.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2826
+    },
+    {
+      "id": "q39",
+      "category": "cli-config",
+      "question": "How do I enable Elasticsearch/OpenSearch for the storefront search and build the index?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/infrastructure/elasticsearch/elasticsearch-setup.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.515686511993408,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/elasticsearch-setup.md",
+          "heading": null,
+          "score": 0.022501,
+          "dense_rank": 7,
+          "sparse_rank": 6,
+          "rerank_score": 4.5157
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/installation/legacy-setups/devenv-options.md",
+          "heading": "Enable OpenSearch",
+          "score": 0.022642,
+          "dense_rank": 8,
+          "sparse_rank": 3,
+          "rerank_score": 4.287
+        },
+        {
+          "rank": 3,
+          "doc_path": "concepts/framework/elasticsearch.md",
+          "heading": null,
+          "score": 0.021227,
+          "dense_rank": 11,
+          "sparse_rank": 10,
+          "rerank_score": 4.083
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/performance/performance-tweaks.md",
+          "heading": "Elasticsearch/OpenSearch",
+          "score": 0.02097,
+          "dense_rank": 16,
+          "sparse_rank": 4,
+          "rerank_score": 3.7685
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/index.md",
+          "heading": null,
+          "score": 0.021649,
+          "dense_rank": 4,
+          "sparse_rank": 23,
+          "rerank_score": 3.2806
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/adr/2023-04-11-new-language-inheritance-mechanism-for-opensearch.md",
+          "heading": null,
+          "score": 0.018574,
+          "dense_rank": 30,
+          "sparse_rank": 7,
+          "rerank_score": 3.0643
+        },
+        {
+          "rank": 7,
+          "doc_path": "resources/references/adr/2026-01-28-apply-opensearch-in-admin-api.md",
+          "heading": "Apply OpenSearch globally",
+          "score": 0.020679,
+          "dense_rank": 17,
+          "sparse_rank": 5,
+          "rerank_score": 2.9359
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/elasticsearch-setup.md",
+          "heading": "Indexing",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": 2.676
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/elasticsearch.md",
+          "heading": null,
+          "score": 0.020565,
+          "dense_rank": 20,
+          "sparse_rank": 2,
+          "rerank_score": 2.1165
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/hosting/infrastructure/elasticsearch/elasticsearch-debugging.md",
+          "heading": null,
+          "score": 0.011236,
+          "dense_rank": 29,
+          "sparse_rank": null,
+          "rerank_score": 1.647
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 139.6,
+        "rerank": 1805.8,
+        "generate": 0.0,
+        "total": 1945.4,
+        "wall": 1945.9
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1389
+    },
+    {
+      "id": "q40",
+      "category": "cli-config",
+      "question": "Can I set system configuration values in YAML files so they override what is stored in the database?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/hosting/configurations/shopware/static-system-config.md"
+      ],
+      "first_relevant_rank": 3,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.3333333333333333,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.872923374176025,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "concepts/framework/translations/built-in-translation-system.md",
+          "heading": "How to extend or modify the configuration handling",
+          "score": 0.020192,
+          "dense_rank": 20,
+          "sparse_rank": 5,
+          "rerank_score": 4.8729
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/hosting/installation-updates/deployments/deployment-helper/configuration.md",
+          "heading": "YAML tags for advanced merging",
+          "score": 0.023536,
+          "dense_rank": 1,
+          "sparse_rank": 10,
+          "rerank_score": 3.1935
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/hosting/configurations/shopware/static-system-config.md",
+          "heading": null,
+          "score": 0.022153,
+          "dense_rank": 2,
+          "sparse_rank": 23,
+          "rerank_score": 2.6509
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/configurations/shopware/static-system-config.md",
+          "heading": null,
+          "score": 0.021577,
+          "dense_rank": 4,
+          "sparse_rank": 24,
+          "rerank_score": 1.7751
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/configurations/shopware/index.md",
+          "heading": null,
+          "score": 0.023216,
+          "dense_rank": 6,
+          "sparse_rank": 2,
+          "rerank_score": 0.8252
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/lifecycle/configuration.md",
+          "heading": "Reading the configuration values",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -0.0189
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/installation-updates/deployments/deployment-helper/configuration.md",
+          "heading": null,
+          "score": 0.018687,
+          "dense_rank": 30,
+          "sparse_rank": 6,
+          "rerank_score": -0.5058
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/configurations/index.md",
+          "heading": null,
+          "score": 0.013333,
+          "dense_rank": 15,
+          "sparse_rank": null,
+          "rerank_score": -0.6559
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/hosting/installation-updates/deployments/build-w-o-db.md",
+          "heading": "Compiling the Storefront without database",
+          "score": 0.02034,
+          "dense_rank": 17,
+          "sparse_rank": 8,
+          "rerank_score": -0.8308
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2026-05-28-agentic-files-for-sales-channels.md",
+          "heading": "Storage",
+          "score": 0.017931,
+          "dense_rank": 23,
+          "sparse_rank": 25,
+          "rerank_score": -1.2356
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 119.6,
+        "rerank": 3556.6,
+        "generate": 0.0,
+        "total": 3676.2,
+        "wall": 3676.7
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2280
+    },
+    {
+      "id": "q41",
+      "category": "concepts",
+      "question": "Can a Shopware app modify the database schema, and where can plugins versus apps run?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/index.md",
+        "guides/development/extensions/index.md",
+        "concepts/extensions/apps-concept.md",
+        "concepts/extensions/plugins-concept.md"
+      ],
+      "first_relevant_rank": 3,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.3333333333333333,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "top_rerank_score": 4.960113048553467,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/index.md",
+          "heading": null,
+          "score": 0.018251,
+          "dense_rank": 27,
+          "sparse_rank": 14,
+          "rerank_score": 4.9601
+        },
+        {
+          "rank": 2,
+          "doc_path": "concepts/extensions/index.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": 4.2711
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/extensions/index.md",
+          "heading": null,
+          "score": 0.02171,
+          "dense_rank": 14,
+          "sparse_rank": 1,
+          "rerank_score": 3.9416
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/index.md",
+          "heading": null,
+          "score": 0.01944,
+          "dense_rank": 26,
+          "sparse_rank": 4,
+          "rerank_score": 3.8985
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/database/index.md",
+          "heading": null,
+          "score": 0.02433,
+          "dense_rank": 1,
+          "sparse_rank": 3,
+          "rerank_score": 3.6219
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/index.md",
+          "heading": null,
+          "score": 0.019571,
+          "dense_rank": 12,
+          "sparse_rank": 28,
+          "rerank_score": 3.5486
+        },
+        {
+          "rank": 7,
+          "doc_path": "concepts/extensions/apps-concept.md",
+          "heading": null,
+          "score": 0.017316,
+          "dense_rank": 28,
+          "sparse_rank": 24,
+          "rerank_score": 3.2962
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/index.md",
+          "heading": null,
+          "score": 0.017646,
+          "dense_rank": 29,
+          "sparse_rank": 18,
+          "rerank_score": 3.2562
+        },
+        {
+          "rank": 9,
+          "doc_path": "concepts/extensions/apps-concept.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": 2.8867
+        },
+        {
+          "rank": 10,
+          "doc_path": "concepts/framework/migrations.md",
+          "heading": null,
+          "score": 0.02041,
+          "dense_rank": 21,
+          "sparse_rank": 2,
+          "rerank_score": 2.5217
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 159.8,
+        "rerank": 1894.3,
+        "generate": 0.0,
+        "total": 2054.1,
+        "wall": 2054.4
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1865
+    },
+    {
+      "id": "q42",
+      "category": "concepts",
+      "question": "How do I change the cart at runtime, for example to add a custom discount line item?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/checkout/cart/add-cart-processor-collector.md",
+        "guides/plugins/plugins/checkout/cart/add-cart-discounts.md"
+      ],
+      "first_relevant_rank": 3,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.3333333333333333,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.5,
+      "top_rerank_score": 5.818608283996582,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/apps/app-scripts/cart-manipulation.md",
+          "heading": "Line items",
+          "score": 0.02407,
+          "dense_rank": 3,
+          "sparse_rank": 1,
+          "rerank_score": 5.8186
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/checkout/cart/change-price-of-item.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 5.6231
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/checkout/cart/add-cart-discounts.md",
+          "heading": null,
+          "score": 0.020663,
+          "dense_rank": 11,
+          "sparse_rank": 16,
+          "rerank_score": 4.8061
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/checkout/cart/add-cart-discounts.md",
+          "heading": "Creating the processor",
+          "score": 0.023197,
+          "dense_rank": 5,
+          "sparse_rank": 4,
+          "rerank_score": 4.6616
+        },
+        {
+          "rank": 5,
+          "doc_path": "resources/references/app-reference/script-reference/cart-manipulation-script-services-reference.md",
+          "heading": "services.cart (Shopware\\Core\\Checkout\\Cart\\Facade\\CartFacade)",
+          "score": 0.020734,
+          "dense_rank": 16,
+          "sparse_rank": 6,
+          "rerank_score": 4.1879
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/app-reference/script-reference/cart-manipulation-script-services-reference.md",
+          "heading": "Shopware\\Core\\Checkout\\Cart\\Facade\\ContainerFacade",
+          "score": 0.020595,
+          "dense_rank": 19,
+          "sparse_rank": 3,
+          "rerank_score": 4.1879
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/apps/app-scripts/cart-manipulation.md",
+          "heading": null,
+          "score": 0.011111,
+          "dense_rank": 30,
+          "sparse_rank": null,
+          "rerank_score": 3.7508
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/checkout/cart/add-cart-items.md",
+          "heading": null,
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": 3.6705
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/checkout/cart/add-cart-items.md",
+          "heading": null,
+          "score": 0.020739,
+          "dense_rank": 7,
+          "sparse_rank": 26,
+          "rerank_score": 3.3251
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/checkout/cart/change-price-of-item.md",
+          "heading": "The collector",
+          "score": 0.020796,
+          "dense_rank": 15,
+          "sparse_rank": 7,
+          "rerank_score": 3.2656
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 219.9,
+        "rerank": 1810.7,
+        "generate": 0.0,
+        "total": 2030.7,
+        "wall": 2031.3
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2478
+    },
+    {
+      "id": "u01",
+      "category": "unanswerable",
+      "question": "How do I enable the built-in GraphQL API in Shopware 6?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": 1.8932058811187744,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/installation/legacy-setups/symfony-cli-setup.md",
+          "heading": null,
+          "score": 0.013158,
+          "dense_rank": 16,
+          "sparse_rank": null,
+          "rerank_score": 1.8932
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/apps/app-scripts/add-api-endpoint.md",
+          "heading": null,
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": 1.4261
+        },
+        {
+          "rank": 3,
+          "doc_path": "concepts/extensions/apps-concept.md",
+          "heading": null,
+          "score": 0.012346,
+          "dense_rank": 21,
+          "sparse_rank": null,
+          "rerank_score": 0.8303
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/installation/index.md",
+          "heading": null,
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": 0.6384
+        },
+        {
+          "rank": 5,
+          "doc_path": "concepts/extensions/index.md",
+          "heading": null,
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": 0.044
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/app-sdks/index.md",
+          "heading": null,
+          "score": 0.011765,
+          "dense_rank": 25,
+          "sparse_rank": null,
+          "rerank_score": -0.5209
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/administration/services-utilities/making-api-requests.md",
+          "heading": null,
+          "score": 0.011628,
+          "dense_rank": 26,
+          "sparse_rank": null,
+          "rerank_score": -0.54
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/development/integrations-api/generated-reference.md",
+          "heading": null,
+          "score": 0.011111,
+          "dense_rank": 30,
+          "sparse_rank": null,
+          "rerank_score": -1.0971
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/app-scripts/add-api-endpoint.md",
+          "heading": "Installing the plugin",
+          "score": 0.012987,
+          "dense_rank": 17,
+          "sparse_rank": null,
+          "rerank_score": -1.1241
+        },
+        {
+          "rank": 10,
+          "doc_path": "concepts/api/index.md",
+          "heading": null,
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": -1.261
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 52.8,
+        "rerank": 2184.4,
+        "generate": 0.0,
+        "total": 2237.3,
+        "wall": 2237.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1666
+    },
+    {
+      "id": "u02",
+      "category": "unanswerable",
+      "question": "Which Magento 2 extension should I use to sync orders into Shopware 6 in real time?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": 0.4786882996559143,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/configurations/shopware/stock.md",
+          "heading": null,
+          "score": 0.019172,
+          "dense_rank": 29,
+          "sparse_rank": 3,
+          "rerank_score": 0.4787
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/development/monetization/index.md",
+          "heading": null,
+          "score": 0.011494,
+          "dense_rank": 27,
+          "sparse_rank": null,
+          "rerank_score": -1.5618
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/installation/legacy-setups/symfony-cli-setup.md",
+          "heading": null,
+          "score": 0.011364,
+          "dense_rank": 28,
+          "sparse_rank": null,
+          "rerank_score": -1.8184
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/extensions/index.md",
+          "heading": "Common extension workflows",
+          "score": 0.012346,
+          "dense_rank": 21,
+          "sparse_rank": null,
+          "rerank_score": -2.3037
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/index.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": -2.3115
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/development/testing/store/quality-guidelines.md",
+          "heading": "Review process",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": -2.5226
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/extensions/index.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -2.6994
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": null,
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": -2.8806
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/checkout/payment.md",
+          "heading": null,
+          "score": 0.013699,
+          "dense_rank": 13,
+          "sparse_rank": null,
+          "rerank_score": -3.548
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/testing/store/functionality-integration.md",
+          "heading": null,
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": -4.1525
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 170.5,
+        "rerank": 1911.5,
+        "generate": 0.0,
+        "total": 2082.0,
+        "wall": 2082.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1713
+    },
+    {
+      "id": "u03",
+      "category": "unanswerable",
+      "question": "What is the maximum number of products allowed on the Shopware Rise plan?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": -0.2525303065776825,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/configurations/shopware/price-rule-limit.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -0.2525
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": "Configuration",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": -2.1399
+        },
+        {
+          "rank": 3,
+          "doc_path": "concepts/commerce/catalog/products.md",
+          "heading": null,
+          "score": 0.023338,
+          "dense_rank": 1,
+          "sparse_rank": 12,
+          "rerank_score": -3.6338
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/installation/system-requirements.md",
+          "heading": null,
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": -4.0773
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/integrations/commercial/multi-inventory.md",
+          "heading": "Concept",
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": -4.5635
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/content/stock/index.md",
+          "heading": null,
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": -4.9001
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": null,
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": -5.0423
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": "Default rate limiters",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -5.2659
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/testing/store/not-allowed-store-behaviors.md",
+          "heading": null,
+          "score": 0.012821,
+          "dense_rank": 18,
+          "sparse_rank": null,
+          "rerank_score": -5.8054
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/integrations/commercial/index.md",
+          "heading": null,
+          "score": 0.011236,
+          "dense_rank": 29,
+          "sparse_rank": null,
+          "rerank_score": -6.0093
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 81.7,
+        "rerank": 2138.5,
+        "generate": 0.0,
+        "total": 2220.2,
+        "wall": 2220.7
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 1803
+    },
+    {
+      "id": "u04",
+      "category": "unanswerable",
+      "question": "How do I switch on Quantum Checkout mode in the Shopware Administration?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": 1.7669401168823242,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/installation-updates/performing-updates.md",
+          "heading": "Final steps",
+          "score": 0.019861,
+          "dense_rank": 23,
+          "sparse_rank": 4,
+          "rerank_score": 1.7669
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/hosting/installation-updates/performing-updates.md",
+          "heading": "Performing the update via Administration",
+          "score": 0.020931,
+          "dense_rank": 12,
+          "sparse_rank": 11,
+          "rerank_score": 0.2285
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/apps/gateways/checkout/checkout-gateway.md",
+          "heading": "Checkout gateway endpoint",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -1.2935
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transition parameters",
+          "score": 0.020588,
+          "dense_rank": 8,
+          "sparse_rank": 25,
+          "rerank_score": -1.4552
+        },
+        {
+          "rank": 5,
+          "doc_path": "resources/references/adr/2024-04-01-checkout-gateway.md",
+          "heading": "Decision",
+          "score": 0.013514,
+          "dense_rank": 14,
+          "sparse_rank": null,
+          "rerank_score": -2.0793
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/gateways/checkout/checkout-gateway.md",
+          "heading": "Checkout gateway endpoint",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": -2.4267
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/start-developing.md",
+          "heading": null,
+          "score": 0.013699,
+          "dense_rank": 13,
+          "sparse_rank": null,
+          "rerank_score": -2.6718
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/adr/2024-04-01-checkout-gateway.md",
+          "heading": "App-System",
+          "score": 0.014085,
+          "dense_rank": 11,
+          "sparse_rank": null,
+          "rerank_score": -2.736
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/gateways/checkout/checkout-gateway.md",
+          "heading": null,
+          "score": 0.011628,
+          "dense_rank": 26,
+          "sparse_rank": null,
+          "rerank_score": -3.263
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/checkout/index.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": -3.3051
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 121.4,
+        "rerank": 3661.0,
+        "generate": 0.0,
+        "total": 3782.5,
+        "wall": 3783.0
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2332
+    },
+    {
+      "id": "u05",
+      "category": "unanswerable",
+      "question": "How do I configure WooCommerce shipping zones?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": -5.7498459815979,
+      "refused": null,
+      "refused_by": null,
+      "answer": "",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/apps/checkout/shipping-methods.md",
+          "heading": "Manifest configuration",
+          "score": 0.021978,
+          "dense_rank": 10,
+          "sparse_rank": 5,
+          "rerank_score": -5.7498
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/apps/checkout/shipping-methods.md",
+          "heading": "Manifest configuration",
+          "score": 0.023348,
+          "dense_rank": 6,
+          "sparse_rank": 1,
+          "rerank_score": -6.2641
+        },
+        {
+          "rank": 3,
+          "doc_path": "resources/references/app-reference/manifest-reference.md",
+          "heading": "Shipping methods",
+          "score": 0.023272,
+          "dense_rank": 2,
+          "sparse_rank": 10,
+          "rerank_score": -6.9914
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": "Fill your plugin configuration with settings",
+          "score": 0.013889,
+          "dense_rank": 12,
+          "sparse_rank": null,
+          "rerank_score": -7.1192
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/apps/checkout/shipping-methods.md",
+          "heading": null,
+          "score": 0.023449,
+          "dense_rank": 5,
+          "sparse_rank": 2,
+          "rerank_score": -7.3489
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/checkout/shipping-methods.md",
+          "heading": "Position",
+          "score": 0.023562,
+          "dense_rank": 4,
+          "sparse_rank": 3,
+          "rerank_score": -7.6415
+        },
+        {
+          "rank": 7,
+          "doc_path": "resources/references/adr/2026-06-24-sales-channel-business-timezone.md",
+          "heading": null,
+          "score": 0.0125,
+          "dense_rank": 20,
+          "sparse_rank": null,
+          "rerank_score": -7.8676
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/app-reference/script-reference/script-hooks-reference.md",
+          "heading": "shipping-method-route-request",
+          "score": 0.021035,
+          "dense_rank": 8,
+          "sparse_rank": 19,
+          "rerank_score": -9.4227
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/checkout/shipping-methods.md",
+          "heading": "Delivery Time",
+          "score": 0.023686,
+          "dense_rank": 3,
+          "sparse_rank": 4,
+          "rerank_score": -9.4361
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/troubleshooting/rules-reference.md",
+          "heading": "Checkout",
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": -9.4532
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 60.6,
+        "rerank": 1708.6,
+        "generate": 0.0,
+        "total": 1769.2,
+        "wall": 1769.6
+      },
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0
+      },
+      "context_tokens": 2616
+    }
+  ]
+}

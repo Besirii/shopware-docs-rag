@@ -1,0 +1,59 @@
+name: shopware-docs-rag
+
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.19.2
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage   # the index survives restarts
+    healthcheck:
+      # The qdrant image ships without curl; bash's /dev/tcp is enough to probe the port.
+      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/6333' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build: .
+    image: shopware-docs-rag:latest
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+    ports:
+      - "8000:8000"
+    volumes:
+      - model_cache:/models              # embedding / BM25 / reranker weights, downloaded once
+      - ./data:/app/data                 # docs checkout + manifest + index stats
+      - ./eval/results:/app/eval/results # eval results land in the repo
+    depends_on:
+      qdrant:
+        condition: service_healthy
+
+  # Optional local LLM: `docker compose --profile ollama up -d`
+  ollama:
+    image: ollama/ollama:0.40.6
+    profiles: ["ollama"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_KEEP_ALIVE: 10m
+      # Fit small GPUs (4 GB): flash attention + 8-bit KV cache roughly halve the
+      # context memory, and only one model stays resident (generator OR judge).
+      OLLAMA_FLASH_ATTENTION: "1"
+      OLLAMA_KV_CACHE_TYPE: q8_0
+      OLLAMA_MAX_LOADED_MODELS: "1"
+      # llama.cpp keeps old prompts' KV state in host RAM (default up to 8 GiB). With
+      # thousands of distinct RAG/judge prompts it only grows - and here it exhausted
+      # Docker's VM. Every prompt is different anyway, so turn it off.
+      LLAMA_ARG_CACHE_RAM: "0"
+
+volumes:
+  qdrant_data:
+  model_cache:
+  ollama_data:

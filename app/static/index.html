@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shopware Docs RAG</title>
+<style>
+  :root { --bg: #f7f8fa; --card: #fff; --text: #1d2330; --muted: #5b6475; --accent: #189eff; --border: #dde2ea; --code: #f1f3f7; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #11151c; --card: #1a2029; --text: #e6e9ef; --muted: #9aa4b5; --accent: #4fb3ff; --border: #2b3340; --code: #232a35; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.4rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 24px; font-size: .95rem; }
+  form { display: flex; gap: 8px; flex-wrap: wrap; }
+  textarea { flex: 1 1 100%; min-height: 72px; padding: 12px; font: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); resize: vertical; }
+  select, button { font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
+  button { background: var(--accent); color: #fff; border: none; cursor: pointer; min-width: 96px; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 20px; }
+  .answer pre { background: var(--code); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: .88rem; }
+  .answer code { background: var(--code); padding: 1px 4px; border-radius: 4px; font-size: .9em; }
+  .answer pre code { padding: 0; background: none; }
+  sup a { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .refused { color: var(--muted); font-style: italic; }
+  ol.cites { padding-left: 22px; margin: 0; }
+  ol.cites li { margin-bottom: 10px; }
+  ol.cites a { color: var(--accent); }
+  .snippet { color: var(--muted); font-size: .9rem; }
+  .meta { color: var(--muted); font-size: .85rem; margin-top: 12px; }
+  .error { color: #d4380d; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Shopware 6 Docs RAG</h1>
+  <p class="sub">Answers only from the official developer documentation, with a source for every claim.</p>
+  <form id="f">
+    <textarea id="q" placeholder="e.g. How do I register an event subscriber in a plugin?" required minlength="3"></textarea>
+    <select id="mode" title="retrieval mode">
+      <option value="hybrid">hybrid</option>
+      <option value="hybrid_rerank">hybrid + rerank</option>
+      <option value="dense">dense</option>
+      <option value="bm25">bm25</option>
+    </select>
+    <button id="b" type="submit">Ask</button>
+  </form>
+  <div id="out"></div>
+</main>
+<script>
+const esc = s => s.replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+
+// Tiny, safe markdown subset: code fences, inline code, bold, links, paragraphs, [n] citations.
+function render(md, cites) {
+  const byN = Object.fromEntries(cites.map(c => [c.n, c]));
+  const parts = md.split(/```[a-zA-Z0-9_+-]*\n?([\s\S]*?)```/g);
+  return parts.map((part, i) => {
+    if (i % 2 === 1) return `<pre><code>${esc(part.replace(/\n$/, ""))}</code></pre>`;
+    let h = esc(part)
+      .replace(/`([^`]+)`/g, "<code>$1</code>")
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/\[(\d+)\]/g, (m, n) => byN[n] ? `<sup><a href="${esc(byN[n].url)}" target="_blank" rel="noopener" title="${esc(byN[n].title)}">[${n}]</a></sup>` : "");
+    return h.split(/\n{2,}/).map(p => p.trim() ? `<p>${p.replace(/\n/g, "<br>")}</p>` : "").join("");
+  }).join("");
+}
+
+document.getElementById("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const b = document.getElementById("b"), out = document.getElementById("out");
+  b.disabled = true; b.textContent = "…";
+  try {
+    const r = await fetch("/ask", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({question: document.getElementById("q").value, mode: document.getElementById("mode").value})});
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail ? JSON.stringify(d.detail) : r.statusText);
+    const cites = d.citations || [];
+    out.innerHTML = `<div class="card answer">${d.answerable ? render(d.answer, cites) : `<p class="refused">${esc(d.answer)}</p>`}
+      <div class="meta">${d.mode} · ${d.llm_model || "–"} · retrieve ${Math.round(d.timings_ms.retrieve)} ms · rerank ${Math.round(d.timings_ms.rerank)} ms · generate ${Math.round(d.timings_ms.generate)} ms · ${d.usage.input_tokens}/${d.usage.output_tokens} tokens</div></div>` +
+      (cites.length ? `<div class="card"><strong>Sources</strong><ol class="cites">${cites.map(c =>
+        `<li value="${c.n}"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}${c.heading ? " › " + esc(c.heading) : ""}</a><div class="snippet">${esc(c.snippet)}</div></li>`).join("")}</ol></div>` : "");
+  } catch (err) {
+    out.innerHTML = `<div class="card error">${esc(String(err))}</div>`;
+  } finally { b.disabled = false; b.textContent = "Ask"; }
+});
+</script>
+</body>
+</html>
