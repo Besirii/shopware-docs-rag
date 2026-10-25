@@ -193,6 +193,19 @@ def test_partial_answer_is_not_a_refusal():
     assert not is_refusal(text, NOT_FOUND)
 
 
+def test_refusal_with_explanation_keeps_the_explanation(make_runner):
+    # Seen in the multi-hop eval: Claude opens with the sentence, then says what it searched.
+    runner, _ = make_runner([
+        ai("", call(SEARCH_DOCS, "a", query="HubSpot connector")),
+        ai(f"{NOT_FOUND}\n\nI searched for a HubSpot connector; no page mentions it. Custom fields are "
+           "defined declaratively instead [1]. Invented [7]."),
+    ])
+    res = runner.run("How do I use the HubSpot connector?")
+    assert res.answerable is False
+    assert res.answer.startswith(NOT_FOUND) and "I searched for a HubSpot connector" in res.answer
+    assert "[7]" not in res.answer and [c.n for c in res.citations] == [1]
+
+
 def test_trace_can_be_left_out(make_runner):
     runner, _ = make_runner([ai("", call(SEARCH_DOCS, "a", query="theme")), ai("Compile it [1].")])
     res = runner.run("theme?", include_trace=False)
@@ -292,3 +305,22 @@ def test_agent_endpoint_validates_input(api):
 
 def test_build_agent_returns_none_for_extractive(settings):
     assert build_agent(settings, pipeline=None) is None
+
+
+def test_sources_show_exactly_what_the_model_saw(make_runner):
+    runner, model = make_runner([
+        ai("", call(SEARCH_DOCS, "a", query="register event subscriber kernel.event_subscriber")),
+        ai("", call(READ_SECTION, "b", source=1)),
+        ai("Tag it [1]."),
+    ])
+    res = runner.run("How do I register a subscriber?", include_sources=True)
+    by_n = {s.n: s for s in res.sources}
+    assert sorted(by_n) == list(range(1, len(by_n) + 1))
+    assert by_n[1].read is True and "$services->set(MySubscriber::class)" in by_n[1].text
+    unread = [s for s in res.sources if not s.read]
+    assert unread and all(s.text in tool_results(model, 1)[0].content for s in unread)  # the preview it saw
+
+
+def test_sources_are_off_by_default(make_runner):
+    runner, _ = make_runner([ai("", call(SEARCH_DOCS, "a", query="theme")), ai("Compile it [1].")])
+    assert runner.run("theme?").sources is None

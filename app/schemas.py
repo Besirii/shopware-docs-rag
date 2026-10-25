@@ -86,6 +86,8 @@ class AgentRequest(BaseModel):
     max_tool_calls: int | None = Field(default=None, ge=1, le=15,
                                        description="tool-call budget for this question; null = server default")
     include_trace: bool = Field(default=True, description="return every tool call the agent made")
+    include_sources: bool = Field(default=False, description="return every source the agent saw, with the text "
+                                                             "it saw (eval + auditing)")
 
     model_config = {
         "json_schema_extra": {
@@ -105,6 +107,20 @@ class AgentStep(BaseModel):
     error: str | None = None
 
 
+class AgentSource(BaseModel):
+    """A numbered source the agent saw. `text` is exactly what the model saw: the full
+    section if it called read_section, otherwise the search preview."""
+
+    n: int
+    chunk_id: str
+    doc_path: str
+    title: str
+    url: str
+    heading: str | None
+    read: bool
+    text: str
+
+
 class AgentTimings(BaseModel):
     model: float = 0.0
     tools: float = 0.0
@@ -122,3 +138,4 @@ class AgentResponse(BaseModel):
     usage: Usage
     llm_model: str | None = None
     steps: list[AgentStep] | None = None
+    sources: list[AgentSource] | None = None

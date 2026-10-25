@@ -236,3 +236,42 @@ agjenti kërkoi mirë apo humbi kohë.
 1. Ulë `AGENT_MAX_TOOL_CALLS` në 2 dhe bëj një pyetje me tri pjesë. Çfarë ndodh me përgjigjen?
 2. Krahaso `/ask` dhe `/agent` te 5 pyetje nga `eval/questions.jsonl`: saktësia, koha, tokens.
 3. Shto një tool `list_page_sections(doc_path)` që kthen titujt e një faqeje. Kur do ta përdorte modeli?
+
+## 10. Eval-i: agjenti kundrejt një kërkimi të vetëm
+
+Pyetja që duhet t'i përgjigjesh me numra: **a e gjen agjenti më shpesh gjithçka që i duhet, dhe sa kushton kjo?**
+
+**Pyetjet.** `eval/questions_multihop.jsonl` ka 15 pyetje që kërkojnë secila **dy faqe të ndryshme**
+të dokumentacionit (p.sh. custom field + shfaqja në storefront, Store API route + rate limit) dhe 3
+pyetje pa përgjigje. Çdo pyetje ka `hops`: për secilën pjesë, faqet që e mbulojnë. U kontrollua që
+asnjë faqe e vetme nuk i ka të gjitha faktet kyçe (`evidence`) të pyetjes.
+
+**Metrikat** (të gjitha deterministe, pa LLM-gjykues):
+
+| Metrika | Çfarë mat |
+|---|---|
+| All parts found | Sa pyetje i kishin **të gjitha** pjesët para LLM-së. Kjo është metrika kryesore për multi-hop. |
+| Parts found | Mesatarja e pjesëve të gjetura (1 nga 2 = 50%). |
+| Key facts in context | Sa nga faktet kyçe ishin në tekstin që pa LLM-ja. |
+| Key facts in answer | Sa nga faktet kyçe u shfaqën në përgjigje. Është një tregues i përafërt i saktësisë. |
+| Parts cited | Sa pjesë mbështeten nga një citim. |
+| Tool calls, tokens, cost, latency | Çmimi i agjentit. |
+
+Te agjenti, "konteksti" janë të gjitha burimet që pa: teksti i plotë për ato që lexoi, preview për
+të tjerat. Kështu të dy mënyrat maten mbi atë që LLM-ja pa realisht.
+
+**Si ta ekzekutosh** (API-ja duhet të punojë, me të njëjtin LLM për `/ask` dhe `/agent`):
+
+```powershell
+docker compose up -d --build        # imazhi duhet rindërtuar: pyetjet e reja janë brenda tij
+.\tasks.ps1 eval-agent              # 18 pyetje multi-hop, /ask + /agent
+.\tasks.ps1 eval-agent-single       # opsionale: 47 pyetjet origjinale, për të parë a dëmton agjenti te pyetjet e thjeshta
+```
+
+Rezultatet ruhen te `eval/results/<data>_agent__multihop.json` dhe `..._2b_hybrid_weighted__multihop.json`.
+Brenda çdo pyetjeje ke `steps` dhe `sources_seen`: aty sheh pse agjenti e gjeti ose s'e gjeti një pjesë.
+
+**Si ta lexosh.** Me 15 pyetje, intervali i besueshmërisë është i gjerë (±20–25 pikë). Një diferencë
+e vogël nuk provon asgjë. Një diferencë e madhe te "All parts found", p.sh. 40% kundrejt 90%, ka
+kuptim. Shiko edhe kostën: nëse agjenti kushton 5 herë më shumë, kjo duhet thënë bashkë me
+përmirësimin.

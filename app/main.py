@@ -86,7 +86,7 @@ def agent(req: AgentRequest) -> AgentResponse:
         raise HTTPException(status_code=503,
                             detail="agent disabled: set AGENT_PROVIDER (or LLM_PROVIDER) to anthropic, openai or ollama")
     try:
-        return runner.run(req.question, req.max_tool_calls, req.include_trace)
+        return runner.run(req.question, req.max_tool_calls, req.include_trace, req.include_sources)
     except AgentError as e:
         raise HTTPException(status_code=502, detail=f"agent error: {e}") from e
 

@@ -1,0 +1,4011 @@
+{
+  "experiment": "agent",
+  "tag": "multihop",
+  "label": "Agent: plans its own searches (search_docs + read_section)",
+  "config": {
+    "kind": "agent",
+    "chunking": "heading",
+    "mode": "agent",
+    "label": "Agent: plans its own searches (search_docs + read_section)",
+    "top_k": 6,
+    "generate": true
+  },
+  "created_at": "2026-10-25T15:36:02+00:00",
+  "duration_s": 172.8,
+  "docs_commit_sha": "7ab78da5845834c1d45cfcbd4df39d9bc224f967",
+  "embedding_model": "ibm-granite/granite-embedding-small-english-r2",
+  "llm_model": "claude-haiku-5-5",
+  "judge_model": null,
+  "judge_usage": null,
+  "dataset": {
+    "path": "eval/questions_multihop.jsonl",
+    "n": 18,
+    "sha256": "d1ec6426d67acb82"
+  },
+  "settings": {
+    "embedding_provider": "fastembed",
+    "embedding_model": "ibm-granite/granite-embedding-small-english-r2",
+    "sparse_model": "Qdrant/bm25",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "rerank_input": "embed_text",
+    "rerank_threshold": null,
+    "retrieval_candidates": 30,
+    "rrf_k": 60,
+    "hybrid_sparse_weight": 0.5,
+    "fusion_backend": "python",
+    "chunk_max_tokens": 600,
+    "chunk_min_tokens": 120,
+    "chunk_overlap_tokens": 80,
+    "baseline_chunk_tokens": 512,
+    "baseline_overlap_tokens": 64,
+    "llm_provider": "anthropic",
+    "llm_model": "claude-haiku-5-5",
+    "collection_name": "shopware_docs"
+  },
+  "summary": {
+    "n_questions": 18,
+    "n_errors": 0,
+    "n_answerable": 15,
+    "hit@1": 0.8,
+    "hit@3": 0.8667,
+    "hit@5": 0.9333,
+    "hit@10": 1.0,
+    "mrr@10": 0.8611,
+    "ci95": {
+      "hit@1": [
+        0.6,
+        1.0
+      ],
+      "hit@5": [
+        0.8,
+        1.0
+      ],
+      "mrr@10": [
+        0.694,
+        1.0
+      ],
+      "evidence@k": [
+        0.772,
+        0.961
+      ],
+      "hop_coverage": [
+        1.0,
+        1.0
+      ],
+      "all_hops": [
+        1.0,
+        1.0
+      ],
+      "answer_evidence": [
+        0.75,
+        0.95
+      ],
+      "cited_hop_coverage": [
+        0.9,
+        1.0
+      ]
+    },
+    "doc_recall@5": 0.5111,
+    "evidence@k": 0.8778,
+    "citation_hit": 1.0,
+    "hop_coverage": 1.0,
+    "all_hops": 1.0,
+    "answer_evidence": 0.8556,
+    "cited_hop_coverage": 0.9667,
+    "agent": {
+      "tool_calls_mean": 5.7222,
+      "model_calls_mean": 3.9444,
+      "stopped_by": {
+        "answer": 18
+      }
+    },
+    "refusal": {
+      "answered": 15,
+      "correct_refusal": 3,
+      "correct_refusal_rate": 1.0,
+      "false_refusal_rate": 0.0,
+      "accuracy": 1.0
+    },
+    "latency_ms": {
+      "retrieve": {
+        "p50": 52.2,
+        "p95": 104.1
+      },
+      "rerank": {
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "generate": {
+        "p50": 9865.7,
+        "p95": 13578.8
+      },
+      "total": {
+        "p50": 9996.4,
+        "p95": 13663.3
+      },
+      "wall": {
+        "p50": 9998.4,
+        "p95": 13666.6
+      }
+    },
+    "context_tokens_mean": null,
+    "tokens_mean": {
+      "input": 18568.2222,
+      "output": 1504.3889
+    },
+    "hit@5_by_category": {
+      "multi-hop": 0.9333
+    },
+    "incomplete_hops": [],
+    "misses@10": []
+  },
+  "questions": [
+    {
+      "id": "m01",
+      "category": "multi-hop",
+      "question": "I want a new 'material' field on products that merchants can fill in, and its value should show up on the product detail page in the storefront. What do I need to do in my plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+        "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md"
+      ],
+      "first_relevant_rank": 6,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 1.0,
+      "rr@10": 0.16666666666666666,
+      "doc_recall@5": 0.0,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The simplest approach is a **custom field** (not an entity extension), since merchants can edit it in the Administration and it only needs scalar values. The docs I found cover the field definition and the storefront template, but not the step that attaches the set to the product entity, so you'll need to check that part yourself.\n\n**1. Register the custom field set in your plugin**\n\nCreate the set and field from a lifecycle method (for example `install()`), using the `custom_field_set.repository` service. The docs show this pattern [11]:\n\n```php\nuse Shopware\\Core\\System\\CustomField\\CustomFieldTypes;\nuse \\Shopware\\Core\\Defaults;\n\n[...]\n\n$this->customFieldSetRepository->create([\n    [\n        'name' => 'swag_example_set',\n        'global' => true,\n        'config' => [\n            'label' => [\n                'en-GB' => 'English custom field set label',\n                'de-DE' => 'German custom field set label',\n                Defaults::LANGUAGE_SYSTEM => \"Mention the fallback label here\"\n            ]\n        ],\n        'customFields' => [\n            [\n                'name' => 'swag_example_size',\n                'type' => CustomFieldTypes::INT,\n                'includeInSearch' => true,\n                'config' => [\n                    'label' => [\n                        'en-GB' => 'English custom field label',\n                        'de-DE' => 'German custom field label',\n                        Defaults::LANGUAGE_SYSTEM => \"Mention the fallback label here\"\n                    ],\n                    'customFieldPosition' => 1\n                ]\n            ]\n        ]\n    ]\n], $context);\n```\n\nFor a text field like \"material\", use the string type instead of `CustomFieldTypes::INT`. I did not confirm the exact constant name for strings, so check `CustomFieldTypes` in the Shopware source. The docs also say that for merchants to edit and delete the set in the Administration, `global` must be `false` [11]. Note that the `global` value in the example is `true`.\n\nAlternatively, from Shopware 6.7.13.0 you can declare sets in `Resources/config/custom-fields.xml` under `src`. Shopware then creates, updates and removes them on install, update and uninstall [14][15].\n\nRemove the set on uninstall, using the repository's standard methods [12].\n\n**2. Show the value on the product detail page**\n\nExtend the Storefront template and read the value from the product. The docs give this example for the product description block [6]:\n\n```twig\n// <plugin root>/src/Resources/views/storefront/page/product-detail/description.html.twig\n{% sw_extends '@Storefront/storefront/page/product-detail/description.html.twig' %}\n\n{% block page_product_detail_description_content_text %}\n    {{ parent() }}\n\n    {# Insert your custom field here, as seen below: #}\n    {{ \"customFields.my_test_field\"|trans|sw_sanitize }}: {{ page.product.translated.customFields.my_test_field }}\n{% endblock %}\n```\n\nReplace `my_test_field` with your field name (for example `swag_material`). The docs use the description block as their example, so you may want a different block for a material display.\n\n**What's missing from the docs I found:** how to link the custom field set to the `product` entity. Without that link the field may not appear on products in the Administration. Check the full \"Add custom fields to an entity\" section of the custom field guide for the relation step.",
+      "citations": [
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#add-a-custom-field-to-the-administration"
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#declarative-custom-fields-via-resources-config-custom-fields-xml"
+        },
+        {
+          "n": 15,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#declarative-custom-fields-via-resources-config-custom-fields-xml"
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#deleting-a-custom-field"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.html#storefront-usage-of-custom-fields"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 6,
+      "model_calls": 5,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "add custom field to product entity via plugin EntityExtension"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "storefront product detail page display custom field twig extension"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "add custom field set plugin subscriber CustomFieldSet product customFieldSetRepository"
+          },
+          "sources": [
+            11,
+            10,
+            12,
+            13,
+            14
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 6
+          },
+          "sources": [
+            6
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 11
+          },
+          "sources": [
+            11
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "custom_field_set_relation entityName product custom field set relations create"
+          },
+          "sources": [
+            14,
+            11,
+            13,
+            15,
+            16
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/integrations/elasticsearch/add-product-entity-extension-to-elasticsearch.md",
+          "heading": "Decorate the ElasticsearchProductDefinition",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/integrations/elasticsearch/add-product-entity-extension-to-elasticsearch.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md",
+          "heading": "Storefront usage of custom fields",
+          "read": true
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md",
+          "heading": "Displaying the data in the Storefront",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Configuring your plugins",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/database/custom-fields-of-type-media.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-custom-fields.md",
+          "heading": "Using custom fields in your module",
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Add a custom field to the Administration",
+          "read": true
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Add a custom field to the Administration",
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Declarative custom fields via Resources/config/custom-fields.xml",
+          "read": false
+        },
+        {
+          "n": 15,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Declarative custom fields via Resources/config/custom-fields.xml",
+          "read": false
+        },
+        {
+          "n": 16,
+          "doc_path": "resources/references/app-reference/entities-reference.md",
+          "heading": null,
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 73.4,
+        "rerank": 0.0,
+        "generate": 13578.8,
+        "total": 13663.3,
+        "wall": 13666.6
+      },
+      "usage": {
+        "input_tokens": 26732,
+        "output_tokens": 1819
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m02",
+      "category": "multi-hop",
+      "question": "I've written an EntityDefinition for my own table. How do I register it so Shopware picks it up, can Shopware generate the CREATE TABLE migration for me, and how do I run that migration?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+        "guides/plugins/plugins/database/database-migrations.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "**1. Register the definition**\n\nAdd the class to your plugin's `services.php` with the `shopware.entity.definition` tag. The docs show this for a translation definition, and say Shopware looks for definitions this way [3]:\n\n```php\n$services->set(Examples\\ExampleEntityDefinition::class)\n    ->tag('shopware.entity.definition');\n```\n\nThe `shopware.entity` tag shown in the attributes-based guide is a different approach, so use `shopware.entity.definition` for a classic `EntityDefinition` [1][3].\n\n**2. Generate the CREATE TABLE migration**\n\nYes. Shopware can generate the complete migration, including the `CREATE TABLE` or `ALTER TABLE` statements, from your entity definitions [6]:\n\n```bash\n$./bin/console dal:migration:create --bundle=SwagBasicExample --entities=your_entity\n```\n\n- `--bundle` is your plugin name. Without it, the migration goes into the core.\n- `--entities` is a comma-separated list. It creates one migration file per entity.\n- Your plugin must be activated, or the custom definition won't be found [6].\n\n**3. Run the migration**\n\nThe docs describe two paths [11]:\n\n- When you install or update the plugin through the Plugin Manager, its migrations run automatically.\n- During development, after the plugin is installed, run the new migration manually:\n\n```bash\n$./bin/console database:migrate SwagBasicExample --all\n```\n\nUse your bundle name as the identifier. Without it, the command runs the Shopware core migrations [11].\n\nDon't edit a migration after it has run, because each migration only runs once [11].",
+      "citations": [
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-translations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/add-data-translations.html#entitydefinition-class"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/entities-via-attributes.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/entities-via-attributes.html#register-the-entity"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/database/database-migrations.html#generating-a-complete-migration-for-an-entity"
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/database/database-migrations.html#execute-migration"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 5,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "register custom EntityDefinition DependencyInjection tag shopware.entity.definition"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "migration generate CREATE TABLE from entity definition"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "run migrations console command database migrate"
+          },
+          "sources": [
+            11,
+            12,
+            6,
+            13,
+            14
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 6
+          },
+          "sources": [
+            6
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 11
+          },
+          "sources": [
+            11
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/entities-via-attributes.md",
+          "heading": "Register the entity",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "EntityDefinition class",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-translations.md",
+          "heading": "EntityDefinition class",
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "Creating an entity",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generating a complete migration for an entity",
+          "read": true
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-translations.md",
+          "heading": "Creating the migration",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/versioning-entities.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Execute migration",
+          "read": true
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "concepts/framework/migrations.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/bundle.md",
+          "heading": "Adding migrations",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 57.1,
+        "rerank": 0.0,
+        "generate": 6214.9,
+        "total": 6275.8,
+        "wall": 6278.3
+      },
+      "usage": {
+        "input_tokens": 12059,
+        "output_tokens": 985
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m03",
+      "category": "multi-hop",
+      "question": "I need a background job in my plugin that runs every 10 minutes, but it should only do its work when a checkbox in my plugin's settings is enabled. How do I set this up?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+        "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "To run a task every 10 minutes that only works when a plugin checkbox is enabled, combine a scheduled task with a boolean config field.\n\n**1. Add the checkbox to `config.xml`**\n\nUse a `bool` input field. The example config shows the `type=\"bool\"` syntax [8]:\n\n```xml\n<!-- PLUGIN_ROOT/src/Resources/config/config.xml -->\n<card>\n    <title>Basic Configuration</title>\n    <input-field type=\"bool\">\n        <name>enableCleanup</name>\n        <defaultValue>false</defaultValue>\n        <label>Enable cleanup task</label>\n    </input-field>\n</card>\n```\n\nAfter saving, refresh the Administration and open the plugin's **Configure** action to set the value [8].\n\n**2. Create the task class (600 seconds = 10 minutes)**\n\n`getDefaultInterval()` takes seconds [5]:\n\n```php\n// PLUGIN_ROOT/src/Service/ScheduledTask/ExampleTask.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Service\\ScheduledTask;\n\nuse Shopware\\Core\\Framework\\MessageQueue\\ScheduledTask\\ScheduledTask;\n\nclass ExampleTask extends ScheduledTask\n{\n    public static function getTaskName(): string\n    {\n        return 'swag.example_task';\n    }\n\n    public static function getDefaultInterval(): int\n    {\n        return 600; // 10 minutes\n    }\n}\n```\n\nThe task name should carry a vendor prefix to avoid collisions [5]. Replace `Swag\\BasicExample` with your own namespace.\n\n**3. Create the handler and check the setting in `run()`**\n\nThe handler is the Messenger consumer that executes `run()` [5]. Inject `SystemConfigService` and read the prefixed key `<BundleName>.config.<configName>` [6]:\n\n```php\n// PLUGIN_ROOT/src/Service/ScheduledTask/ExampleTaskHandler.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Service\\ScheduledTask;\n\nuse Shopware\\Core\\Framework\\MessageQueue\\ScheduledTask\\ScheduledTaskHandler;\nuse Shopware\\Core\\System\\SystemConfig\\SystemConfigService;\nuse Symfony\\Component\\Messenger\\Attribute\\AsMessageHandler;\n\n#[AsMessageHandler(handles: ExampleTask::class)]\nclass ExampleTaskHandler extends ScheduledTaskHandler\n{\n    private SystemConfigService $systemConfigService;\n\n    public function __construct(\n        /* inject the repository from your constructor here, as required by ScheduledTaskHandler */\n        SystemConfigService $systemConfigService\n    ) {\n        $this->systemConfigService = $systemConfigService;\n    }\n\n    public function run(): void\n    {\n        // Null = global value; pass a sales channel ID to read a sales-channel-specific value [6]\n        $enabled = $this->systemConfigService->get('SwagBasicExample.config.enableCleanup');\n\n        if (!$enabled) {\n            return;\n        }\n\n        //... your task logic\n    }\n}\n```\n\nImportant: the handler's constructor must also pass the arguments that `ScheduledTaskHandler` needs. The docs I retrieved don't show that constructor, so check the base class signature. The `SwagBasicExample` prefix assumes your plugin's bundle name, so adjust it to match yours.\n\n**4. Register task and handler in `services.php`**\n\nThe docs say `services.php` references both the task and its handler from `Service/ScheduledTask` [5], but the retrieved sources don't include the exact registration snippet. Check the \"Add Scheduled Task\" guide for the tag and the registration code.\n\n**Optional: test it**\n\nRun a single task without waiting for the queue with `bin/console scheduled-task:run-single <task-name>` (available from Shopware 6.7.2.0) [4]. For example: `bin/console scheduled-task:run-single swag.example_task`.",
+      "citations": [
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.html#example"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.html#scheduledtask-and-its-handler"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.html#reading-the-configuration"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.html#debugging-scheduled-tasks"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 6,
+      "model_calls": 4,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware scheduled task custom plugin run every interval"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "SystemConfigService get plugin configuration value config.xml"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 3
+          },
+          "sources": [
+            3
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 6
+          },
+          "sources": [
+            6
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 5
+          },
+          "sources": [
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 8
+          },
+          "sources": [
+            8
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Dynamic rescheduling",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": "Using the symfony scheduler to run tasks",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "ScheduledTask and its handler",
+          "read": true
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md",
+          "heading": "Reading the configuration",
+          "read": true
+        },
+        {
+          "n": 7,
+          "doc_path": "resources/references/app-reference/script-reference/miscellaneous-script-services-reference.md",
+          "heading": "services.config (Shopware\\Core\\System\\SystemConfig\\Facade\\SystemConfigFacade)",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/apps/lifecycle/configuration.md",
+          "heading": "Reading the configuration values",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/apps/lifecycle/configuration.md",
+          "heading": null,
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 34.3,
+        "rerank": 0.0,
+        "generate": 10733.2,
+        "total": 10772.1,
+        "wall": 10774.7
+      },
+      "usage": {
+        "input_tokens": 18364,
+        "output_tokens": 2012
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m04",
+      "category": "multi-hop",
+      "question": "I want a new Store API endpoint /store-api/example in my plugin that headless frontends can call, and it must be protected against brute force with a rate limit per IP address. How do I build the route and add the rate limit?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+        "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.6666666666666666,
+      "refused": false,
+      "refused_by": null,
+      "answer": "I could not find the full plugin wiring in the documentation, so this answer covers the route class and the rate limiter, and notes what is missing.\n\n**1. Create the route class**\n\nThe Store API guide builds a route `ExampleRoute` under `/store-api/example`. It is an `AbstractExampleRoute` subclass with a `#[Route]` attribute and the Store API route scope [4]. Adapt it like this:\n\n```php\n// <plugin root>/src/Core/Content/Example/SalesChannel/ExampleRoute.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Core\\Content\\Example\\SalesChannel;\n\nuse Shopware\\Core\\Framework\\Routing\\StoreApiRouteScope;\nuse Shopware\\Core\\PlatformRequest;\nuse Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository;\nuse Shopware\\Core\\Framework\\Plugin\\Exception\\DecorationPatternException;\nuse Shopware\\Core\\System\\SalesChannel\\SalesChannelContext;\nuse Symfony\\Component\\Routing\\Attribute\\Route;\n\n#[Route(defaults: [PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StoreApiRouteScope::ID]])]\nclass ExampleRoute extends AbstractExampleRoute\n{\n    // constructor injection of services (including RateLimiter, see step 3)\n\n    public function getDecorated(): AbstractExampleRoute\n    {\n        throw new DecorationPatternException(self::class);\n    }\n\n    #[Route(path: '/store-api/example', name: 'store-api.example.search', methods: ['GET','POST'])]\n    public function load(Request $request, SalesChannelContext $context): ExampleRouteResponse\n    {\n        // rate limit goes here (step 3)\n        //... your logic, return ExampleRouteResponse\n    }\n}\n```\n\nThe `getDecorated()` method must throw `DecorationPatternException` because the route has no decoration [4]. The guide's example uses a `Criteria` parameter and a repository search. Your endpoint can take a `Request` instead, as shown in the rate limit example [6]. Its exact signature and the `ExampleRouteResponse` class are up to you.\n\nThe guide also mentions a service definition that registers the route with the DI container, and a `routes.php` that imports it for discovery [4]. The documentation does not show their contents, so check the Store API guide for those files. You can verify the route with `./bin/console debug:router store-api.example.search` [3].\n\n**2. Configure the rate limiter**\n\nCreate `<plugin root>/src/Resources/config/rate_limiter.yaml`. The root key is a unique name, here `example_route` [8]:\n\n```yaml\n// <plugin root>/src/Resources/config/rate_limiter.yaml\nexample_route:\n    enabled: true\n    policy: 'time_backoff'\n```\n\nSupported policies are `fixed_window`, `sliding_window`, `token_bucket`, `time_backoff` and `system_config` [8]. The `time_backoff` policy has its own configuration described in the rate limiter hosting guide [8]. I could not retrieve those keys, and the Symfony keys for the other policies are not in the sources I read.\n\n**3. Inject the limiter and call it per IP**\n\nInject `Shopware\\Core\\Framework\\RateLimiter\\RateLimiter` into the constructor [7]:\n\n```php\nuse Shopware\\Core\\Framework\\RateLimiter\\RateLimiter;\n\npublic function __construct(private RateLimiter $rateLimiter) {}\n```\n\nThen call `ensureAccepted` at the start of the route method, passing the route name from the YAML and the client IP [7]:\n\n```php\n#[Route(path: '/store-api/example', name: 'store-api.example.search', methods: ['GET','POST'])]\npublic function load(Request $request, SalesChannelContext $context): ExampleRouteResponse\n{\n    $this->rateLimiter->ensureAccepted('example_route', $request->getClientIp());\n\n    //... your logic\n}\n```\n\nIf the limit is exceeded, it throws `Shopware\\Core\\Framework\\RateLimiter\\Exception\\RateLimitExceededException` [7].\n\nTo scope the limit per sales channel, pass the sales channel ID as the third argument and include it in the key. This needs Shopware 6.7.16.0 or later, and before 6.8.0.0 it can only be passed positionally [6]:\n\n```php\n$key = $request->getClientIp(). '-'. $context->getSalesChannelId();\n$this->rateLimiter->ensureAccepted('example_route', $key, $context->getSalesChannelId());\n```\n\nCall `reset()` with the same key after a successful request, if you want successful calls to clear the counter [6]. For brute-force protection on a login-style endpoint, you would typically count every attempt and not reset it.\n\n**Not covered by the sources:**",
+      "citations": [
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/store-api/add-store-api-route.html#create-route-class"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.html#limit-per-sales-channel"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/store-api/add-store-api-route.html#check-route-via-symfony-debugger"
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.html#prerequisites"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.html#implementing-rate-limit-in-api-route"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 8,
+      "model_calls": 5,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Store API route plugin create custom endpoint"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "rate limit Store API route per IP address RateLimiter"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 6
+          },
+          "sources": [
+            6
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "rate limiter basic configuration plugin config rate_limiter.yaml policy time_backoff limits"
+          },
+          "sources": [
+            11,
+            8,
+            10,
+            12,
+            13
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 4
+          },
+          "sources": [
+            4
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 8
+          },
+          "sources": [
+            8
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/store-api/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Create route class",
+          "read": true
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/apps/app-scripts/add-api-endpoint.md",
+          "heading": "Create the script",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Implementing rate limit in API route",
+          "read": true
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Implementing rate limit in API route",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Overview",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": "Default rate limiters",
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": "Configuration",
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": "Configuration",
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": "Default rate limiters",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 55.1,
+        "rerank": 0.0,
+        "generate": 13052.7,
+        "total": 13113.4,
+        "wall": 13115.8
+      },
+      "usage": {
+        "input_tokens": 28444,
+        "output_tokens": 2628
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m05",
+      "category": "multi-hop",
+      "question": "Sending an SMS from my plugin is slow, so I want it to run in the background instead of during the request. How do I define that job, put it on the queue and write the code that processes it?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+        "guides/plugins/plugins/framework/message-queue/add-message-handler.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Shopware's message queue is built on Symfony Messenger. You need three parts: a message class, a dispatch call, and a handler. I could not read the full handler guide, so step 3 is only partly covered.\n\n**1. Define the message**\n\nCreate the class in `<plugin root>/src/MessageQueue/Message`. Implementing `AsyncMessageInterface` makes it asynchronous; by default messages are handled synchronously [14].\n\n```php\n// <plugin root>/src/MessageQueue/Message/SmsNotification.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\MessageQueue\\Message;\n\nuse Shopware\\Core\\Framework\\MessageQueue\\AsyncMessageInterface;\n\nclass SmsNotification implements AsyncMessageInterface\n{\n    private string $content;\n\n    public function __construct(string $content)\n    {\n        $this->content = $content;\n    }\n\n    public function getContent(): string\n    {\n        return $this->content;\n    }\n}\n```\n[14]\n\nThe message should be serializable and contain everything the handler needs [3]. Pass the phone number and text, not objects such as entities.\n\n**2. Dispatch it**\n\nInject `Symfony\\Component\\Messenger\\MessageBusInterface`, which dispatches through the `messenger.default_bus` bus [13]:\n\n```php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Service;\n\nuse Swag\\BasicExample\\MessageQueue\\Message\\SmsNotification;\nuse Symfony\\Component\\Messenger\\MessageBusInterface;\n\nclass ExampleSender\n{\n    private MessageBusInterface $bus;\n\n    public function __construct(MessageBusInterface $bus)\n    {\n        $this->bus = $bus;\n    }\n\n    public function sendMessage(string $message): void\n    {\n        $this->bus->dispatch(new SmsNotification($message));\n    }\n}\n```\n[13]\n\nUse this from your plugin's SMS code path. The request then only queues the message and returns.\n\n**3. Write the handler**\n\nThe handler guide says to create a class (the example is named `SmsHandler`), mark it with the PHP attribute `#[AsMessageHandler]`, and implement `__invoke`. It also says to register the handler with the `messenger.message_handler` tag [9]. I could not read the full handler code, so check the guide for the exact class body and service registration: https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-handler.html\n\n**4. Run the consumer**\n\nMessages are not processed during the request. A worker has to consume them. The CLI worker is the recommended method [4]:\n\n```bash\nbin/console messenger:consume async --time-limit=60 --memory-limit=128M\n```\n[4]\n\nOn a production system, process the queue with CLI processes rather than the Administration worker [7].\n\n**Optional: low priority.** If the SMS does not need to go out immediately, implement `Shopware\\Core\\Framework\\MessageQueue\\LowPriorityMessageInterface` instead of `AsyncMessageInterface`. This uses the `low_priority` queue, which exists only in Shopware 6.5.7.0 and later [3][1].",
+      "citations": [
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-to-queue.html#create-a-message"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-to-queue.html#overview"
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-to-queue.html#send-a-message"
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-handler.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-handler.html#handling-messages"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/hosting/infrastructure/message-queue.html#execution-methods"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/hosting/installation-updates/cluster-setup.md",
+          "url": "https://developer.shopware.com/docs/guides/hosting/installation-updates/cluster-setup.html#message-queue"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-to-queue.html#lower-the-priority-for-specific-async-messages"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 8,
+      "model_calls": 5,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware message queue async message handler"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware MessageBus dispatch message queue worker"
+          },
+          "sources": [
+            6,
+            5,
+            7,
+            4,
+            8
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 3
+          },
+          "sources": [
+            3
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Add message handler AsMessageHandler MessageSubscriberInterface plugin"
+          },
+          "sources": [
+            9,
+            10,
+            11,
+            12,
+            3
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "dispatch message bus message_bus Add Message to Queue example"
+          },
+          "sources": [
+            13,
+            3,
+            12,
+            6,
+            14
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 14
+          },
+          "sources": [
+            14
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 13
+          },
+          "sources": [
+            13
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 9
+          },
+          "sources": [],
+          "error": "skipped: tool-call budget used up"
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": "Overview",
+          "read": true
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": "Execution methods",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": "Admin worker",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/hosting/installation-updates/cluster-setup.md",
+          "heading": "Message queue",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-handler.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-handler.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-middleware.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-middleware.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": "Send a message",
+          "read": true
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": "Create a message",
+          "read": true
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 58.8,
+        "rerank": 0.0,
+        "generate": 10082.4,
+        "total": 10146.5,
+        "wall": 10148.7
+      },
+      "usage": {
+        "input_tokens": 24603,
+        "output_tokens": 1761
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m06",
+      "category": "multi-hop",
+      "question": "My plugin has two custom entities: a brand (swag_brand) and its items (swag_item), and each item belongs to exactly one brand. How do I define this relation in both entity definitions, and how do I load a brand together with its items?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+        "guides/plugins/plugins/framework/data-handling/reading-data.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Use a `OneToManyAssociationField` on the brand side and a `FkField` plus `ManyToOneAssociationField` on the item side. The documentation's example uses `bar`/`foo`, which maps to your `brand`/`item` as follows.\n\n**1. Brand definition** (`BrandDefinition.php`)\n\n```php\nprotected function defineFields(): FieldCollection\n{\n    return new FieldCollection([\n        (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),\n\n        new OneToManyAssociationField('items', ItemDefinition::class, 'brand_id')\n    ]);\n}\n```\n\nThe parameters are the property name (`items`), the class of the referenced definition, and the column in the item table that points back to the brand. [1]\n\n**2. Item definition** (`ItemDefinition.php`)\n\n```php\nprotected function defineFields(): FieldCollection\n{\n    return new FieldCollection([\n        (new IdField('id', 'id'))->addFlags(new Required(), new PrimaryKey()),\n        (new FkField('brand_id', 'brandId', BrandDefinition::class))->addFlags(new Required()),\n\n        new ManyToOneAssociationField('brand', 'brand_id', BrandDefinition::class, 'id'),\n    ]);\n}\n```\n\nThe `FkField` takes the snake_case column name, the camelCase property name, and the referenced definition. The `ManyToOneAssociationField` takes the property name (`brand`), the FK column, the referenced definition, and the referenced ID column. [1]\n\nThe `swag_brand` and `swag_item` tables and the `brand_id` column still need to exist in your database, which the documentation doesn't cover in this part. [1]\n\n**3. Load a brand with its items**\n\n```php\npublic function readData(Context $context): void\n{\n    $criteria = new Criteria();\n    $criteria->addFilter(new EqualsFilter('name', 'Example name'));\n    $criteria->addAssociation('items');\n\n    $brands = $this->brandRepository->search($criteria, $context);\n}\n```\n\nPass the association's property name (`items`) to `addAssociation()`. [7]\n\nTo load only some items, use `getAssociation()`, which returns a nested `Criteria` you can filter:\n\n```php\n$criteria->getAssociation('items')->addFilter(new RangeFilter('points', [\n    RangeFilter::GTE => 4\n]));\n```\n\n[7]\n\nThe documentation's example filters on `points`, so replace that with a field on your item entity. [7]",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/add-data-associations.html#one-to-many-many-to-one"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/reading-data.html#using-the-repository"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 4,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "OneToManyAssociationField ManyToOneAssociationField entity definition custom entity"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "EntityRepository criteria addAssociation load association"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": "One to Many / Many to One",
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": "Many to Many associations",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/field-inheritance.md",
+          "heading": "Association inheritance",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Working with associations",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/development/integrations-api/search-criteria.md",
+          "heading": "Parameters",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-data-handling.md",
+          "heading": "Working with associations",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/apps/app-scripts/data-loading.md",
+          "heading": "Loading data",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 85.8,
+        "rerank": 0.0,
+        "generate": 6364.2,
+        "total": 6454.1,
+        "wall": 6456.2
+      },
+      "usage": {
+        "input_tokens": 10943,
+        "output_tokens": 1261
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m07",
+      "category": "multi-hop",
+      "question": "I want a new storefront page at /example that is rendered by my own controller, and its response should be served from the HTTP cache. How do I set up the controller and make it cacheable?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+        "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.3333333333333333,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Here's how to set it up, based on the Shopware guides for custom storefront controllers and HTTP caching.\n\n**1. Create the controller**\n\nExtend `StorefrontController`, set the storefront route scope on the class, and add the `/example` route with `_httpCache` set to `true` on the method:\n\n```php\n// <plugin root>/src/Storefront/Controller/ExampleController.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Storefront\\Controller;\n\nuse Shopware\\Core\\PlatformRequest;\nuse Shopware\\Core\\System\\SalesChannel\\SalesChannelContext;\nuse Shopware\\Storefront\\Controller\\StorefrontController;\nuse Shopware\\Storefront\\Framework\\Routing\\StorefrontRouteScope;\nuse Symfony\\Component\\HttpFoundation\\Request;\nuse Symfony\\Component\\HttpFoundation\\Response;\nuse Symfony\\Component\\Routing\\Attribute\\Route;\n\n#[Route(defaults: [PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StorefrontRouteScope::ID]])]\nclass ExampleController extends StorefrontController\n{\n\n    #[Route(path: '/example', name: 'frontend.example.example', methods: ['GET'], defaults: ['_httpCache' => true])]\n    public function showExample(): Response\n    {\n        return $this->renderStorefront('@SwagBasicExample/storefront/page/example/index.html.twig', [\n            'example' => 'Hello world'\n        ]);\n    }\n}\n```\n[1]\n\nNotes on the code:\n- The class must extend `StorefrontController` and define the storefront route scope [7][9].\n- The route name `frontend.example.example` uses the `frontend` prefix, which identifies it as a Storefront route [7].\n- `renderStorefront` renders the Twig template and returns a `Response` [7].\n\n**2. Make it cacheable**\n\nSetting `defaults: ['_httpCache' => true]` on the route attribute makes the response cacheable. Once this is set, the core handles the rest. If the route is called several times in the same state, only the first request generates a response and later requests get the same one [1].\n\nShopware distinguishes two user states that the HTTP cache reacts to: `logged-in` (user is logged in) and `cart-filled` (products are in the cart) [1]. Responses for those states are not cached in the usual way, so a page that must be shared across visitors should be designed around that.\n\n**3. Register the controller as a service**\n\nA controller is a service, so it must be registered in the service container [8]. The sources I retrieved did not include the exact service XML/YAML, so check the \"Adding custom Storefront controller\" guide for that step.\n\n**Caveats**\n- The sources do not show how to define custom TTLs or per-route caching policies beyond `_httpCache`. The caching policy configuration (`CACHE_REWORK` feature flag, which is experimental) is described in the caching guide [4], and I did not read it in full, so I can't give you its exact settings.\n- Cache invalidation is handled by the core through cache tags, and Storefront routes follow the invalidation of the corresponding Store API routes [5].",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.html"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/controllers/add-custom-controller.html#storefront-controller-class-example"
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/index.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/controllers/"
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/controllers/add-custom-controller.html#adding-custom-storefront-controller"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/hosting/performance/caches.md",
+          "url": "https://developer.shopware.com/docs/guides/hosting/performance/caches.html#http-caching-policies"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.html#cache-invalidation"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 4,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware storefront controller route cache HTTP cache"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "StorefrontController route defaults _routeScope storefront"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "concepts/framework/http_cache.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "concepts/framework/http_cache.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/hosting/performance/caches.md",
+          "heading": "HTTP Caching Policies",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "heading": "Cache invalidation",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "heading": "Storefront Controller class example",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "heading": "Storefront Controller class example",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "heading": "Adding custom Storefront controller",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Make the route available for the Storefront",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 37.0,
+        "rerank": 0.0,
+        "generate": 6767.8,
+        "total": 6809.0,
+        "wall": 6811.2
+      },
+      "usage": {
+        "input_tokens": 10320,
+        "output_tokens": 1280
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.3333333333333333,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m08",
+      "category": "multi-hop",
+      "question": "I've built a custom Administration module in my plugin. How do I add it to the admin menu, and make sure only users whose role has the right permission can see the menu entry and open its pages?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+        "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+        "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.6666666666666666,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "To add the module to the menu and restrict it by role, you need three parts: the menu entry, the ACL privilege, and the route protection. I confirmed the first two from the docs. For the menu-entry restriction I could not read the exact property, so that step is incomplete (see below).\n\n**1. Add the menu entry**\n\nPut `navigation` in your module registration. Plugin modules can't add top-level entries, so set `parent` to an existing category. The entry also needs an `id`:\n\n```javascript\n// <plugin root>/src/Resources/app/administration/src/module/swag-example/index.js\nnavigation: [{\n    id: 'swag-custommodule-list',\n    label: 'CustomModule',\n    color: '#ff3d58',\n    path: 'swag.custommodule.list',\n    icon: 'default-shopping-paper-bag-product',\n    parent: 'sw-catalogue',\n    position: 100\n}]\n```\n[1]\n\n**2. Register the privilege**\n\nRegister the privilege with the privilege service. Use the recommended pattern of an `acl` folder imported from your component's `index.js`:\n\n```javascript\n// <plugin root>/src/Resources/app/administration/src/<your-component>/acl/index.js\nShopware.Service('privileges').addPrivilegeMappingEntry({\n    category: 'permissions',\n    parent: null,\n    key: 'your_key',\n    roles: {\n        viewer: {\n            privileges: [],\n            dependencies: []\n        },\n        editor: {\n            privileges: [],\n            dependencies: []\n        },\n        creator: {\n            privileges: [],\n            dependencies: []\n        },\n        deleter: {\n            privileges: [],\n            dependencies: []\n        }\n    }\n});\n```\n[14]\n\nAdd the entity operations each role needs to `privileges`, in the form `entity_name:operation`, e.g. `product:read`. Use `dependencies` to require another role, e.g. `review.viewer`. [13] The privilege must be registered before the user opens the roles detail page. [14] Registered privileges then appear under the roles in Users & Permissions. [13]\n\n**3. Protect the routes**\n\nAdd `privilege` to the `meta` of each route. This restricts the pages, so users without the privilege can't open them:\n\n```javascript\nModule.register('your-plugin-module', {\n    routes: {\n        detail: {\n            component: 'your-plugin-detail',\n            path: 'your-plugin',\n            meta: {\n                privilege: 'your_key.your_role' // e.g. 'product.viewer'\n            }\n        }\n    }\n});\n```\n[11]\n\n**4. Menu entry visibility (not fully confirmed)**\n\nThe ACL guide lists \"protect your menu entries\" as a topic, but I could not read that section before my tool budget ran out. Check the \"Adding Permissions\" page of the Shopware developer docs for the exact property to put on the `navigation` entry. I haven't verified its name, so don't assume it is `privilege`.\n\n**Note:** ACL rules only apply in the Administration. Users can still reach the backend through direct API calls, so the server-side API permissions remain the real security boundary. [7]",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/routing-navigation/add-menu-entry.html#menu-entry-in-category"
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#adding-new-normal-permissions"
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#register-admin-privilege"
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#protect-your-plugin-routes"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#overview"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 8,
+      "model_calls": 5,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Administration module navigation menu entry registration plugin"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Administration module privileges ACL permission restrict route"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 8
+          },
+          "sources": [
+            8
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware.Module.register privilege key navigation privilege route meta"
+          },
+          "sources": [
+            11,
+            12,
+            13,
+            10,
+            14
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 13
+          },
+          "sources": [
+            13
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 14
+          },
+          "sources": [
+            14
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 11
+          },
+          "sources": [],
+          "error": "skipped: tool-call budget used up"
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+          "heading": "Creating a simple menu entry",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "heading": "Next steps",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "concepts/framework/architecture/administration-concept.md",
+          "heading": "ACL in the Administration",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Overview",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/index.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 9,
+          "doc_path": "resources/references/adr/2020-08-28-import-acl-privileges-from-other-roles.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Get permissions from other privilege mappings",
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/overriding-routes.md",
+          "heading": "Applying the override",
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Register admin privilege",
+          "read": true
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Register admin privilege",
+          "read": true
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 49.3,
+        "rerank": 0.0,
+        "generate": 11057.0,
+        "total": 11112.6,
+        "wall": 11115.0
+      },
+      "usage": {
+        "input_tokens": 24170,
+        "output_tokens": 1623
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m09",
+      "category": "multi-hop",
+      "question": "I'm building a custom CMS element for Shopping Experiences that shows a video based on an ID the merchant configures. How do I register the element in the Administration, render it in the Storefront, and load extra data for it on the server side?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/content/cms/add-cms-element.md",
+        "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md"
+      ],
+      "first_relevant_rank": 4,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.25,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.75,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The full path has three parts: a Administration element, a Storefront Twig template, and a server-side data resolver. I didn't retrieve the docs' Step 1–2 (where the element is declared and its `defaultConfig` is set), so check that step in the guide before you build.\n\n**1. Administration: register the element**\n\nCreate the preview, main component, and config component as JS components. The docs use this pattern:\n\n- **Preview** (block picker thumbnail): `Shopware.Component.register('cms-el-preview-dailymotion',...)` [9]\n- **Main component** (editor view): register `cms-el-dailymotion` with the `cms-element` mixin and call `this.initElementConfig('dailymotion')` in `created()`. Read the value through `element.config.url.value` [9]\n- **Config component** (modal form): register `cms-el-config-dailymotion` with an `mt-text-field` bound to `element.config.url.value`, so the merchant can enter the video ID [9]\n\nUse the Meteor components for the UI [9]. The docs example uses the element name `dailymotion`.\n\n**2. Storefront: render the element**\n\nPlace the template at `<plugin root>/src/Resources/views/storefront/element/cms-element-dailymotion.html.twig`. The prefix `cms-element-` is required, and the technical name must match the element name [6]. The docs example reads the configured value directly:\n\n```twig\n<div class=\"cms-element-dailymotion\">\n    <iframe\n        src=\"https://www.dailymotion.com/embed/video/{{ element.config.url.value }}\"\n        frameborder=\"0\"\n        type=\"text/html\"\n        width=\"100%\"\n        height=\"480\"\n    />\n</div>\n```\n\n`element` is passed to the template automatically and holds the meta data and config values [6]. Clear the Storefront cache after adding the template [6].\n\n**3. Server side: load extra data with a resolver**\n\nUse a resolver when the element needs more than plain config values, such as entities or external API data [10].\n\nCreate a class that extends `AbstractCmsElementResolver`. It must implement `getType()`, `collect()` and `enrich()` [10]:\n\n```php\nnamespace Swag\\BasicExample\\DataResolver;\n\nuse Shopware\\Core\\Content\\Cms\\Aggregate\\CmsSlot\\CmsSlotEntity;\nuse Shopware\\Core\\Content\\Cms\\DataResolver\\Element\\AbstractCmsElementResolver;\nuse Shopware\\Core\\Content\\Cms\\DataResolver\\Element\\ElementDataCollection;\nuse Shopware\\Core\\Content\\Cms\\DataResolver\\ResolverContext\\ResolverContext;\nuse Shopware\\Core\\Content\\Cms\\DataResolver\\CriteriaCollection;\n\nclass DailyMotionCmsElementResolver extends AbstractCmsElementResolver\n{\n    public function getType(): string\n    {\n        return 'dailymotion';\n    }\n\n    public function collect(CmsSlotEntity $slot, ResolverContext $resolverContext): ?CriteriaCollection\n    {\n        return null;\n    }\n\n    public function enrich(CmsSlotEntity $slot, ResolverContext $resolverContext, ElementDataCollection $result): void\n    {\n\n    }\n}\n```\n[10]\n\n- `getType()` returns the element name, and the resolver runs for every element of that type [10].\n- `collect()` builds the criteria. Read config with `$slot->getFieldConfig()` and `$config->get('fieldName')`. If an entity ID is stored there, add a `Criteria` to a `CriteriaCollection` [12].\n- `enrich()` processes the resolved data. It can also call an external API with a config value, then store the result with `$slot->setData()` [12].\n\nRegister the resolver in `<plugin root>/src/Resources/config/services.php` with the `shopware.cms.data_resolver` tag [10]:\n\n```php\nuse Swag\\BasicExample\\DataResolver\\DailyMotionCmsElementResolver;\nuse Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ContainerConfigurator;\n\nreturn static function (ContainerConfigurator $configurator): void {\n    $services = $configurator->services();\n\n    $services->set(DailyMotionCmsElementResolver::class)\n        ->tag('shopware.cms.data_resolver');\n};\n```\n[10]\n\nFor a plain video ID you may not need a resolver at all: the Storefront template can read `element.config.url.value` directly [6]. Use a resolver if you need to load or fetch data on the server before rendering.",
+      "citations": [
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/cms/add-cms-element.html#step-3-create-the-preview-component"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/cms/add-cms-element.html#how-to-create-an-element-in-the-storefront"
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/cms/add-data-to-cms-elements.html#overview"
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/cms/add-data-to-cms-elements.html#collect-data"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 7,
+      "model_calls": 4,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopping Experiences custom CMS element Administration register"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "CMS element Storefront template custom element render"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            4
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "CMS element data resolver server side load data"
+          },
+          "sources": [
+            10,
+            11,
+            12,
+            13,
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 6
+          },
+          "sources": [
+            6
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 9
+          },
+          "sources": [
+            9
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 12
+          },
+          "sources": [
+            12
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 10
+          },
+          "sources": [
+            10
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "concepts/commerce/content/shopping-experiences-cms.md",
+          "heading": "Extensibility",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "concepts/commerce/content/shopping-experiences-cms.md",
+          "heading": "Structure",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "resources/references/adr/2022-07-19-blog-concept.md",
+          "heading": "Decision",
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": "Where to find elements",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": "Overview",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-block.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/apps/administration/add-cms-element-via-admin-sdk.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": "How to create an element in the Administration",
+          "read": true
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md",
+          "heading": "Event-based extensibility",
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md",
+          "heading": "Create a data resolver",
+          "read": true
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md",
+          "heading": "Event-based extensibility",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 37.1,
+        "rerank": 0.0,
+        "generate": 13522.4,
+        "total": 13564.7,
+        "wall": 13567.4
+      },
+      "usage": {
+        "input_tokens": 22683,
+        "output_tokens": 2163
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.75,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m10",
+      "category": "multi-hop",
+      "question": "My plugin needs its own email template that is installed together with the plugin, and the template has to show some extra data that my plugin computes. How do I add the template and get my data into it?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/content/mail/add-mail-template.md",
+        "guides/plugins/plugins/content/mail/add-data-to-mails.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "You can ship the template with a database migration, and pass your computed data to it with an event subscriber. The docs don't show the full migration code in the text I could retrieve, so I've described the steps and left the code out.\n\n**1. Add the template with a migration**\n\nShopware's documented approach is a plugin database migration. It needs to:\n- Use an existing mail template type ID (the docs' example uses \"contact form\") or create a new custom type. [2][1]\n- Insert an entry into `mail_template` with that type ID. Set `system_default` to 0. [2][5]\n- Insert an entry into `mail_template_translation` for each language you support, such as en-GB and de-DE. [2][5]\n\nUse `INSERT IGNORE INTO` for these statements. The docs warn not to remove the templates on uninstall, because they may be linked to other entities. [5]\n\n**2. Pass your data into the template**\n\nListen to `MailBeforeValidateEvent` in an event subscriber and call `addTemplateData()`. The docs describe this as the simpler option compared with decorating the mail service. [7]\n\n```php\npublic static function getSubscribedEvents(): array\n{\n    return [\n        MailBeforeValidateEvent::class => 'beforeMailValidate',\n    ];\n}\n\npublic function beforeMailValidate(MailBeforeValidateEvent $event): void\n{\n    $event->addTemplateData('key', 'value'); // your computed data\n}\n```\n[7]\n\nRegister the subscriber with the `kernel.event_subscriber` tag in `services.php`. [7]\n\n```php\n$services->set(MyMailSubscriber::class)\n    ->tag('kernel.event_subscriber');\n```\n[7]\n\nOnce the data is added, reference it in your template with `{{ key }}` (for example `{{ myCustomData }}` in the docs' decorator example). [8]\n\n**Alternative:** You can decorate `AbstractMailService` and add values to `$templateData` in its `send()` method. [8]",
+      "citations": [
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-mail-template.html#adding-a-mail-template-via-migration"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-mail-template.html#creating-a-custom-mail-type"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-mail-template.html#adding-a-mail-template-via-migration"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-data-to-mails.html#adding-data-via-subscriber"
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-data-to-mails.html#adding-data-via-decorator"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 6,
+      "model_calls": 4,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "plugin add mail template installation mail_template_type"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "MailTemplateDataEvent add custom data to mail template"
+          },
+          "sources": [
+            6,
+            3,
+            7,
+            8,
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 2
+          },
+          "sources": [
+            2
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 8
+          },
+          "sources": [
+            8
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 5
+          },
+          "sources": [
+            5
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Creating a custom mail type",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Adding a mail template via migration",
+          "read": true
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Adding a mail template via migration",
+          "read": true
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "heading": "Adding data via subscriber",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "heading": "Adding data via decorator",
+          "read": true
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 33.4,
+        "rerank": 0.0,
+        "generate": 6793.0,
+        "total": 6830.8,
+        "wall": 6833.1
+      },
+      "usage": {
+        "input_tokens": 16195,
+        "output_tokens": 1075
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m11",
+      "category": "multi-hop",
+      "question": "My plugin shows text both in the Storefront and in its own Administration module, in English and German. Where do the translation files go in each case, and how do I use them in the templates?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/styling/add-translations.md",
+        "guides/plugins/plugins/administration/templates-styling/adding-snippets.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Short answer: the Storefront and Administration use different directories and different file naming, so you need two separate sets of snippet files.\n\n## 1. Storefront snippets\n\n**Location:** `<plugin root>/src/Resources/snippet/`, using the naming pattern `<domain>.<locale>.json`. [5]\n\n```text\nSwagBasicExample\n└── src\n    ├─ Resources\n    │  └─ snippet\n    │     ├─ my-app.de.json\n    │     └─ my-app.en.json\n    └─ SwagBasicExample.php\n```\n[5]\n\nThe locale must be an ISO string such as `de` or `en`, with dashes instead of underscores. [5] Shipping a whole new language uses the `.base` suffix, e.g. `my-app.de.base.json`. [5] Newer Shopware versions also use language-based naming such as `messages.en.base.json` rather than country-specific names like `en-GB`. [2]\n\n**Usage in Twig:** use the `trans` filter. [11]\n\n```twig\n<div class=\"product-detail-headline\">\n    {{ 'header.example' | trans }}\n</div>\n```\n[11]\n\nPlaceholders are passed in the same guide's \"with placeholders\" example, which I could not read in full. [11]\n\n## 2. Administration snippets (module)\n\n**Location:** inside your module directory, `<plugin root>/src/Resources/app/administration/src/module/<your-module>/snippet/`. There is one JSON file per language, e.g. `de-DE.json` and `en-GB.json`. [9]\n\nEach file holds a nested object. The top-level key is usually your module's namespace: [9]\n\n```json\n{\n    \"swag-example\": {\n        \"nested\": {\n            \"value\": \"example\",\n            \"examplePluralization\": \"1 Product | {n} Products\"\n        },\n        \"foo\": \"bar\"\n    }\n}\n```\n[9]\n\nShopware collects these files automatically when the plugin is activated. [9] If your module doesn't follow that directory layout, you can place the files anywhere under `<plugin root>/src/Resources/app/administration/src/`. [9]\n\n**Usage in templates:** use the `$tc` helper. [12]\n\n```twig\n{% block my_custom_block %}\n    <p>\n       {{ $tc('swag-example.general.myCustomText') }}\n    </p>\n{% endblock %}\n```\n[12]\n\nFor menu labels, the module's label is also a translation key, e.g. `example`. [7]\n\n## Summary\n\n| Where | Directory | File name | Template usage |\n|---|---|---|---|\n| Storefront | `src/Resources/snippet/` | `<domain>.<locale>.json` | `{{ 'key'\\|trans }}` |\n| Administration | `src/Resources/app/administration/src/module/<module>/snippet/` | `<locale>.json` (e.g. `en-GB.json`) | `{{ $tc('key') }}` |",
+      "citations": [
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/styling/add-translations.html#overview"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/upgrades-migrations/extension-translation.md",
+          "url": "https://developer.shopware.com/docs/guides/upgrades-migrations/extension-translation.html#manual"
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/styling/add-translations.html#using-translations-in-templates"
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/administration/templates-styling/adding-snippets.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/templates-styling/adding-snippets.html#overview"
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/administration/templates-styling/adding-snippets.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/templates-styling/adding-snippets.html#using-the-snippets-in-templates"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/module-component-management/add-custom-module.html#implementing-snippets"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 5,
+      "model_calls": 4,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Storefront snippet files translation plugin snippet/en-GB snippet/de-DE"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Administration module snippets translation file plugin src/Resources/app/administration/src/module snippet"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 5
+          },
+          "sources": [
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 9
+          },
+          "sources": [
+            9
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "twig trans filter snippet key usage Storefront template; $tc Administration snippet usage"
+          },
+          "sources": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": "Creating translations",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/upgrades-migrations/extension-translation.md",
+          "heading": "Migrating Extension Translations to the Country-Independent Snippet Layer",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": "Snippet files in the private filesystem",
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "concepts/framework/translations/automated-translation-updates.md",
+          "heading": "Update snippets in Crowdin",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/apps/administration/adding-snippets.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "heading": "Implementing snippets",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "concepts/framework/translations/extension-points.md",
+          "heading": "Override snippets (the snippet module)",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/administration/templates-styling/adding-snippets.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/themes/configuration/theme-configuration.md",
+          "heading": "Translations in Theme Manager",
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/administration/templates-styling/adding-snippets.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/administration/services-utilities/using-filter.md",
+          "heading": "Filter in Twig templates",
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md",
+          "heading": "Storefront usage of custom fields",
+          "read": false
+        },
+        {
+          "n": 15,
+          "doc_path": "concepts/framework/architecture/storefront-concept.md",
+          "heading": "Translations",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 52.2,
+        "rerank": 0.0,
+        "generate": 9249.0,
+        "total": 9307.7,
+        "wall": 9310.2
+      },
+      "usage": {
+        "input_tokens": 16859,
+        "output_tokens": 1376
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m12",
+      "category": "multi-hop",
+      "question": "In my payment plugin, how do I create the payment handler, and how can I later change the payment status of the order transaction (for example to paid) and check which status changes are possible at that moment?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+        "guides/plugins/plugins/checkout/order/using-the-state-machine.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.75,
+      "refused": false,
+      "refused_by": null,
+      "answer": "**Creating the payment handler**\n\nCreate a class that extends `AbstractPaymentHandler` and implements `supports()` and `pay()`. For a synchronous payment, `pay()` returns `null`, and no `finalize()` method is needed [1]:\n\n```php\nclass MyCustomPaymentHandler extends AbstractPaymentHandler\n{\n    public function __construct(private readonly OrderTransactionStateHandler $transactionStateHandler)\n    {\n    }\n\n    public function supports(PaymentHandlerType $type, string $paymentMethodId, Context $context): bool\n    {\n        // This payment handler does not support recurring payments nor refunds\n        return false;\n    }\n\n    public function pay(Request $request, PaymentTransactionStruct $transaction, Context $context, ?Struct $validateStruct): ?RedirectResponse\n    {\n        // In here you should probably call your payment provider to process the payment\n        // $this->myPaymentProvider->processPayment($transaction);\n\n        // afterward you should update the transaction with the new state\n        $this->transactionStateHandler->process($transaction->getOrderTransactionId(), $context);\n\n        return null;\n    }\n}\n```\n[1]\n\nIf the payment provider call can fail, throw a `PaymentException`. Shopware then sets the transaction to the `failed` state [1].\n\n**Changing the transaction status**\n\n- The simplest approach is to inject `OrderTransactionStateHandler` and call its `process()` method with the transaction ID, as in the example above [1]. The documentation I found does not show a `paid` method on this handler, so I can't confirm that it exists.\n- For a general state change, inject `Shopware\\Core\\System\\StateMachine\\StateMachineRegistry` and call `transition()` with a `Transition` object and the `Context`. The `Transition` takes four arguments: the entity name (use the definition constant, e.g. `order_transaction`), the entity ID, the transition name, and the state field name (`stateId`) [6][9].\n\n**Checking the possible status changes**\n\nCall `getAvailableTransitions` on the `StateMachineRegistry`. It takes the entity name, the entity ID, the state field (`'stateId'`) and the context, and returns the transitions allowed from the current state [11]:\n\n```php\n$transitions = $this->stateMachineRegistry->getAvailableTransitions(\n    OrderDefinition::ENTITY_NAME,\n    '<Order ID here>',\n    'stateId',\n    $context\n);\n```\n[11]\n\nFor the order transaction, pass the transaction's entity name and ID instead. The documentation example uses the order entity.\n\n**Gaps:** I could not retrieve the list of order transaction transition names (such as the one that leads to \"paid\"). Check them with `bin/console state-machine:dump order_transaction.state`, which exports the registered states and transitions, including those added by extensions [10].",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/payment/add-payment-plugin.html#example-payment-handlers"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#transitioning"
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#transition-parameters"
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#finding-possible-transitions"
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#inspecting-a-state-machine"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 8,
+      "model_calls": 4,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware synchronous payment handler implement PaymentHandler pay method"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware StateMachineRegistry transition order transaction paid"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware available state machine transitions order transaction getAvailableTransitions"
+          },
+          "sources": [
+            6,
+            9,
+            7,
+            11,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 3
+          },
+          "sources": [
+            3
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 6
+          },
+          "sources": [
+            6
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 11
+          },
+          "sources": [
+            11
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 9
+          },
+          "sources": [
+            9
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "read": true
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/apps/checkout/payment.md",
+          "heading": "Asynchronous payments",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "concepts/commerce/checkout-concept/payments.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transitioning",
+          "read": true
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transitioning",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Overview",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transition parameters",
+          "read": true
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Finding possible transitions",
+          "read": true
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 88.1,
+        "rerank": 0.0,
+        "generate": 10749.3,
+        "total": 10842.5,
+        "wall": 10844.7
+      },
+      "usage": {
+        "input_tokens": 24236,
+        "output_tokens": 1731
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.75,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m13",
+      "category": "multi-hop",
+      "question": "I need a bin/console command in my plugin that imports products: it should create a product if it doesn't exist yet and update it if it does. How do I build the command and write the data?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+        "guides/plugins/plugins/framework/data-handling/writing-data.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.6666666666666666,
+      "refused": false,
+      "refused_by": null,
+      "answer": "I can cover the command setup and the upsert pattern from the docs. The docs don't include a complete import example, so the code below is a sketch that combines those pieces.\n\n**1. Create the command class**\n\nShopware commands are Symfony Console commands. Put the class in your plugin, for example `src/Command/ImportProductsCommand.php` [1]:\n\n```php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Command;\n\nuse Symfony\\Component\\Console\\Attribute\\AsCommand;\nuse Symfony\\Component\\Console\\Command\\Command;\nuse Symfony\\Component\\Console\\Input\\InputInterface;\nuse Symfony\\Component\\Console\\Output\\OutputInterface;\n\n#[AsCommand(name: 'swag:product:import', description: 'Imports products')]\nclass ImportProductsCommand extends Command\n{\n    protected function execute(InputInterface $input, OutputInterface $output): int\n    {\n        $output->writeln('Importing products');\n\n        return Command::SUCCESS;\n    }\n}\n```\n\n**2. Register it as a service with the `console.command` tag**\n\nIn `src/Resources/config/services.php` [1]:\n\n```php\n$services->set(Swag\\BasicExample\\Command\\ImportProductsCommand::class)\n    ->tag('console.command');\n```\n\nThe docs say commands registered this way are automatically available via `bin/console` [1]. The docs don't show how to inject the product repository into the command. Inject it through the service definition's constructor arguments, as you would for any service.\n\n**3. Upsert the product**\n\nThe `upsert()` method creates or updates entities. If the payload contains an `id` that already exists, the entity is updated. Otherwise it is created [6]. The docs also say that without an `id`, data is always created and never updated [7].\n\nSo the command needs to find the existing product's ID first. The docs show this pattern with `searchIds()` and `firstId()` plus an `EqualsFilter` [7][11]. Filtering by `productNumber` instead of `name` is my adaptation:\n\n```php\nuse Shopware\\Core\\Framework\\Context;\nuse Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityRepository;\nuse Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\Criteria;\nuse Shopware\\Core\\Framework\\DataAbstractionLayer\\Search\\Filter\\EqualsFilter;\n\n// inside a method that has $context and the injected $productRepository\n$criteria = new Criteria();\n$criteria->addFilter(new EqualsFilter('productNumber', $row['productNumber']));\n\n$productId = $this->productRepository->searchIds($criteria, $context)->firstId();\n\n$this->productRepository->upsert([\n    [\n        'id' => $productId ?? Uuid::randomHex(),\n        'productNumber' => $row['productNumber'],\n        'name' => $row['name'],\n        'stock' => (int) $row['stock'],\n    ],\n], $context);\n```\n\nNotes:\n- `$productId ?? Uuid::randomHex()` gives new products an ID, so `upsert()` creates them and existing products are updated. The docs don't show this exact line. `Uuid` is `Shopware\\Core\\Framework\\Uuid\\Uuid`, which I didn't verify in the docs.\n- The docs show `searchIds()` and `firstId()` but don't say what `firstId()` returns when nothing matches. Check for `null` before using it.\n- For a new product, Shopware also requires fields such as a tax and a price. The docs I found don't cover those required fields, so check the product entity definition for your version.\n- The `$context` argument comes from your command. The docs don't show how a console command obtains a `Context`.\n\nIf you need more detail on any step, such as required product fields or how to build the `Context` in a command, I can search for that.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-custom-commands.html"
+        },
+        {
+          "n": 6,
+          "doc_path": "resources/references/app-reference/script-reference/custom-endpoint-script-services-reference.md",
+          "url": "https://developer.shopware.com/docs/resources/references/app-reference/script-reference/custom-endpoint-script-services-reference.html#upsert"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/writing-data.html#updating-data"
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/reading-data.html#using-the-repository"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 5,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware plugin console command Symfony Command AsCommand"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "EntityRepository upsert create or update product"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "EntityRepository search Criteria filter by productNumber"
+          },
+          "sources": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/installation/legacy-setups/symfony-cli-setup.md",
+          "heading": "Install Shopware",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/development/start-developing.md",
+          "heading": "Running commands",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "resources/references/app-reference/script-reference/custom-endpoint-script-services-reference.md",
+          "heading": "upsert()",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "heading": "Writing data",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/integrations/commercial/multi-inventory.md",
+          "heading": "Working with the API",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/05-http-client.md",
+          "heading": "Abstraction of Sync API",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/05-http-client.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/development/integrations-api/search-criteria.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "resources/references/app-reference/script-reference/data-loading-script-services-reference.md",
+          "heading": "search()",
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/development/integrations-api/flows/create-product.md",
+          "heading": "Step 7: Read the product with the Store API",
+          "read": false
+        },
+        {
+          "n": 15,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/reading-data.md",
+          "heading": "Using the repository",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 127.2,
+        "rerank": 0.0,
+        "generate": 9865.7,
+        "total": 9996.4,
+        "wall": 9998.4
+      },
+      "usage": {
+        "input_tokens": 12784,
+        "output_tokens": 1834
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m14",
+      "category": "multi-hop",
+      "question": "When my plugin finishes processing one of its example entities, it should fire its own event that carries the sales channel context, and another class in the plugin should react to it. How do I create and dispatch the event, and how do I listen to it?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/event/add-custom-event.md",
+        "guides/plugins/plugins/framework/event/listening-to-events.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Here's the full flow: create the event class, dispatch it from a service, and listen with a subscriber registered in `services.php`.\n\n**1. Create the event class**\n\nImplement `ShopwareSalesChannelEvent`, which gives you access to the `SalesChannelContext` [11][12]:\n\n```php\n// <plugin root>/src/Core/Content/Example/Event/ExampleEvent.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Core\\Content\\Example\\Event;\n\nuse Shopware\\Core\\Framework\\Context;\nuse Shopware\\Core\\Framework\\Event\\ShopwareSalesChannelEvent;\nuse Shopware\\Core\\System\\SalesChannel\\SalesChannelContext;\nuse Swag\\BasicExample\\Core\\Content\\Example\\ExampleEntity;\n\nclass ExampleEvent implements ShopwareSalesChannelEvent\n{\n    protected ExampleEntity $exampleEntity;\n\n    protected SalesChannelContext $salesChannelContext;\n\n    public function __construct(ExampleEntity $exampleEntity, SalesChannelContext $context)\n    {\n        $this->exampleEntity = $exampleEntity;\n        $this->salesChannelContext = $context;\n    }\n\n    public function getExample(): ExampleEntity\n    {\n        return $this->exampleEntity;\n    }\n\n    public function getContext(): Context\n    {\n        return $this->salesChannelContext->getContext();\n    }\n\n    public function getSalesChannelContext(): SalesChannelContext\n    {\n        return $this->salesChannelContext;\n    }\n}\n```\n[12]\n\n**2. Dispatch the event**\n\nInject the `EventDispatcherInterface` and call `dispatch` with the event object [1]:\n\n```php\n// <plugin root>/src/Service/ExampleEventService.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Service;\n\nuse Shopware\\Core\\System\\SalesChannel\\SalesChannelContext;\nuse Swag\\BasicExample\\Core\\Content\\Example\\Event\\ExampleEvent;\nuse Swag\\BasicExample\\Core\\Content\\Example\\ExampleEntity;\nuse Symfony\\Contracts\\EventDispatcher\\EventDispatcherInterface;\n\nclass ExampleEventService\n{\n    private EventDispatcherInterface $eventDispatcher;\n\n    public function __construct(EventDispatcherInterface $eventDispatcher)\n    {\n        $this->eventDispatcher = $eventDispatcher;\n    }\n\n    public function fireEvent(ExampleEntity $exampleEntity, SalesChannelContext $context)\n    {\n        $this->eventDispatcher->dispatch(new ExampleEvent($exampleEntity, $context));\n    }\n}\n```\n[1]\n\nCall `fireEvent()` where your plugin finishes processing the example entity.\n\n**3. Listen to the event**\n\nCreate a subscriber that implements `EventSubscriberInterface`, mapping the event class to a method [3]:\n\n```php\n// <plugin root>/src/Subscriber/ExampleEventSubscriber.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Subscriber;\n\nuse Swag\\BasicExample\\Core\\Content\\Example\\Event\\ExampleEvent;\nuse Symfony\\Component\\EventDispatcher\\EventSubscriberInterface;\n\nclass ExampleEventSubscriber implements EventSubscriberInterface\n{\n    public static function getSubscribedEvents(): array\n    {\n        // <event to listen to> => <method to execute>\n        return [\n            ExampleEvent::class => 'onExampleEvent',\n        ];\n    }\n\n    public function onExampleEvent(ExampleEvent $event): void\n    {\n        $salesChannelContext = $event->getSalesChannelContext();\n        // Do something with $event->getExample() and $salesChannelContext\n    }\n}\n```\n\nThe subscriber example in the docs uses event name constants, such as `ProductEvents::PRODUCT_LOADED_EVENT` [3]. For a custom event, the event class name is used as the key. The documentation I found does not explicitly show this form, so check it against your setup. The subscriber's method receives the event object, as in the docs' example [3].\n\n**4. Register the subscriber**\n\nAdd the `kernel.event_subscriber` tag in `services.php` [14]:\n\n```php\n// <plugin root>/src/Resources/config/services.php\n<?php declare(strict_types=1);\n\nuse Swag\\BasicExample\\Subscriber\\ExampleEventSubscriber;\nuse Symfony\\Component\\DependencyInjection\\Loader\\Configurator\\ContainerConfigurator;\n\nreturn static function (ContainerConfigurator $configurator): void {\n    $services = $configurator->services();\n\n    $services->set(ExampleEventSubscriber::class)\n        ->tag('kernel.event_subscriber');\n};\n```\n[14]\n\nThe docs also note that a subscriber without this registration is never called, and Shopware gives no obvious error in that case [3]. The `ExampleEventService` also needs to be registered as a service in `services.php` so it can receive the `EventDispatcherInterface`. The docs I retrieved don't show that step, so I can't confirm the exact configuration for it.",
+      "citations": [
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/add-custom-event.html#event-interfaces-and-classes"
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/add-custom-event.html#create-the-event-class"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/add-custom-event.html#fire-the-event"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/listening-to-events.html#creating-your-new-subscriber-class"
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/listening-to-events.html#registering-your-subscriber-via-services-php"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 8,
+      "model_calls": 5,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware custom event class dispatch EventDispatcher"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware subscriber EventSubscriberInterface getSubscribedEvents"
+          },
+          "sources": [
+            3,
+            6,
+            7,
+            8,
+            9
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware SalesChannelContext event implements ShopwareSalesChannelEvent"
+          },
+          "sources": [
+            10,
+            11,
+            12,
+            1,
+            13
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 12
+          },
+          "sources": [
+            12
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 3
+          },
+          "sources": [
+            3
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "services.php kernel.event_subscriber tag subscriber registration plugin"
+          },
+          "sources": [
+            14,
+            6,
+            7,
+            15,
+            3
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 14
+          },
+          "sources": [
+            14
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "heading": null,
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/event/finding-events.md",
+          "heading": "General PHP events",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Creating your new subscriber class",
+          "read": true
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/flow/add-flow-builder-trigger.md",
+          "heading": "Create custom flow trigger",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/framework/flow/add-flow-builder-trigger.md",
+          "heading": "Create a new trigger (event)",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/using-database-events.md",
+          "heading": "Event classes",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/extension/finding-extensions.md",
+          "heading": "Using Extensions in Your Plugin",
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/framework/flow/add-flow-builder-trigger.md",
+          "heading": "Create custom flow trigger",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/using-database-events.md",
+          "heading": "Shopware\\Core\\Framework\\DataAbstractionLayer\\Event\\EntityWriteEvent",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "resources/references/adr/2020-11-06-creating-events.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "heading": "Event interfaces and classes",
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "heading": "Create the event class",
+          "read": true
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/plugins/architecture/events.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Registering your subscriber via services.php",
+          "read": true
+        },
+        {
+          "n": 15,
+          "doc_path": "guides/plugins/plugins/framework/extension/creating-custom-extension.md",
+          "heading": "Example: Custom Product Filter Extension",
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 62.0,
+        "rerank": 0.0,
+        "generate": 13865.1,
+        "total": 13933.3,
+        "wall": 13935.2
+      },
+      "usage": {
+        "input_tokens": 33298,
+        "output_tokens": 2368
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m15",
+      "category": "multi-hop",
+      "question": "When a merchant edits an order, my plugin needs to know which fields changed and, if a certain field changed, set the order's delivery to shipped. How do I get the changed fields and change the delivery state?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+        "guides/plugins/plugins/checkout/order/using-the-state-machine.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 1.0,
+      "refused": false,
+      "refused_by": null,
+      "answer": "To react to field changes, you need to request a changeset from Shopware's write process. To ship the delivery, you use the state machine. The docs cover both, but they don't show how to test a specific field inside the changeset, so that part is up to you.\n\n**1. Detect changed fields on order updates**\n\nShopware doesn't add the changeset to the event by default. You have to request it in a `PreWriteValidationEvent` subscriber and read it in your order-written listener [1]:\n\n```php\npublic static function getSubscribedEvents(): array\n{\n    return [\n        PreWriteValidationEvent::class => 'triggerChangeSet',\n        OrderEvents::ORDER_WRITTEN_EVENT => 'onOrderWritten',\n    ];\n}\n\npublic function triggerChangeSet(PreWriteValidationEvent $event): void\n{\n    if ($event->getContext()->getVersionId() !== Defaults::LIVE_VERSION) {\n        return;\n    }\n\n    foreach ($event->getCommands() as $command) {\n        if (!$command instanceof ChangeSetAware) {\n            continue;\n        }\n\n        if ($command->getEntityName() !== OrderDefinition::ENTITY_NAME) {\n            continue;\n        }\n\n        $command->requestChangeSet();\n    }\n}\n\npublic function onOrderWritten(EntityWrittenEvent $event): void\n{\n    if ($event->getContext()->getVersionId() !== Defaults::LIVE_VERSION) {\n        return;\n    }\n\n    foreach ($event->getWriteResults() as $result) {\n        $changeSet = $result->getChangeSet();\n\n        // Do stuff\n    }\n}\n```\n\n[1] The docs don't say which methods the changeset object offers for checking a particular field, so check its class in the Shopware source. Insert commands can't produce a changeset because the whole entity is new [2].\n\n**2. Set the delivery to shipped**\n\nInject `Shopware\\Core\\System\\StateMachine\\StateMachineRegistry` and use the `ship` transition on `order_delivery` [7][11]. Using the order's delivery ID:\n\n```php\npublic function setOrderDeliveryToShipped(string $orderId, $context): void\n{\n    $criteria = new Criteria();\n    $criteria->addFilter(new EqualsFilter('orderId', $orderId));\n\n    $orderDeliveryEntityId = $this->orderDeliveryRepository->searchIds($criteria, $context)->firstId();\n\n    $this->stateMachineRegistry->transition(new Transition(\n        OrderDeliveryDefinition::ENTITY_NAME,\n        $orderDeliveryEntityId,\n        'ship',\n        'stateId'\n    ), $context);\n}\n```\n\n[11] The `order_delivery.repository` service is injected via the dependency injection container [11]. Alternatively, you can load the order with the `deliveries` association and use the first delivery's ID [11].\n\nCombining the two: in your order-written listener, when the relevant field is in the changeset, call `setOrderDeliveryToShipped()`. Be careful not to create a loop, for example by shipping the order inside a listener that is triggered by that same change.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/listen-to-order-changes.html#reading-changeset"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/listen-to-order-changes.html#reading-changeset"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#transitioning"
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#full-example"
+        }
+      ],
+      "citation_hit": true,
+      "tool_calls": 6,
+      "model_calls": 5,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "EntityWrittenEvent changeset getPayload changed fields entity updated"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "StateMachineRegistry transition order delivery state ship"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 1
+          },
+          "sources": [
+            1
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 7
+          },
+          "sources": [
+            7
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Transition order_delivery.state ship orderDeliveryId ACTION_SHIP StateMachineRegistry example"
+          },
+          "sources": [
+            6,
+            11,
+            7,
+            8,
+            12
+          ],
+          "error": null
+        },
+        {
+          "tool": "read_section",
+          "args": {
+            "source": 11
+          },
+          "sources": [
+            11
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": "Reading changeset",
+          "read": true
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": "Reading changeset",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/using-database-events.md",
+          "heading": "Shopware\\Core\\Framework\\DataAbstractionLayer\\Event\\EntityWriteEvent",
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "resources/references/adr/2022-03-25-available-stock.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/apps/lifecycle/product-translator.md",
+          "heading": "Fetching data from the shop",
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transitioning",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transitioning",
+          "read": true
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Overview",
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transition parameters",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Full example",
+          "read": true
+        },
+        {
+          "n": 12,
+          "doc_path": "resources/references/adr/2022-03-25-initial-state-id-loader.md",
+          "heading": null,
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 50.7,
+        "rerank": 0.0,
+        "generate": 12412.0,
+        "total": 12468.1,
+        "wall": 12470.1
+      },
+      "usage": {
+        "input_tokens": 24297,
+        "output_tokens": 1759
+      },
+      "context_tokens": null,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "mu1",
+      "category": "multi-hop-unanswerable",
+      "question": "How do I connect Shopware 6 to HubSpot with the built-in HubSpot connector and sync my product custom fields to HubSpot contacts?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "refused": true,
+      "refused_by": "llm",
+      "answer": "I could not find this in the Shopware documentation.\n\nI ran several searches for the built-in HubSpot connector, HubSpot setup, and syncing custom fields to HubSpot. None of the results describe a HubSpot connector or a HubSpot integration. The closest results covered general plugin integrations [11] and the Shopware Admin and Store APIs [15], which you could use to build your own integration.\n\nWhat the documentation does cover is how custom fields are defined. Shopware custom fields are additional data fields that can be added to entities such as products, customers, or orders [7]. You can define them declaratively in a plugin through `Resources/config/custom-fields.xml`, and Shopware creates or updates the sets and fields on install or update [6]. That may help you prepare the product custom fields, but it does not explain how they reach HubSpot.\n\nFor the HubSpot connector itself, check the HubSpot or Shopware partner documentation, or the extension's listing in the Shopware Store.",
+      "citations": [
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/integrations/index.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/integrations/"
+        },
+        {
+          "n": 15,
+          "doc_path": "concepts/api/index.md",
+          "url": "https://developer.shopware.com/docs/concepts/api/"
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/index.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#declarative-custom-fields-via-resources-config-custom-fields-xml"
+        }
+      ],
+      "citation_hit": null,
+      "tool_calls": 3,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "HubSpot connector Shopware setup"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "HubSpot custom fields sync product contacts"
+          },
+          "sources": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "HubSpot integration"
+          },
+          "sources": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/hosting/installation-updates/cluster-setup.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/installation/legacy-setups/docker-setup.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/installation/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/installation/legacy-setups/devenv-setup.md",
+          "heading": "Launch Devenv and install Shopware",
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/hosting/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Declarative custom fields via Resources/config/custom-fields.xml",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/fetching-data-from-entity-selection.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/fetching-data-from-entity-selection.md",
+          "heading": "Fetching data",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/fetching-data-from-entity-selection.md",
+          "heading": "Fetching data",
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/plugins/plugins/integrations/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/06-integration.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/06-integration.md",
+          "heading": "Various Repositories (DynamoDB, Deno KV, Cloudflare KV, Bun SQLite, Better SQLite3)",
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "resources/references/adr/2022-04-19-integrate-app-into-flow-action.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 15,
+          "doc_path": "concepts/api/index.md",
+          "heading": null,
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 47.6,
+        "rerank": 0.0,
+        "generate": 3998.1,
+        "total": 4049.5,
+        "wall": 4051.3
+      },
+      "usage": {
+        "input_tokens": 9436,
+        "output_tokens": 511
+      },
+      "context_tokens": null,
+      "hop_coverage": null,
+      "all_hops": null,
+      "answer_evidence": null,
+      "cited_hop_coverage": null,
+      "refusal_outcome": "correct_refusal"
+    },
+    {
+      "id": "mu2",
+      "category": "multi-hop-unanswerable",
+      "question": "How do I turn on Shopware's built-in A/B testing for product detail pages and send the variant results to Google Analytics 4?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "refused": true,
+      "refused_by": "llm",
+      "answer": "I could not find this in the Shopware documentation.\n\nI ran three searches covering built-in A/B testing for product detail pages, A/B test variants in the storefront, and sending A/B test results to Google Analytics 4. None of the returned sources described a Shopware A/B testing feature, how to enable it, or any Google Analytics 4 integration for experiment variants. The results were about accessibility feature flags, performance testing with k6, E2E testing, and store extension guidelines.\n\nYou may want to check the Shopware Account or Administration for an A/B testing or experiments feature, or consult your Shopware partner or the official Shopware community for setup details.",
+      "citations": [],
+      "citation_hit": null,
+      "tool_calls": 3,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware A/B testing product detail page enable"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware Google Analytics 4 A/B test variant tracking"
+          },
+          "sources": [
+            1,
+            6,
+            7,
+            2,
+            8
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Shopware A/B test experiment variants storefront"
+          },
+          "sources": [
+            7,
+            9,
+            1,
+            10,
+            11
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/development/accessibility/storefront-accessibility.md",
+          "heading": "Best practices for accessibility (a11y) in Shopware extensions",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/hosting/performance/k6.md",
+          "heading": "Running the tests",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/hosting/performance/k6.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/development/testing/e2e-playwright/test.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/development/testing/e2e-playwright/fixtures.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/development/testing/store/content-and-translations.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "guides/development/testing/store/storefront-performance-and-errors.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "guides/development/testing/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/development/accessibility/storefront-accessibility.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "guides/development/testing/store/quality-guidelines.md",
+          "heading": "Review process",
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "guides/development/accessibility/index.md",
+          "heading": null,
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 104.1,
+        "rerank": 0.0,
+        "generate": 9505.8,
+        "total": 9613.8,
+        "wall": 9615.6
+      },
+      "usage": {
+        "input_tokens": 9426,
+        "output_tokens": 470
+      },
+      "context_tokens": null,
+      "hop_coverage": null,
+      "all_hops": null,
+      "answer_evidence": null,
+      "cited_hop_coverage": null,
+      "refusal_outcome": "correct_refusal"
+    },
+    {
+      "id": "mu3",
+      "category": "multi-hop-unanswerable",
+      "question": "Which Administration setting enables the built-in Salesforce CRM sync, and how often does it push new customers and their orders?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "refused": true,
+      "refused_by": "llm",
+      "answer": "I could not find this in the Shopware documentation.\n\nI ran four searches covering the Administration setting for the Salesforce CRM sync, its sync frequency, and the general Salesforce term. None of the results described a built-in Salesforce integration, a setting that enables it, or how often customers and orders are pushed. The closest results were about the Sync API, custom fields, and sales channels, which don't answer your question. The documentation may cover this in a partner extension or in a Shopware product page that isn't indexed here, so checking the Shopware Store or your Shopware account contact may help.",
+      "citations": [],
+      "citation_hit": null,
+      "tool_calls": 3,
+      "model_calls": 3,
+      "stopped_by": "answer",
+      "steps": [
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Salesforce CRM sync Shopware administration settings"
+          },
+          "sources": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Salesforce integration customers orders sync interval"
+          },
+          "sources": [
+            1,
+            6,
+            7,
+            8,
+            9
+          ],
+          "error": null
+        },
+        {
+          "tool": "search_docs",
+          "args": {
+            "query": "Salesforce"
+          },
+          "sources": [
+            10,
+            11,
+            12,
+            13,
+            14
+          ],
+          "error": null
+        }
+      ],
+      "sources_seen": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/05-http-client.md",
+          "heading": "Abstraction of Sync API",
+          "read": false
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Declarative custom fields via Resources/config/custom-fields.xml",
+          "read": false
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/development/start-developing.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 4,
+          "doc_path": "concepts/api/admin-api.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/apps/administration/index.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/apps/mcp-server.md",
+          "heading": "mcp.xml structure",
+          "read": false
+        },
+        {
+          "n": 7,
+          "doc_path": "resources/references/app-reference/webhook-events-reference.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 8,
+          "doc_path": "resources/references/app-reference/script-reference/trigger-events-reference.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 9,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": "Reading changeset",
+          "read": false
+        },
+        {
+          "n": 10,
+          "doc_path": "concepts/commerce/catalog/sales-channels.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 11,
+          "doc_path": "concepts/commerce/catalog/sales-channels.md",
+          "heading": "Core model and relations",
+          "read": false
+        },
+        {
+          "n": 12,
+          "doc_path": "resources/references/adr/2020-07-02-implement-sales-channel-context-token-requirement.md",
+          "heading": null,
+          "read": false
+        },
+        {
+          "n": 13,
+          "doc_path": "guides/development/troubleshooting/flow-reference.md",
+          "heading": "B2B",
+          "read": false
+        },
+        {
+          "n": 14,
+          "doc_path": "concepts/commerce/catalog/sales-channels.md",
+          "heading": null,
+          "read": false
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 38.1,
+        "rerank": 0.0,
+        "generate": 3700.2,
+        "total": 3742.4,
+        "wall": 3744.3
+      },
+      "usage": {
+        "input_tokens": 9379,
+        "output_tokens": 423
+      },
+      "context_tokens": null,
+      "hop_coverage": null,
+      "all_hops": null,
+      "answer_evidence": null,
+      "cited_hop_coverage": null,
+      "refusal_outcome": "correct_refusal"
+    }
+  ]
+}

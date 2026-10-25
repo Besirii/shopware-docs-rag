@@ -18,6 +18,8 @@ switch ($Target) {
     "eval"           { docker compose exec api python -m eval.run_eval --experiments main --api-url http://localhost:8000 }
     "eval-retrieval" { docker compose exec api python -m eval.run_eval --experiments all --no-generate --api-url http://localhost:8000 }
     "eval-judge"     { docker compose exec api python -m eval.run_eval --experiments main --judge --api-url http://localhost:8000 }
+    "eval-agent"     { docker compose exec api python -m eval.run_eval --experiments compare --dataset eval/questions_multihop.jsonl --api-url http://localhost:8000 }
+    "eval-agent-single" { docker compose exec api python -m eval.run_eval --experiments compare --api-url http://localhost:8000 }
     "report"         { uv run python -m eval.report --update-docs }
     "calibrate"      { uv run python -m eval.calibrate }
     "test"           { uv run pytest }
@@ -43,6 +45,6 @@ switch ($Target) {
     }
     default {
         "Targets: up, up-ollama, pull-model, down, logs, ingest, ingest-local, eval, eval-retrieval,"
-        "         eval-judge, report, calibrate, test, lint, health, ask -Question '...', agent -Question '...'"
+        "         eval-judge, eval-agent, eval-agent-single, report, calibrate, test, lint, health, ask '...', agent '...'"
     }
 }

@@ -13,7 +13,12 @@ Usage:
     python -m eval.run_eval --experiments 3_rerank --judge     # add LLM-judge metrics
     python -m eval.run_eval --api-url http://localhost:8000    # go through the HTTP API (default: in-process)
 
-Results: eval/results/<date>_<experiment>.json (one file per experiment run).
+Agent vs. single search (same LLM, same questions; needs AGENT_PROVIDER / LLM_PROVIDER with tool calling):
+    python -m eval.run_eval --experiments compare --dataset eval/questions_multihop.jsonl --api-url ...
+    python -m eval.run_eval --experiments compare --api-url ...    # the original single-topic set
+
+Results: eval/results/<date>_<experiment>[__<tag>].json (one file per experiment run; runs on
+another dataset get its name as tag, e.g. __multihop).
 """
 
 from __future__ import annotations
@@ -53,8 +58,13 @@ EXPERIMENTS: dict[str, dict] = {
     "x_fixed_hybrid": {"chunking": "fixed", "mode": "hybrid", "sparse_weight": 1.0, "label": "fixed chunks + hybrid"},
     "x_fixed_rerank": {"chunking": "fixed", "mode": "hybrid_rerank", "sparse_weight": 1.0,
                        "label": "fixed chunks + hybrid + reranker"},
+    # POST /agent: the model runs its own searches (same index, hybrid search inside search_docs).
+    "agent": {"kind": "agent", "chunking": "heading", "mode": "agent",
+              "label": "Agent: plans its own searches (search_docs + read_section)"},
 }
 MAIN = ["0_baseline", "1_heading", "2_hybrid", "2b_hybrid_weighted", "3_rerank"]
+# Single search (the /ask default) vs. the agent - same LLM, same questions.
+COMPARE = ["2b_hybrid_weighted", "agent"]
 KS = (1, 3, 5, 10)
 
 
@@ -70,6 +80,11 @@ class ApiClient:
         r.raise_for_status()
         return r.json()
 
+    def agent(self, body: dict) -> dict:
+        r = self.http.post("/agent", json=body)
+        r.raise_for_status()
+        return r.json()
+
     def info(self) -> dict:
         r = self.http.get("/health")
         return r.json()
@@ -80,35 +95,83 @@ class InProcessClient:
         from app.pipeline import RAGPipeline
 
         self.pipeline = RAGPipeline.from_settings(get_settings(), with_llm=with_llm)
+        self._agent = None
 
     def ask(self, body: dict) -> dict:
         from app.schemas import AskRequest
 
         return self.pipeline.ask(AskRequest(**body)).model_dump(exclude_none=True)
 
+    def agent(self, body: dict) -> dict:
+        from app.agent import build_agent
+        from app.schemas import AgentRequest
+
+        if self._agent is None:
+            self._agent = build_agent(get_settings(), self.pipeline)
+            if self._agent is None:
+                raise RuntimeError("agent disabled: set AGENT_PROVIDER (or LLM_PROVIDER) to a tool-calling LLM")
+        req = AgentRequest(**body)
+        return self._agent.run(req.question, req.max_tool_calls, req.include_trace,
+                               req.include_sources).model_dump(exclude_none=True)
+
     def info(self) -> dict:
-        return self.pipeline.health()
+        s = get_settings()
+        return {**self.pipeline.health(), "agent": {"provider": s.resolved_agent_provider,
+                                                    "model": s.resolved_agent_model}}
 
 
 # ------------------------------------------------------------------ running
 
 
-def evaluate_question(client, q: EvalQuestion, exp: dict, top_k: int, generate: bool) -> dict:
-    """Phase 1: ask the system and compute the deterministic metrics."""
-    body = {"question": q.question, "top_k": top_k, "mode": exp["mode"], "chunking": exp["chunking"],
-            "sparse_weight": exp.get("sparse_weight"), "generate": generate, "include_contexts": True}
-    resp = None
+def _call(fn, body: dict, qid: str) -> tuple[dict | None, float, str | None]:
+    """Call the system with 3 attempts; returns (response, wall ms, error)."""
     for attempt in range(3):
         t0 = time.perf_counter()
         try:
-            resp = client.ask(body)
-            break
+            return fn(body), (time.perf_counter() - t0) * 1000, None
         except Exception as e:  # keep going; a question that still fails is visible in the results
-            log.error("%s failed (attempt %d/3): %s", q.id, attempt + 1, e)
+            log.error("%s failed (attempt %d/3): %s", qid, attempt + 1, e)
             if attempt == 2:
-                return {"id": q.id, "category": q.category, "error": str(e)}
+                return None, 0.0, str(e)
             time.sleep(5 * (attempt + 1))
-    wall_ms = (time.perf_counter() - t0) * 1000
+    return None, 0.0, "unreachable"
+
+
+def hops_of(q: EvalQuestion) -> list[list[str]]:
+    """Multi-hop questions list their hops; for the others any relevant doc is enough (one hop)."""
+    return q.extra.get("hops") or ([q.relevant_docs] if q.relevant_docs else [])
+
+
+def multihop_metrics(q: EvalQuestion, context_docs: list[str], answer: str | None, citations: list[dict],
+                     generated: bool) -> dict:
+    """Did every part of the question reach the LLM, end up in the answer, and get cited?
+
+    hop_coverage        share of hops with a document in the LLM's context
+    all_hops            1 if every hop was covered (the multi-hop "found everything" rate)
+    answer_evidence     share of the key facts (identifiers, commands) that appear in the answer
+    cited_hop_coverage  share of hops backed by a citation of one of their documents
+    """
+    if not q.answerable:
+        return {"hop_coverage": None, "all_hops": None, "answer_evidence": None, "cited_hop_coverage": None}
+    hops = hops_of(q)
+    cov = m.hop_coverage(context_docs, hops)
+    return {
+        "hop_coverage": cov,
+        "all_hops": None if cov is None else float(cov == 1.0),
+        "answer_evidence": m.evidence_recall([answer or ""], q.evidence) if generated else None,
+        "cited_hop_coverage": m.hop_coverage([c["doc_path"] for c in citations], hops) if generated else None,
+    }
+
+
+def evaluate_question(client, q: EvalQuestion, exp: dict, top_k: int, generate: bool) -> dict:
+    """Phase 1: ask the system and compute the deterministic metrics."""
+    if exp.get("kind") == "agent":
+        return evaluate_agent_question(client, q)
+    body = {"question": q.question, "top_k": top_k, "mode": exp["mode"], "chunking": exp["chunking"],
+            "sparse_weight": exp.get("sparse_weight"), "generate": generate, "include_contexts": True}
+    resp, wall_ms, error = _call(client.ask, body, q.id)
+    if resp is None:
+        return {"id": q.id, "category": q.category, "error": error}
 
     contexts = resp.get("contexts") or []
     ranked_docs = [c["doc_path"] for c in contexts]
@@ -141,11 +204,62 @@ def evaluate_question(client, q: EvalQuestion, exp: dict, top_k: int, generate: 
         "timings_ms": {**resp.get("timings_ms", {}), "wall": round(wall_ms, 1)},
         "usage": resp.get("usage", {}),
         "context_tokens": sum(c.get("token_count") or 0 for c in contexts[:top_k]),
+        **multihop_metrics(q, ranked_docs[:top_k], resp.get("answer"), citations, generate),
         # Kept only until the judge phase has run (not written to the results file).
         "_contexts": [c.get("text") or "" for c in contexts[:top_k]],
     }
     if row["refused"] is not None:
         row["refusal_outcome"] = m.refusal_outcome(q.answerable, refused)
+    return row
+
+
+def evaluate_agent_question(client, q: EvalQuestion) -> dict:
+    """Same metrics for POST /agent. The agent's "context" is every source it saw, in the order it
+    found them, with the text it saw (full section if read, else the search preview)."""
+    body = {"question": q.question, "include_trace": True, "include_sources": True}
+    resp, wall_ms, error = _call(client.agent, body, q.id)
+    if resp is None:
+        return {"id": q.id, "category": q.category, "error": error}
+
+    sources = resp.get("sources") or []
+    seen_docs = [s["doc_path"] for s in sources]
+    texts = [s.get("text") or "" for s in sources]
+    rank = m.first_relevant_rank(seen_docs, q.relevant_docs) if q.answerable else None
+    refused = resp.get("answerable") is False
+    citations = resp.get("citations") or []
+    t = resp.get("timings_ms", {})
+    row: dict = {
+        "id": q.id,
+        "category": q.category,
+        "question": q.question,
+        "answerable_truth": q.answerable,
+        "relevant_docs": q.relevant_docs,
+        # Rank = order of discovery; read hit@k as "found among the first k sources it saw".
+        "first_relevant_rank": rank,
+        **{f"hit@{k}": m.hit_at_k(rank, k) for k in KS},
+        "rr@10": m.reciprocal_rank(rank, 10),
+        "doc_recall@5": m.doc_recall_at_k(seen_docs, q.relevant_docs, 5) if q.answerable else None,
+        "evidence@k": m.evidence_recall(texts, q.evidence) if q.answerable else None,
+        "refused": refused,
+        "refused_by": "llm" if refused else None,
+        "answer": resp.get("answer"),
+        "citations": [{"n": c["n"], "doc_path": c["doc_path"], "url": c["url"]} for c in citations],
+        "citation_hit": any(c["doc_path"] in q.relevant_docs for c in citations) if citations and q.answerable else None,
+        "tool_calls": resp.get("tool_calls"),
+        "model_calls": resp.get("model_calls"),
+        "stopped_by": resp.get("stopped_by"),
+        "steps": [{k: s.get(k) for k in ("tool", "args", "sources", "error")} for s in resp.get("steps") or []],
+        "sources_seen": [{"n": s["n"], "doc_path": s["doc_path"], "heading": s.get("heading"), "read": s.get("read")}
+                         for s in sources],
+        # Same keys as /ask so the summary can compare them: tools = retrieval, model = generation.
+        "timings_ms": {"retrieve": t.get("tools", 0.0), "rerank": 0.0, "generate": t.get("model", 0.0),
+                       "total": t.get("total", 0.0), "wall": round(wall_ms, 1)},
+        "usage": resp.get("usage", {}),
+        "context_tokens": None,
+        **multihop_metrics(q, seen_docs, resp.get("answer"), citations, True),
+        "_contexts": texts,
+    }
+    row["refusal_outcome"] = m.refusal_outcome(q.answerable, refused)
     return row
 
 
@@ -186,6 +300,16 @@ def summarize(rows: list[dict], top_k: int) -> dict:
     summary["evidence@k"] = m.mean(r.get("evidence@k") for r in ans)
     summary["ci95"]["evidence@k"] = m.bootstrap_ci([r["evidence@k"] for r in ans if r.get("evidence@k") is not None])
     summary["citation_hit"] = m.mean(float(r["citation_hit"]) for r in ans if r.get("citation_hit") is not None)
+    for key in ("hop_coverage", "all_hops", "answer_evidence", "cited_hop_coverage"):
+        summary[key] = m.mean(r.get(key) for r in ans)
+        summary["ci95"][key] = m.bootstrap_ci([r[key] for r in ans if r.get(key) is not None])
+    agent_rows = [r for r in ok if r.get("tool_calls") is not None]
+    if agent_rows:
+        summary["agent"] = {
+            "tool_calls_mean": m.mean(r["tool_calls"] for r in agent_rows),
+            "model_calls_mean": m.mean(r["model_calls"] for r in agent_rows),
+            "stopped_by": dict(Counter(r["stopped_by"] for r in agent_rows)),
+        }
 
     outcomes = Counter(r["refusal_outcome"] for r in ok if "refusal_outcome" in r)
     if outcomes:
@@ -219,6 +343,7 @@ def summarize(rows: list[dict], top_k: int) -> dict:
     for r in ans:
         by_cat[r["category"]].append(r["hit@5"])
     summary["hit@5_by_category"] = {c: m.mean(v) for c, v in sorted(by_cat.items())}
+    summary["incomplete_hops"] = [r["id"] for r in ans if r.get("all_hops") == 0.0]
     summary["misses@10"] = [r["id"] for r in ans if r["first_relevant_rank"] is None]
     return summary
 
@@ -259,7 +384,8 @@ def run_experiment(name: str, client, questions: list[EvalQuestion], top_k: int,
         "duration_s": round(time.perf_counter() - t0, 1),
         "docs_commit_sha": coll.get("commit_sha"),
         "embedding_model": coll.get("embedding_model"),
-        "llm_model": info.get("llm", {}).get("model") if generate else None,
+        "llm_model": (info.get("agent") or {}).get("model") if exp.get("kind") == "agent"
+        else info.get("llm", {}).get("model") if generate else None,
         "judge_model": judge.model_id if judge else None,
         # Per-experiment share of the judge usage (the Judge object is shared across experiments).
         "judge_usage": {k: v - usage_before.get(k, 0) for k, v in judge.usage.items()} if judge else None,
@@ -274,15 +400,17 @@ def run_experiment(name: str, client, questions: list[EvalQuestion], top_k: int,
     out = RESULTS_DIR / f"{datetime.now().strftime('%Y-%m-%d')}_{name}{suffix}.json"
     out.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     s = summary
-    log.info("   hit@5=%s mrr@10=%s faithfulness=%s refusal=%s -> %s", s["hit@5"], s["mrr@10"],
-             s.get("faithfulness"), (s.get("refusal") or {}).get("accuracy"), out)
+    log.info("   hit@5=%s mrr@10=%s all_hops=%s answer_evidence=%s faithfulness=%s refusal=%s -> %s",
+             s["hit@5"], s["mrr@10"], s.get("all_hops"), s.get("answer_evidence"), s.get("faithfulness"),
+             (s.get("refusal") or {}).get("accuracy"), out)
     return out
 
 
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--experiments", default="main", help="comma list, 'main' (0-3) or 'all'")
+    parser.add_argument("--experiments", default="main",
+                        help="comma list, 'main' (0-3), 'all' (every /ask config) or 'compare' (/ask vs agent)")
     parser.add_argument("--api-url", help="evaluate through the HTTP API instead of in-process")
     parser.add_argument("--dataset", type=Path, default=DEFAULT_PATH)
     parser.add_argument("--top-k", type=int, default=get_settings().default_top_k)
@@ -297,11 +425,21 @@ def main() -> None:
     for noisy in ("httpx", "rag", "app.embeddings"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
 
-    names = MAIN if args.experiments == "main" else list(EXPERIMENTS) if args.experiments == "all" \
-        else [x.strip() for x in args.experiments.split(",")]
+    presets = {"main": MAIN, "compare": COMPARE,
+               "all": [n for n, e in EXPERIMENTS.items() if e.get("kind") != "agent"]}
+    names = presets.get(args.experiments) or [x.strip() for x in args.experiments.split(",")]
     unknown = [n for n in names if n not in EXPERIMENTS]
     if unknown:
         parser.error(f"unknown experiments {unknown}; choose from {list(EXPERIMENTS)}")
+    if args.no_generate and any(EXPERIMENTS[n].get("kind") == "agent" for n in names):
+        parser.error("the agent always generates an answer; drop --no-generate")
+    # Runs on another dataset get its name in the file name, and comparison runs (which use the agent's
+    # LLM for /ask too) are tagged "compare" - so neither overwrites nor mixes into the main table.
+    tag = args.tag
+    if tag is None and args.dataset.name != DEFAULT_PATH.name:
+        tag = args.dataset.stem.removeprefix("questions_")
+    elif tag is None and args.experiments == "compare":
+        tag = "compare"
 
     questions = load_questions(args.dataset)
     if args.ids:
@@ -330,7 +468,7 @@ def main() -> None:
 
     for name in names:
         print(run_experiment(name, client, questions, args.top_k, generate, judge, args.workers, info, args.dataset,
-                             tag=args.tag))
+                             tag=tag))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,2824 @@
+{
+  "experiment": "2b_hybrid_weighted",
+  "tag": "multihop",
+  "label": "+ weighted RRF (BM25 x 0.5)",
+  "config": {
+    "chunking": "heading",
+    "mode": "hybrid",
+    "sparse_weight": 0.5,
+    "label": "+ weighted RRF (BM25 x 0.5)",
+    "top_k": 6,
+    "generate": true
+  },
+  "created_at": "2026-10-25T15:06:03+00:00",
+  "duration_s": 81.8,
+  "docs_commit_sha": "7ab78da5845834c1d45cfcbd4df39d9bc224f967",
+  "embedding_model": "ibm-granite/granite-embedding-small-english-r2",
+  "llm_model": "claude-haiku-5-5",
+  "judge_model": null,
+  "judge_usage": null,
+  "dataset": {
+    "path": "eval/questions_multihop.jsonl",
+    "n": 18,
+    "sha256": "d1ec6426d67acb82"
+  },
+  "settings": {
+    "embedding_provider": "fastembed",
+    "embedding_model": "ibm-granite/granite-embedding-small-english-r2",
+    "sparse_model": "Qdrant/bm25",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "rerank_input": "embed_text",
+    "rerank_threshold": null,
+    "retrieval_candidates": 30,
+    "rrf_k": 60,
+    "hybrid_sparse_weight": 0.5,
+    "fusion_backend": "python",
+    "chunk_max_tokens": 600,
+    "chunk_min_tokens": 120,
+    "chunk_overlap_tokens": 80,
+    "baseline_chunk_tokens": 512,
+    "baseline_overlap_tokens": 64,
+    "llm_provider": "anthropic",
+    "llm_model": "claude-haiku-5-5",
+    "collection_name": "shopware_docs"
+  },
+  "summary": {
+    "n_questions": 18,
+    "n_errors": 0,
+    "n_answerable": 15,
+    "hit@1": 0.6667,
+    "hit@3": 0.9333,
+    "hit@5": 0.9333,
+    "hit@10": 1.0,
+    "mrr@10": 0.8111,
+    "ci95": {
+      "hit@1": [
+        0.4,
+        0.867
+      ],
+      "hit@5": [
+        0.8,
+        1.0
+      ],
+      "mrr@10": [
+        0.667,
+        0.933
+      ],
+      "evidence@k": [
+        0.489,
+        0.689
+      ],
+      "hop_coverage": [
+        0.567,
+        0.833
+      ],
+      "all_hops": [
+        0.133,
+        0.667
+      ],
+      "answer_evidence": [
+        0.461,
+        0.672
+      ],
+      "cited_hop_coverage": [
+        0.567,
+        0.833
+      ]
+    },
+    "doc_recall@5": 0.6667,
+    "evidence@k": 0.5889,
+    "citation_hit": 1.0,
+    "hop_coverage": 0.7,
+    "all_hops": 0.4,
+    "answer_evidence": 0.5667,
+    "cited_hop_coverage": 0.7,
+    "refusal": {
+      "answered": 15,
+      "correct_refusal": 3,
+      "correct_refusal_rate": 1.0,
+      "false_refusal_rate": 0.0,
+      "accuracy": 1.0
+    },
+    "latency_ms": {
+      "retrieve": {
+        "p50": 36.7,
+        "p95": 75.7
+      },
+      "rerank": {
+        "p50": 340.2,
+        "p95": 386.2
+      },
+      "generate": {
+        "p50": 3768.8,
+        "p95": 7788.7
+      },
+      "total": {
+        "p50": 4184.9,
+        "p95": 8165.2
+      },
+      "wall": {
+        "p50": 4187.4,
+        "p95": 8168.0
+      }
+    },
+    "context_tokens_mean": 2195.6667,
+    "tokens_mean": {
+      "input": 5025.6667,
+      "output": 711.5556
+    },
+    "hit@5_by_category": {
+      "multi-hop": 0.9333
+    },
+    "incomplete_hops": [
+      "m01",
+      "m03",
+      "m04",
+      "m06",
+      "m07",
+      "m09",
+      "m11",
+      "m12",
+      "m13"
+    ],
+    "misses@10": []
+  },
+  "questions": [
+    {
+      "id": "m01",
+      "category": "multi-hop",
+      "question": "I want a new 'material' field on products that merchants can fill in, and its value should show up on the product detail page in the storefront. What do I need to do in my plugin?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+        "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": -0.9864640235900879,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The excerpts cover parts of this, but not the full setup. To show a custom field value on the Storefront product detail page, extend the description template and render the field with Twig, for example:\n\n```twig\n{% sw_extends '@Storefront/storefront/page/product-detail/description.html.twig' %}\n\n{% block page_product_detail_description_content_text %}\n    {{ parent() }}\n\n    {# Insert your custom field here, as seen below: #}\n    {{ \"customFields.my_test_field\"|trans|sw_sanitize }}: {{ page.product.translated.customFields.my_test_field }}\n{% endblock %}\n```\n\nThe template file goes in `<plugin root>/src/Resources/views/storefront/page/product-detail/description.html.twig` [1]. The sample uses `my_test_field`, so replace it with your field name, which here would be the material field [1].\n\nTo let merchants fill in the field in the Administration, add it to the product's detail page with a plugin: create `main.js` in `<plugin root>/src/Resources/app/administration/src`, and use `Shopware.Component.override('sw-product-settings-form', { template })` with a Twig template extension [6].\n\nThe excerpts do not show how to define the custom field itself (its entity set, name, or type configuration), so you will need the custom field guide for that [4]. Also, the excerpts do not describe how a text custom field is created in the Administration with a plugin, so that step is not covered here.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.html#storefront-usage-of-custom-fields"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/module-component-management/add-custom-field.html#overview"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/database/custom-fields-of-type-media.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/database/custom-fields-of-type-media.html"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md",
+          "heading": "Storefront usage of custom fields",
+          "score": 0.024066,
+          "dense_rank": 2,
+          "sparse_rank": 3,
+          "rerank_score": -0.9865
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/storefront/howto/use-media-thumbnails.md",
+          "heading": null,
+          "score": 0.022098,
+          "dense_rank": 10,
+          "sparse_rank": 4,
+          "rerank_score": -2.2364
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-plugin-configuration.md",
+          "heading": "Input field settings",
+          "score": 0.02125,
+          "dense_rank": 9,
+          "sparse_rank": 14,
+          "rerank_score": -5.9809
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/database/custom-fields-of-type-media.md",
+          "heading": null,
+          "score": 0.020934,
+          "dense_rank": 11,
+          "sparse_rank": 13,
+          "rerank_score": -2.4063
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/add-custom-javascript.md",
+          "heading": "Configuring your plugins",
+          "score": 0.020351,
+          "dense_rank": 19,
+          "sparse_rank": 5,
+          "rerank_score": -3.7286
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-field.md",
+          "heading": null,
+          "score": 0.01861,
+          "dense_rank": 28,
+          "sparse_rank": 9,
+          "rerank_score": -1.3766
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/howto/using-custom-fields-storefront.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-custom-fields.md",
+          "heading": "Prerequisites",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-data-to-storefront-page.md",
+          "heading": "Displaying the data in the Storefront",
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/index.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 135.5,
+        "rerank": 397.9,
+        "generate": 4354.6,
+        "total": 4888.6,
+        "wall": 4891.7
+      },
+      "usage": {
+        "input_tokens": 5165,
+        "output_tokens": 520
+      },
+      "context_tokens": 2288,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m02",
+      "category": "multi-hop",
+      "question": "I've written an EntityDefinition for my own table. How do I register it so Shopware picks it up, can Shopware generate the CREATE TABLE migration for me, and how do I run that migration?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+        "guides/plugins/plugins/database/database-migrations.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 3.9929990768432617,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The documentation does not explain how to register an EntityDefinition so Shopware picks it up. It only shows that the definition extends `Shopware\\Core\\Framework\\DataAbstractionLayer\\EntityDefinition` and implements `getEntityName` and `defineFields` [4].\n\nYes, Shopware can generate the CREATE TABLE migration from your entity definitions. Run `./bin/console dal:migration:create --bundle=SwagBasicExample --entities=your_entity` [1]. The `--entities` option takes a comma-separated list and creates one migration file per entity. Your plugin must be activated, otherwise the custom entity definition cannot be found [1].\n\nTo run the migration, install or update the plugin. Shopware runs the `update()` method of the migration automatically on plugin install or update [3]. Plugin install and update never run `updateDestructive()`, and merchants do not run `database:migrate-destructive` for plugins [2]. Cleanup on removal belongs in `uninstall()` [2][3].",
+      "citations": [
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/add-custom-complex-data.html#creating-an-entity"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/database/database-migrations.html#generating-a-complete-migration-for-an-entity"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/database/database-migrations.html#generate-migration-skeleton"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/database/database-migrations.html#generate-migration-skeleton"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generating a complete migration for an entity",
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": -2.3488
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "score": 0.024066,
+          "dense_rank": 2,
+          "sparse_rank": 3,
+          "rerank_score": -5.7103
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "score": 0.023016,
+          "dense_rank": 3,
+          "sparse_rank": 10,
+          "rerank_score": -6.9832
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "Creating an entity",
+          "score": 0.022738,
+          "dense_rank": 7,
+          "sparse_rank": 4,
+          "rerank_score": 3.993
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "EntityDefinition class",
+          "score": 0.020542,
+          "dense_rank": 21,
+          "sparse_rank": 1,
+          "rerank_score": 3.0491
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-translations.md",
+          "heading": "Creating the migration",
+          "score": 0.019904,
+          "dense_rank": 10,
+          "sparse_rank": 29,
+          "rerank_score": -4.0986
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "Creating the database table",
+          "score": 0.019744,
+          "dense_rank": 15,
+          "sparse_rank": 18,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "EntityDefinition class",
+          "score": 0.01875,
+          "dense_rank": 20,
+          "sparse_rank": 20,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/app-sdks/symfony-bundle/index.md",
+          "heading": "Quick Start using SQL-based storage (Doctrine)",
+          "score": 0.018009,
+          "dense_rank": 22,
+          "sparse_rank": 26,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/database/index.md",
+          "heading": null,
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 75.7,
+        "rerank": 366.4,
+        "generate": 4030.5,
+        "total": 4473.3,
+        "wall": 4476.3
+      },
+      "usage": {
+        "input_tokens": 5934,
+        "output_tokens": 694
+      },
+      "context_tokens": 2616,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m03",
+      "category": "multi-hop",
+      "question": "I need a background job in my plugin that runs every 10 minutes, but it should only do its work when a checkbox in my plugin's settings is enabled. How do I set this up?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+        "guides/plugins/plugins/plugin-fundamentals/use-plugin-configuration.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": -4.132494926452637,
+      "refused": false,
+      "refused_by": null,
+      "answer": "You can create a scheduled task by extending the `ScheduledTask` class and implementing `getTaskName` and `getDefaultInterval`, where the interval is in seconds, so 10 minutes would be `600` [1]. The task's handler extends `ScheduledTaskHandler`, is annotated with `#[AsMessageHandler(handles: ExampleTask::class)]`, and puts its logic in `run()` [1].\n\n```php\nclass ExampleTask extends ScheduledTask\n{\n    public static function getTaskName(): string\n    {\n        return 'swag.example_task';\n    }\n\n    public static function getDefaultInterval(): int\n    {\n        return 600;\n    }\n}\n```\n[1]\n\nThe documentation provided does not describe how to read a plugin settings checkbox from within a scheduled task handler, so the conditional check (only doing work when the checkbox is enabled) needs to be implemented based on other plugin configuration documentation not included here. You would place that check at the start of `run()` [1].\n\nTo register the task without reinstalling the plugin, use `bin/console scheduled-task:register` [6]. To test it, run `bin/console scheduled-task:run` and then `bin/console messenger:consume`, making sure the task's `status` is `scheduled` in the `scheduled_task` table [6]. You can also run a single task directly with `bin/console scheduled-task:run-single <task-name>` [5].",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.html#scheduledtask-and-its-handler"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.html#executing-the-scheduled-task"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.html#debugging-scheduled-tasks"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "ScheduledTask and its handler",
+          "score": 0.022618,
+          "dense_rank": 7,
+          "sparse_rank": 5,
+          "rerank_score": -7.94
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/index.md",
+          "heading": null,
+          "score": 0.021748,
+          "dense_rank": 10,
+          "sparse_rank": 7,
+          "rerank_score": -4.1325
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.01964,
+          "dense_rank": 11,
+          "sparse_rank": 30,
+          "rerank_score": -9.0928
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": -6.5264
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -7.8898
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Executing the scheduled task",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -6.2516
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "Dynamic rescheduling",
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": "Using the symfony scheduler to run tasks",
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 36.7,
+        "rerank": 341.4,
+        "generate": 3360.5,
+        "total": 3739.3,
+        "wall": 3741.7
+      },
+      "usage": {
+        "input_tokens": 4555,
+        "output_tokens": 511
+      },
+      "context_tokens": 1817,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.3333333333333333,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m04",
+      "category": "multi-hop",
+      "question": "I want a new Store API endpoint /store-api/example in my plugin that headless frontends can call, and it must be protected against brute force with a rate limit per IP address. How do I build the route and add the rate limit?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+        "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": -0.042427532374858856,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The excerpts cover the rate limit part but not building the Store API route itself. Building the route is covered by the guide referenced in the prerequisites: \"you need an existing API route, to create a new one, head over to our [Add Store API route](../store-api/add-store-api-route.md) guide.\" [3]\n\nTo add the rate limit per IP address:\n\n1. Create the configuration file `<plugin root>/src/Resources/config/rate_limiter.yaml` with a unique root key and the required keys `enabled` and `policy` [3]:\n```yaml\nexample_route:\n    enabled: true\n    policy: 'time_backoff'\n```\n2. Register the config by creating a compiler pass `RateLimiterCompilerPass` that merges `rate_limiter.yaml` into the `shopware.api.rate_limiter` parameter, and add it in the plugin class `build()` method using `PassConfig::TYPE_BEFORE_OPTIMIZATION` with priority 500 [6]:\n```php\n$container->addCompilerPass(new RateLimiterCompilerPass(), PassConfig::TYPE_BEFORE_OPTIMIZATION, 500);\n```\n3. Inject `Shopware\\Core\\Framework\\RateLimiter\\RateLimiter` into your route class constructor [4].\n4. Call `ensureAccepted` with the route name and the client IP at the start of your route method [4]:\n```php\n$this->rateLimiter->ensureAccepted('example_route', $request->getClientIp());\n```\nIf the limit is exceeded, `Shopware\\Core\\Framework\\RateLimiter\\Exception\\RateLimitExceededException` is thrown [4].\n\nThe policy `time_backoff` is used in the example; for its configuration see the rate limiter guide referenced in the excerpts [3]. The excerpts do not show the complete Store API route class setup beyond the route attributes and constructor shown above [4].",
+      "citations": [
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.html#prerequisites"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.html#extending-rate-limit-configuration-in-the-di-container"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.html#implementing-rate-limit-in-api-route"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Implementing rate limit in API route",
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": -1.053
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Overview",
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": -4.5432
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": null,
+          "score": 0.023856,
+          "dense_rank": 1,
+          "sparse_rank": 7,
+          "rerank_score": -0.0424
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Implementing rate limit in API route",
+          "score": 0.023562,
+          "dense_rank": 4,
+          "sparse_rank": 3,
+          "rerank_score": -1.4517
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/index.md",
+          "heading": null,
+          "score": 0.022844,
+          "dense_rank": 6,
+          "sparse_rank": 5,
+          "rerank_score": -5.2282
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/rate-limiter/add-rate-limiter-to-api-route.md",
+          "heading": "Creating a new rate limit",
+          "score": 0.022527,
+          "dense_rank": 5,
+          "sparse_rank": 10,
+          "rerank_score": -5.663
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": null,
+          "score": 0.02052,
+          "dense_rank": 8,
+          "sparse_rank": 26,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/store-api/index.md",
+          "heading": null,
+          "score": 0.020459,
+          "dense_rank": 10,
+          "sparse_rank": 21,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/store-api/add-store-api-route.md",
+          "heading": "Create route class",
+          "score": 0.020414,
+          "dense_rank": 11,
+          "sparse_rank": 19,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/hosting/infrastructure/rate-limiter.md",
+          "heading": null,
+          "score": 0.020234,
+          "dense_rank": 19,
+          "sparse_rank": 6,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 44.9,
+        "rerank": 341.5,
+        "generate": 4123.7,
+        "total": 4510.7,
+        "wall": 4513.3
+      },
+      "usage": {
+        "input_tokens": 5125,
+        "output_tokens": 693
+      },
+      "context_tokens": 2106,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m05",
+      "category": "multi-hop",
+      "question": "Sending an SMS from my plugin is slow, so I want it to run in the background instead of during the request. How do I define that job, put it on the queue and write the code that processes it?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+        "guides/plugins/plugins/framework/message-queue/add-message-handler.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": -2.4609451293945312,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Define the message as a serializable PHP object that contains the data your handler needs. The excerpts show `SmsNotification` as the message class, but not its definition, so you will need to create it yourself following the message description [5]. Create a handler class and mark it with the `#[AsMessageHandler]` attribute and an `__invoke` method that takes the message. Put your slow SMS work inside `__invoke` [2]:\n\n```php\n// <plugin root>/src/MessageQueue/Handler/SmsHandler.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\MessageQueue\\Handler;\n\nuse Symfony\\Component\\Messenger\\Attribute\\AsMessageHandler;\nuse Swag\\BasicExample\\MessageQueue\\Message\\SmsNotification;\n\n#[AsMessageHandler]\nclass SmsHandler\n{\n    public function __invoke(SmsNotification $message)\n    {\n        //... do some work - like sending an SMS message!\n    }\n}\n```\n\nTo put the job on the queue, inject `Symfony\\Component\\Messenger\\MessageBusInterface` into a service and dispatch the message on the bus. The default bus is `messenger.default_bus` [3]:\n\n```php\n// <plugin root>/src/Service/ExampleSender.php\npublic function sendMessage(string $message): void\n{\n    $this->bus->dispatch(new SmsNotification($message));\n}\n```\n\nThe excerpts do not show how to start a consumer for processing on a production system beyond noting that the queue should be processed via the CLI and that `messenger:consume` workers are recommended, managed by a process control system such as systemd or supervisor [4]. The exact command setup for your environment is not covered in the provided documentation.",
+      "citations": [
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-to-queue.html#overview"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-handler.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-handler.html#handling-messages"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/message-queue/add-message-to-queue.html#send-a-message"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "url": "https://developer.shopware.com/docs/guides/hosting/infrastructure/message-queue.html#overview"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/index.md",
+          "heading": null,
+          "score": 0.023565,
+          "dense_rank": 3,
+          "sparse_rank": 5,
+          "rerank_score": -4.4005
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-handler.md",
+          "heading": null,
+          "score": 0.022862,
+          "dense_rank": 7,
+          "sparse_rank": 3,
+          "rerank_score": -4.796
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": "Send a message",
+          "score": 0.022614,
+          "dense_rank": 6,
+          "sparse_rank": 7,
+          "rerank_score": -2.4609
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "score": 0.021953,
+          "dense_rank": 12,
+          "sparse_rank": 2,
+          "rerank_score": -3.9971
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": "Overview",
+          "score": 0.021042,
+          "dense_rank": 10,
+          "sparse_rank": 14,
+          "rerank_score": -7.0601
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/hosting/infrastructure/message-queue.md",
+          "heading": null,
+          "score": 0.020158,
+          "dense_rank": 21,
+          "sparse_rank": 4,
+          "rerank_score": -4.4837
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/installation-updates/cluster-setup.md",
+          "heading": "Message queue",
+          "score": 0.018482,
+          "dense_rank": 29,
+          "sparse_rank": 9,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/infrastructure/scheduled-task.md",
+          "heading": null,
+          "score": 0.018148,
+          "dense_rank": 22,
+          "sparse_rank": 24,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/message-queue/add-message-to-queue.md",
+          "heading": "Create a message",
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-scheduled-task.md",
+          "heading": "ScheduledTask and its handler",
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 29.6,
+        "rerank": 386.2,
+        "generate": 3768.8,
+        "total": 4184.9,
+        "wall": 4187.4
+      },
+      "usage": {
+        "input_tokens": 3938,
+        "output_tokens": 658
+      },
+      "context_tokens": 1617,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m06",
+      "category": "multi-hop",
+      "question": "My plugin has two custom entities: a brand (swag_brand) and its items (swag_item), and each item belongs to exactly one brand. How do I define this relation in both entity definitions, and how do I load a brand together with its items?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+        "guides/plugins/plugins/framework/data-handling/reading-data.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.75,
+      "top_rerank_score": -0.05719100311398506,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Use a One To Many / Many To One relation, where the item side holds the foreign key. In the item definition (swag_item), add the foreign key field and the many-to-one association, following the Foo/Bar pattern:\n\n```php\n(new FkField('brand_id', 'brandId', BrandDefinition::class))->addFlags(new Required()),\nnew ManyToOneAssociationField('brand', 'brand_id', BrandDefinition::class, 'id'),\n```\n[4]\n\nIn the brand definition (swag_brand), add only the one-to-many association:\n\n```php\nnew OneToManyAssociationField('items', ItemDefinition::class, 'brand_id'),\n```\n[4]\n\nEach definition extends EntityDefinition and returns its table name from getEntityName(), so use swag_brand and swag_item. [5]\n\nThe documentation provided does not explain how to load a brand together with its items (for example via the repository or Criteria), so that part cannot be answered from these excerpts.",
+      "citations": [
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/add-data-associations.html#one-to-many-many-to-one"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/add-custom-complex-data.html#creating-an-entity"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": -2.7169
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": "One to One associations",
+          "score": 0.023822,
+          "dense_rank": 4,
+          "sparse_rank": 1,
+          "rerank_score": -3.9946
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "score": 0.02364,
+          "dense_rank": 1,
+          "sparse_rank": 9,
+          "rerank_score": -0.4617
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": "One to Many / Many to One",
+          "score": 0.020841,
+          "dense_rank": 13,
+          "sparse_rank": 10,
+          "rerank_score": -4.852
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "Creating an entity",
+          "score": 0.019068,
+          "dense_rank": 19,
+          "sparse_rank": 18,
+          "rerank_score": -0.0572
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/app-reference/entities-reference.md",
+          "heading": null,
+          "score": 0.018673,
+          "dense_rank": 20,
+          "sparse_rank": 21,
+          "rerank_score": -4.925
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-complex-data-to-existing-entities.md",
+          "heading": "Adding a field with a database",
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-custom-complex-data.md",
+          "heading": "EntityDefinition class",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": "One to One associations",
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/add-data-associations.md",
+          "heading": null,
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 33.7,
+        "rerank": 342.4,
+        "generate": 7788.7,
+        "total": 8165.2,
+        "wall": 8168.0
+      },
+      "usage": {
+        "input_tokens": 7426,
+        "output_tokens": 1499
+      },
+      "context_tokens": 3769,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.75,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m07",
+      "category": "multi-hop",
+      "question": "I want a new storefront page at /example that is rendered by my own controller, and its response should be served from the HTTP cache. How do I set up the controller and make it cacheable?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+        "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.3333333333333333,
+      "top_rerank_score": 3.6569643020629883,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Create a Storefront controller that extends `StorefrontController` and declares the storefront route scope on the class: `#[Route(defaults: [PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StorefrontRouteScope::ID]])]` [4]. Each action needs a `#[Route]` attribute with an HTTP method and a return type [4].\n\nTo make the route cacheable, set the default option `_httpCache` to `true` on the route attribute [1]. Only `GET` requests are considered cacheable [2].\n\n```php\n// <plugin root>/src/Storefront/Controller/ExampleController.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Storefront\\Controller;\n\nuse Shopware\\Core\\PlatformRequest;\nuse Shopware\\Core\\System\\SalesChannel\\SalesChannelContext;\nuse Shopware\\Storefront\\Controller\\StorefrontController;\nuse Shopware\\Storefront\\Framework\\Routing\\StorefrontRouteScope;\nuse Symfony\\Component\\HttpFoundation\\Request;\nuse Symfony\\Component\\HttpFoundation\\Response;\nuse Symfony\\Component\\Routing\\Attribute\\Route;\n\n#[Route(defaults: [PlatformRequest::ATTRIBUTE_ROUTE_SCOPE => [StorefrontRouteScope::ID]])]\nclass ExampleController extends StorefrontController\n{\n\n    #[Route(path: '/example', name: 'frontend.example.example', methods: ['GET'], defaults: ['_httpCache' => true])]\n    public function showExample(): Response\n    {\n        return $this->renderStorefront('@SwagBasicExample/storefront/page/example/index.html.twig', [\n            'example' => 'Hello world'\n        ]);\n    }\n}\n```\n[1]\n\nWith this setup, if the route is called several times in the same state, a response is generated only for the first request and later requests get the same response [1]. Shopware distinguishes the user states `logged-in` and `cart-filled`, and the cache reacts to them [1]. Cache invalidation of the controller route is controlled by the Store API route invalidation, as long as the controller loads its data via Store API routes [3].\n\nThe excerpts do not show how to create the plugin or register the route beyond this example, and they do not describe the `frontend` route name requirement in detail beyond the general guideline [4].",
+      "citations": [
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/index.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/controllers/"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.html"
+        },
+        {
+          "n": 2,
+          "doc_path": "concepts/framework/http_cache.md",
+          "url": "https://developer.shopware.com/docs/concepts/framework/http_cache.html#how-does-it-work"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.html#cache-invalidation"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "heading": null,
+          "score": 0.02459,
+          "dense_rank": 1,
+          "sparse_rank": 1,
+          "rerank_score": 3.657
+        },
+        {
+          "rank": 2,
+          "doc_path": "concepts/framework/http_cache.md",
+          "heading": null,
+          "score": 0.023938,
+          "dense_rank": 3,
+          "sparse_rank": 2,
+          "rerank_score": 0.8139
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/storefront/advanced/add-caching-to-custom-controller.md",
+          "heading": "Cache invalidation",
+          "score": 0.023705,
+          "dense_rank": 2,
+          "sparse_rank": 6,
+          "rerank_score": 1.7683
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/index.md",
+          "heading": null,
+          "score": 0.022527,
+          "dense_rank": 5,
+          "sparse_rank": 10,
+          "rerank_score": -0.8193
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/hosting/performance/caches.md",
+          "heading": "HTTP Caching Policies",
+          "score": 0.022398,
+          "dense_rank": 8,
+          "sparse_rank": 5,
+          "rerank_score": -2.1538
+        },
+        {
+          "rank": 6,
+          "doc_path": "concepts/framework/http_cache.md",
+          "heading": null,
+          "score": 0.021437,
+          "dense_rank": 11,
+          "sparse_rank": 8,
+          "rerank_score": 0.1903
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/framework/caching/index.md",
+          "heading": "Overview",
+          "score": 0.021307,
+          "dense_rank": 4,
+          "sparse_rank": 28,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/storefront/controllers/add-custom-controller.md",
+          "heading": "Storefront Controller class example",
+          "score": 0.020404,
+          "dense_rank": 16,
+          "sparse_rank": 9,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "resources/references/adr/2025-09-15-store-api-cache-strategy.md",
+          "heading": null,
+          "score": 0.019863,
+          "dense_rank": 18,
+          "sparse_rank": 11,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2021-08-10-storefront-coding-standards.md",
+          "heading": "Decision",
+          "score": 0.019581,
+          "dense_rank": 13,
+          "sparse_rank": 25,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 59.7,
+        "rerank": 329.8,
+        "generate": 3973.3,
+        "total": 4363.4,
+        "wall": 4366.2
+      },
+      "usage": {
+        "input_tokens": 5019,
+        "output_tokens": 910
+      },
+      "context_tokens": 2224,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.3333333333333333,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m08",
+      "category": "multi-hop",
+      "question": "I've built a custom Administration module in my plugin. How do I add it to the admin menu, and make sure only users whose role has the right permission can see the menu entry and open its pages?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+        "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+        "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.3333333333333333,
+      "top_rerank_score": 4.75499963760376,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The excerpts cover only part of this. A menu entry is what opens your module [3], and the excerpts do not show the full steps for registering a menu entry. Creating the module itself and adding a menu entry are covered in the linked guides [2]. To restrict access, use the privilege identifier, which is the key plus the role, for example product.viewer [5]. Add privilege to the meta property of your route to protect its pages:\n\n```javascript\nModule.register('your-plugin-module', {\n    routes: {\n        detail: {\n            component: 'your-plugin-detail',\n            path: 'your-plugin',\n            meta: {\n                privilege: 'your_key.your_role' // e.g. 'product.viewer'\n            }\n        }    \n    }\n});\n```\n[6]\n\nTo hide the menu entry, add privilege to the navigation settings:\n\n```javascript\nModule.register('your-plugin-module', {\n    navigation: [{\n        id: 'your-plugin',\n...,\n        privilege: 'your_key.your_role' // e.g. product.viewer\n    }]\n});\n```\n[6]\n\nFor a settings item, add privilege in the same way:\n\n```javascript\nModule.register('your-plugin-module', {\n    settingsItem: [{\n        group: 'system',\n        to: 'sw.your.plugin.detail',\n        privilege: 'your_key.your_role' // e.g. product.viewer\n    }]\n});\n```\n[6]\n\nThe excerpts do not show how to register your own privilege, so the role must already exist. The guide for adding permissions covers this, but its registration steps are not included here [1]. Also note that ACL rules in the Administration can be bypassed with direct API calls to the backend, so protect the backend data too [1].",
+      "citations": [
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/routing-navigation/add-menu-entry.html#overview"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/module-component-management/add-custom-module.html#next-steps"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#normal-permissions"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#protect-your-plugin-routes"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.html#overview"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Overview",
+          "score": 0.024326,
+          "dense_rank": 2,
+          "sparse_rank": 1,
+          "rerank_score": 1.0379
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/administration/module-component-management/add-custom-module.md",
+          "heading": "Next steps",
+          "score": 0.024206,
+          "dense_rank": 1,
+          "sparse_rank": 4,
+          "rerank_score": 4.755
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/administration/routing-navigation/add-menu-entry.md",
+          "heading": null,
+          "score": 0.023449,
+          "dense_rank": 5,
+          "sparse_rank": 2,
+          "rerank_score": 4.2298
+        },
+        {
+          "rank": 4,
+          "doc_path": "concepts/framework/architecture/administration-concept.md",
+          "heading": "ACL in the Administration",
+          "score": 0.023088,
+          "dense_rank": 6,
+          "sparse_rank": 3,
+          "rerank_score": 2.3767
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Admin privileges",
+          "score": 0.022915,
+          "dense_rank": 3,
+          "sparse_rank": 11,
+          "rerank_score": 0.4478
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": null,
+          "score": 0.022382,
+          "dense_rank": 4,
+          "sparse_rank": 14,
+          "rerank_score": 0.9357
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": "Register admin privilege",
+          "score": 0.022278,
+          "dense_rank": 7,
+          "sparse_rank": 8,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/apps/administration/add-custom-modules.md",
+          "heading": null,
+          "score": 0.02166,
+          "dense_rank": 11,
+          "sparse_rank": 6,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/administration/index.md",
+          "heading": "Developer workflow",
+          "score": 0.021555,
+          "dense_rank": 8,
+          "sparse_rank": 13,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/administration/permissions-error-handling/add-acl-rules.md",
+          "heading": null,
+          "score": 0.021206,
+          "dense_rank": 14,
+          "sparse_rank": 5,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 36.7,
+        "rerank": 337.4,
+        "generate": 6534.7,
+        "total": 6909.2,
+        "wall": 6911.3
+      },
+      "usage": {
+        "input_tokens": 3510,
+        "output_tokens": 1404
+      },
+      "context_tokens": 1347,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.3333333333333333,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m09",
+      "category": "multi-hop",
+      "question": "I'm building a custom CMS element for Shopping Experiences that shows a video based on an ID the merchant configures. How do I register the element in the Administration, render it in the Storefront, and load extra data for it on the server side?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/content/cms/add-cms-element.md",
+        "guides/plugins/plugins/content/cms/add-data-to-cms-elements.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.25,
+      "top_rerank_score": 3.838392972946167,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The excerpts cover the Administration and Storefront parts, but not the server-side data loading in full.\n\n**Administration:** Create a preview component, a main component, and a configuration component, each registered with `Shopware.Component.register`. For example, the main component is registered as `cms-el-dailymotion` and uses the `cms-element` mixin and `this.initElementConfig('dailymotion')` [1]. The configuration component `cms-el-config-dailymotion` provides form fields for the element's options, using Shopware Meteor components [1].\n\n**Storefront:** Create a twig template in `src/Resources/views/storefront/element` named with the `cms-element-` prefix and the technical name, for example `cms-element-dailymotion.html.twig`. The `element` variable is passed to the template and contains the configuration values, such as `element.config.url.value` [5]. Clear the Storefront cache after adding templates [5].\n\n**Server-side data loading:** Custom resolvers are created by implementing `CmsElementResolverInterface` with `getType()`, `collect()` and `enrich()` [4]. Since Shopware v6.6.7, you can also use the event-based extensions `CmsSlotsDataResolveExtension`, `CmsSlotsDataCollectExtension` and `CmsSlotsDataEnrichExtension` [4]. The excerpts point to the guide \"Add data to CMS elements\" for step-by-step instructions, but its content is not included here, so the registration details for resolvers are not provided.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/cms/add-cms-element.html#step-3-create-the-preview-component"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/cms/add-cms-element.html#how-to-create-an-element-in-the-storefront"
+        },
+        {
+          "n": 4,
+          "doc_path": "concepts/commerce/content/shopping-experiences-cms.md",
+          "url": "https://developer.shopware.com/docs/concepts/commerce/content/shopping-experiences-cms.html#extensibility"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": "How to create an element in the Administration",
+          "score": 0.023016,
+          "dense_rank": 3,
+          "sparse_rank": 10,
+          "rerank_score": -0.3634
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": "Where to find elements",
+          "score": 0.022978,
+          "dense_rank": 4,
+          "sparse_rank": 8,
+          "rerank_score": 1.4034
+        },
+        {
+          "rank": 3,
+          "doc_path": "concepts/commerce/content/shopping-experiences-cms.md",
+          "heading": "Structure",
+          "score": 0.022689,
+          "dense_rank": 9,
+          "sparse_rank": 1,
+          "rerank_score": 3.8384
+        },
+        {
+          "rank": 4,
+          "doc_path": "concepts/commerce/content/shopping-experiences-cms.md",
+          "heading": "Extensibility",
+          "score": 0.022618,
+          "dense_rank": 7,
+          "sparse_rank": 5,
+          "rerank_score": 2.9868
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": null,
+          "score": 0.021876,
+          "dense_rank": 2,
+          "sparse_rank": 27,
+          "rerank_score": 0.9708
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/apps/administration/add-cms-element-via-admin-sdk.md",
+          "heading": "Creating your custom element",
+          "score": 0.021825,
+          "dense_rank": 12,
+          "sparse_rank": 3,
+          "rerank_score": 2.6323
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/apps/administration/add-cms-element-via-admin-sdk.md",
+          "heading": "Registering the block and element",
+          "score": 0.021463,
+          "dense_rank": 8,
+          "sparse_rank": 14,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/apps/administration/add-cms-element-via-admin-sdk.md",
+          "heading": "Templates and communication with the Administration",
+          "score": 0.021337,
+          "dense_rank": 5,
+          "sparse_rank": 24,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/content/cms/add-cms-element.md",
+          "heading": "Overview",
+          "score": 0.021326,
+          "dense_rank": 14,
+          "sparse_rank": 4,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "concepts/commerce/content/shopping-experiences-cms.md",
+          "heading": "Separation of content and presentation",
+          "score": 0.020396,
+          "dense_rank": 18,
+          "sparse_rank": 6,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 52.8,
+        "rerank": 327.8,
+        "generate": 2712.9,
+        "total": 3093.9,
+        "wall": 3096.3
+      },
+      "usage": {
+        "input_tokens": 4269,
+        "output_tokens": 528
+      },
+      "context_tokens": 1777,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.25,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m10",
+      "category": "multi-hop",
+      "question": "My plugin needs its own email template that is installed together with the plugin, and the template has to show some extra data that my plugin computes. How do I add the template and get my data into it?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/content/mail/add-mail-template.md",
+        "guides/plugins/plugins/content/mail/add-data-to-mails.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 2.9196176528930664,
+      "refused": false,
+      "refused_by": null,
+      "answer": "You can ship a mail template with your plugin by using a plugin database migration, since the Administration is not an option for a plugin-shipped template. The steps are to create a new mail template type or fetch an existing mail template type ID, add an entry to `mail_template` using that type ID, and add an entry to `mail_template_translation` for each language you want to support [4][6]. For a custom type, the `createMailTemplateType` method creates the `mail_template_type` entry and the translated `mail_template_type_translation` entries for `en-GB` and `de-DE`, and the `available_entities` column defines which entities are available for the template, e.g. `ProductEntity` [5].\n\nTo get your plugin's extra data into the template, decorate the `MailService` and extend its `send` method, whose last parameter is `$templateData`. Example:\n\n```php\n$templateData['myCustomData'] = 'Example data';\n\nreturn $this->mailService->send($data, $context, $templateData);\n```\n\nThe decorator class extends `AbstractMailService`, keeps the original service in the constructor, and returns it from `getDecorated` [2]. Afterwards, `{{ myCustomData }}` can be added to any mail template and will print the value; you can use any kind of data, e.g. an array [2].\n\nThe excerpts do not show the exact migration code for the template content or how to compute the data inside your plugin beyond the example value, so those details are not covered.",
+      "citations": [
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-mail-template.html#overview"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-mail-template.html#adding-a-mail-template-via-migration"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-mail-template.html#creating-a-custom-mail-type"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/content/mail/add-data-to-mails.html#adding-data-via-decorator"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/content/mail/index.md",
+          "heading": null,
+          "score": 0.021777,
+          "dense_rank": 11,
+          "sparse_rank": 5,
+          "rerank_score": 1.131
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "heading": "Adding data via decorator",
+          "score": 0.021098,
+          "dense_rank": 7,
+          "sparse_rank": 21,
+          "rerank_score": -1.8319
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": 2.9196
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": 2.3612
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -1.9219
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Adding a mail template via migration",
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": -0.103
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Creating a custom mail type",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Adding a mail template via migration",
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/content/mail/add-data-to-mails.md",
+          "heading": "Adding data via subscriber",
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/content/mail/add-mail-template.md",
+          "heading": "Adding a mail template via migration",
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 30.1,
+        "rerank": 326.9,
+        "generate": 3021.6,
+        "total": 3379.1,
+        "wall": 3381.8
+      },
+      "usage": {
+        "input_tokens": 3266,
+        "output_tokens": 501
+      },
+      "context_tokens": 1277,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m11",
+      "category": "multi-hop",
+      "question": "My plugin shows text both in the Storefront and in its own Administration module, in English and German. Where do the translation files go in each case, and how do I use them in the templates?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/storefront/styling/add-translations.md",
+        "guides/plugins/plugins/administration/templates-styling/adding-snippets.md"
+      ],
+      "first_relevant_rank": 2,
+      "hit@1": 0.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 0.5,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 1.4190360307693481,
+      "refused": false,
+      "refused_by": null,
+      "answer": "Storefront translations go in your plugin's snippet directory, `<extension root>/src/Resources/snippet/`, using the `<domain>.<locale>.json` naming, for example `my-app.de.json` and `my-app.en.json` [3]. The excerpt's example uses a subdirectory, `src/Resources/snippet/en_GB/example.en-GB.json`, but the recommended approach is a flat structure, and locales use dashes such as `en-GB` [2][3]. Nested keys are accessed with dot notation, such as `exampleOne.exampleTwo.exampleThree`, and template variables are recommended to be enclosed in `%` symbols, such as `%count%` [2]. Shopware loads these files automatically when this structure and naming are followed [3]. Administration snippets are covered only by a link to the guide 'Add Administration snippets', and the excerpts do not show their file location or how to use them in Administration templates [1]. The Storefront template usage syntax (for example the Twig call) is not shown in the excerpts, so I cannot document it beyond the key-access and variable notes above [2].",
+      "citations": [
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/styling/add-translations.html#overview"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/storefront/styling/add-translations.html#creating-translations"
+        },
+        {
+          "n": 1,
+          "doc_path": "concepts/framework/translations/extension-points.md",
+          "url": "https://developer.shopware.com/docs/concepts/framework/translations/extension-points.html#override-snippets-the-snippet-module"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "concepts/framework/translations/extension-points.md",
+          "heading": "Override snippets (the snippet module)",
+          "score": 0.023016,
+          "dense_rank": 3,
+          "sparse_rank": 10,
+          "rerank_score": 1.0923
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": "Creating translations",
+          "score": 0.022398,
+          "dense_rank": 8,
+          "sparse_rank": 5,
+          "rerank_score": -0.2899
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": null,
+          "score": 0.021811,
+          "dense_rank": 2,
+          "sparse_rank": 28,
+          "rerank_score": -0.4636
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": "Snippet files in the private filesystem",
+          "score": 0.021402,
+          "dense_rank": 6,
+          "sparse_rank": 20,
+          "rerank_score": 1.419
+        },
+        {
+          "rank": 5,
+          "doc_path": "concepts/framework/translations/built-in-translation-system.md",
+          "heading": "Translation configuration",
+          "score": 0.020949,
+          "dense_rank": 7,
+          "sparse_rank": 23,
+          "rerank_score": -1.941
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/checkout/documents/legacy/add-custom-document-type.md",
+          "heading": "Adding a custom document type and its own base configuration to the database",
+          "score": 0.019861,
+          "dense_rank": 23,
+          "sparse_rank": 4,
+          "rerank_score": 0.9929
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/administration/templates-styling/adding-snippets.md",
+          "heading": null,
+          "score": 0.016925,
+          "dense_rank": 30,
+          "sparse_rank": 26,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/storefront/styling/add-translations.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "concepts/framework/architecture/storefront-concept.md",
+          "heading": "Translations",
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/themes/configuration/theme-configuration.md",
+          "heading": "Translations in Theme Manager",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 25.3,
+        "rerank": 350.5,
+        "generate": 2550.2,
+        "total": 2926.7,
+        "wall": 2929.3
+      },
+      "usage": {
+        "input_tokens": 4741,
+        "output_tokens": 389
+      },
+      "context_tokens": 2119,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m12",
+      "category": "multi-hop",
+      "question": "In my payment plugin, how do I create the payment handler, and how can I later change the payment status of the order transaction (for example to paid) and check which status changes are possible at that moment?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+        "guides/plugins/plugins/checkout/order/using-the-state-machine.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 0.5,
+      "evidence@k": 0.5,
+      "top_rerank_score": 5.075110912322998,
+      "refused": false,
+      "refused_by": null,
+      "answer": "To create the handler, make a class that extends `AbstractPaymentHandler` and implements `supports` and `pay`. Use `finalize` too if the payment is asynchronous [1][2]. Inject `OrderTransactionStateHandler` through the constructor [1]. Register the class in `services.php` with the tag `shopware.payment.method` and pass `service(OrderTransactionStateHandler::class)` as an argument [3]. For a synchronous payment, call `$this->transactionStateHandler->process($transaction->getOrderTransactionId(), $context);` in `pay` and return `null` [1]. For an asynchronous payment, return a `RedirectResponse` from `pay`, then call `$this->transactionStateHandler->paid($transaction->getOrderTransactionId(), $context);` in `finalize` to set the state to paid [4]. If a step can fail, throw a `PaymentException`; Shopware then sets the transaction to `failed` [1]. The provided documentation does not explain how to check which status changes are possible at the current moment.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/payment/add-payment-plugin.html#example-payment-handlers"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/payment/add-payment-plugin.html#example-payment-handlers"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/payment/add-payment-plugin.html#example-payment-handlers"
+        },
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/payment/add-payment-plugin.html#example-payment-handlers"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.023375,
+          "dense_rank": 2,
+          "sparse_rank": 9,
+          "rerank_score": 4.573
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.023243,
+          "dense_rank": 1,
+          "sparse_rank": 13,
+          "rerank_score": 3.1297
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.022978,
+          "dense_rank": 4,
+          "sparse_rank": 8,
+          "rerank_score": 5.0751
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.022964,
+          "dense_rank": 6,
+          "sparse_rank": 4,
+          "rerank_score": 4.1538
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.02296,
+          "dense_rank": 5,
+          "sparse_rank": 6,
+          "rerank_score": 4.1375
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.022689,
+          "dense_rank": 9,
+          "sparse_rank": 1,
+          "rerank_score": 4.5293
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.021687,
+          "dense_rank": 3,
+          "sparse_rank": 26,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/apps/checkout/payment.md",
+          "heading": "Prepared payments",
+          "score": 0.020513,
+          "dense_rank": 18,
+          "sparse_rank": 5,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/checkout/payment/add-payment-plugin.md",
+          "heading": "Example payment handlers",
+          "score": 0.02031,
+          "dense_rank": 10,
+          "sparse_rank": 23,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/apps/checkout/payment.md",
+          "heading": "Synchronous payments",
+          "score": 0.020113,
+          "dense_rank": 23,
+          "sparse_rank": 2,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 37.1,
+        "rerank": 327.3,
+        "generate": 7950.6,
+        "total": 8315.5,
+        "wall": 8318.4
+      },
+      "usage": {
+        "input_tokens": 7504,
+        "output_tokens": 1289
+      },
+      "context_tokens": 3320,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.5,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m13",
+      "category": "multi-hop",
+      "question": "I need a bin/console command in my plugin that imports products: it should create a product if it doesn't exist yet and update it if it does. How do I build the command and write the data?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+        "guides/plugins/plugins/framework/data-handling/writing-data.md"
+      ],
+      "first_relevant_rank": 6,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 1.0,
+      "rr@10": 0.16666666666666666,
+      "doc_recall@5": 0.0,
+      "evidence@k": 0.3333333333333333,
+      "top_rerank_score": 2.6379783153533936,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The documentation does not cover how to build a custom console command in a plugin, so I can only answer the data-writing part. For the plugin itself, `bin/console plugin:create <Name>` generates the plugin structure [1]. For the create-or-update logic, Shopware's Data Abstraction Layer provides an `upsert` method on the repository. Make sure each data entry includes an ID, because otherwise the data is always created and never updated [6]. To find an existing product, you can build a `Criteria` with a filter and call `searchIds($criteria, $context)->firstId()` on the product repository, as shown for updates [6]. If the ID is found, pass it in your data; if not, omit it or generate one as needed. For the command class itself, the excerpts only say that `bin/console` runs Shopware application commands [5], so the command registration and class structure are not documented here.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/creating-plugins.html#_2-generate-the-plugin-structure"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/data-handling/writing-data.html#updating-data"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/development/tooling/index.md",
+          "url": "https://developer.shopware.com/docs/guides/development/tooling/"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "2. Generate the plugin structure",
+          "score": 0.022623,
+          "dense_rank": 2,
+          "sparse_rank": 17,
+          "rerank_score": 2.638
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/database/database-migrations.md",
+          "heading": "Generate migration skeleton",
+          "score": 0.022172,
+          "dense_rank": 7,
+          "sparse_rank": 9,
+          "rerank_score": -1.9645
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/tooling/index.md",
+          "heading": "Raw commands, helper commands, or deployment tooling?",
+          "score": 0.021895,
+          "dense_rank": 13,
+          "sparse_rank": 1,
+          "rerank_score": -3.3585
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/administration/single-file-components/tutorial/set-up-your-environment.md",
+          "heading": "The plugin",
+          "score": 0.018118,
+          "dense_rank": 20,
+          "sparse_rank": 29,
+          "rerank_score": -1.7627
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/tooling/index.md",
+          "heading": null,
+          "score": 0.017993,
+          "dense_rank": 29,
+          "sparse_rank": 14,
+          "rerank_score": -1.9289
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/writing-data.md",
+          "heading": "Writing data",
+          "score": 0.017905,
+          "dense_rank": 27,
+          "sparse_rank": 18,
+          "rerank_score": -1.4397
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/plugin-fundamentals/add-custom-commands.md",
+          "heading": null,
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/core-reference/commands-reference.md",
+          "heading": "Commands",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": null,
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/creating-plugins.md",
+          "heading": "Skipping optional scaffold files",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 39.9,
+        "rerank": 329.4,
+        "generate": 5916.0,
+        "total": 6285.7,
+        "wall": 6288.1
+      },
+      "usage": {
+        "input_tokens": 5644,
+        "output_tokens": 933
+      },
+      "context_tokens": 2626,
+      "hop_coverage": 0.5,
+      "all_hops": 0.0,
+      "answer_evidence": 0.3333333333333333,
+      "cited_hop_coverage": 0.5,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m14",
+      "category": "multi-hop",
+      "question": "When my plugin finishes processing one of its example entities, it should fire its own event that carries the sales channel context, and another class in the plugin should react to it. How do I create and dispatch the event, and how do I listen to it?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/framework/event/add-custom-event.md",
+        "guides/plugins/plugins/framework/event/listening-to-events.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 0.6666666666666666,
+      "top_rerank_score": 1.4397549629211426,
+      "refused": false,
+      "refused_by": null,
+      "answer": "The excerpts show how to dispatch the event and how to listen to it, but not how to write the event class itself. The event class is referenced as \"our event class\" without its code [1].\n\n**Dispatching the event:** Inject the `EventDispatcherInterface` into a service and call `dispatch` with your event object. The excerpt's example service is `ExampleEventService`, which is passed `ExampleEntity` and `SalesChannelContext` and dispatches `new ExampleEvent($exampleEntity, $context)` [1]:\n\n```php\n// <plugin root>/src/Service/ExampleEventService.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Service;\n\nuse Shopware\\Core\\System\\SalesChannel\\SalesChannelContext;\nuse Swag\\BasicExample\\Core\\Content\\Example\\Event\\ExampleEvent;\nuse Swag\\BasicExample\\Core\\Content\\Example\\ExampleEntity;\nuse Symfony\\Contracts\\EventDispatcher\\EventDispatcherInterface;\n\nclass ExampleEventService\n{\n    private EventDispatcherInterface $eventDispatcher;\n\n    public function __construct(EventDispatcherInterface $eventDispatcher)\n    {\n        $this->eventDispatcher = $eventDispatcher;\n    }\n\n    public function fireEvent(ExampleEntity $exampleEntity, SalesChannelContext $context)\n    {\n        $this->eventDispatcher->dispatch(new ExampleEvent($exampleEntity, $context));\n    }\n}\n```\n\n**Listening to the event:** Create a subscriber class that implements `EventSubscriberInterface`. Its `getSubscribedEvents()` method maps the event to a method name [3]. The excerpt's example uses a Shopware event constant, but it does not show a constant for a custom event, so use your event's name in that position [3]. The excerpts do not show the exact name constant for `ExampleEvent`:\n\n```php\n// <plugin root>/src/Subscriber/MySubscriber.php\n<?php declare(strict_types=1);\n\nnamespace Swag\\BasicExample\\Subscriber;\n\nuse Symfony\\Component\\EventDispatcher\\EventSubscriberInterface;\n\nclass MySubscriber implements EventSubscriberInterface\n{\n    public static function getSubscribedEvents(): array\n    {\n        return [\n            // <your event name> => 'onExampleEvent'\n        ];\n    }\n\n    public function onExampleEvent(/* event object */)\n    {\n        // Do something\n    }\n}\n```\n\nThe subscriber must also be registered in the dependency injection container in `services.php` and tagged with `kernel.event_subscriber`. Without this registration, Shopware will not call it, and there may be no obvious error [3].\n\n**Missing from the documentation:** the event class definition, the event name constant, and the `services.php` registration syntax are not covered by the excerpts.",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/add-custom-event.html#fire-the-event"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/event/listening-to-events.html#creating-your-new-subscriber-class"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/event/add-custom-event.md",
+          "heading": null,
+          "score": 0.024458,
+          "dense_rank": 1,
+          "sparse_rank": 2,
+          "rerank_score": 1.4398
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Overview",
+          "score": 0.023822,
+          "dense_rank": 4,
+          "sparse_rank": 1,
+          "rerank_score": -2.7579
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/event/listening-to-events.md",
+          "heading": "Creating your new subscriber class",
+          "score": 0.022282,
+          "dense_rank": 8,
+          "sparse_rank": 6,
+          "rerank_score": -1.4387
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/framework/data-handling/using-database-events.md",
+          "heading": null,
+          "score": 0.021336,
+          "dense_rank": 7,
+          "sparse_rank": 18,
+          "rerank_score": -4.541
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/framework/event/finding-events.md",
+          "heading": "Other common event types",
+          "score": 0.02127,
+          "dense_rank": 15,
+          "sparse_rank": 3,
+          "rerank_score": -1.2605
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/reacting-to-javascript-events.md",
+          "heading": null,
+          "score": 0.020865,
+          "dense_rank": 10,
+          "sparse_rank": 16,
+          "rerank_score": -6.3083
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/storefront/javascript/reacting-to-javascript-events.md",
+          "heading": null,
+          "score": 0.02076,
+          "dense_rank": 14,
+          "sparse_rank": 9,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/framework/event/finding-events.md",
+          "heading": null,
+          "score": 0.019603,
+          "dense_rank": 19,
+          "sparse_rank": 12,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": null,
+          "score": 0.019182,
+          "dense_rank": 16,
+          "sparse_rank": 23,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/plugins/plugins/framework/event/finding-events.md",
+          "heading": "General PHP events",
+          "score": 0.018928,
+          "dense_rank": 29,
+          "sparse_rank": 5,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 50.2,
+        "rerank": 329.8,
+        "generate": 6791.2,
+        "total": 7171.5,
+        "wall": 7173.6
+      },
+      "usage": {
+        "input_tokens": 4625,
+        "output_tokens": 1440
+      },
+      "context_tokens": 1885,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 0.6666666666666666,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "m15",
+      "category": "multi-hop",
+      "question": "When a merchant edits an order, my plugin needs to know which fields changed and, if a certain field changed, set the order's delivery to shipped. How do I get the changed fields and change the delivery state?",
+      "answerable_truth": true,
+      "relevant_docs": [
+        "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+        "guides/plugins/plugins/checkout/order/using-the-state-machine.md"
+      ],
+      "first_relevant_rank": 1,
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "hit@10": 1.0,
+      "rr@10": 1.0,
+      "doc_recall@5": 1.0,
+      "evidence@k": 1.0,
+      "top_rerank_score": 0.06679157167673111,
+      "refused": false,
+      "refused_by": null,
+      "answer": "To detect changed fields, listen to the order write event and only react to the live version. Subscribe to `OrderEvents::ORDER_WRITTEN_EVENT` and check `$event->getContext()->getVersionId() !== Defaults::LIVE_VERSION` to return early [4]. The changeset is generated in a `PreWriteValidationEvent` listener, which checks whether the command can generate a changeset, narrows it to the scenario and live version, and then calls `requestChangeSet` on the command [5]. The documentation shows the `ORDER_WRITTEN_EVENT` subscriber structure but does not show the full code for reading the changeset in `onOrderWritten`, nor how to check a specific field's value, so that part is not covered in detail [5].\n\nTo set the delivery to shipped, use the state machine with the `order_delivery` entity name, the delivery ID, the `ship` transition, and `stateId` [1][3]:\n\n```php\n$this->stateMachineRegistry->transition(new Transition(\n    OrderDeliveryDefinition::ENTITY_NAME,\n    '<Order delivery ID here>',\n    'ship',\n    'stateId'\n), $context);\n```\n\nThe delivery ID can be found with a repository search, for example by filtering `orderId` with `searchIds` and `firstId` [1]. Note that `first` may not return the right delivery when there are several, so add filters or sorting to select the proper one [2].",
+      "citations": [
+        {
+          "n": 4,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/listen-to-order-changes.html#overview"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/listen-to-order-changes.html#reading-changeset"
+        },
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#full-example"
+        },
+        {
+          "n": 3,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#order-state"
+        },
+        {
+          "n": 2,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/checkout/order/using-the-state-machine.html#full-example"
+        }
+      ],
+      "citation_hit": true,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Full example",
+          "score": 0.02407,
+          "dense_rank": 3,
+          "sparse_rank": 1,
+          "rerank_score": -1.4045
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Full example",
+          "score": 0.023969,
+          "dense_rank": 1,
+          "sparse_rank": 6,
+          "rerank_score": 0.0668
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transitioning",
+          "score": 0.022557,
+          "dense_rank": 9,
+          "sparse_rank": 2,
+          "rerank_score": -4.6418
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": null,
+          "score": 0.022227,
+          "dense_rank": 2,
+          "sparse_rank": 22,
+          "rerank_score": -0.7
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/plugins/checkout/order/listen-to-order-changes.md",
+          "heading": "Reading changeset",
+          "score": 0.021795,
+          "dense_rank": 5,
+          "sparse_rank": 18,
+          "rerank_score": -1.5016
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Transition parameters",
+          "score": 0.02173,
+          "dense_rank": 6,
+          "sparse_rank": 16,
+          "rerank_score": -1.5016
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Finding possible transitions",
+          "score": 0.021682,
+          "dense_rank": 7,
+          "sparse_rank": 14,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/plugins/plugins/checkout/order/using-the-state-machine.md",
+          "heading": "Overview",
+          "score": 0.021391,
+          "dense_rank": 13,
+          "sparse_rank": 5,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/apps/checkout/shipping-methods.md",
+          "heading": "Delivery Time",
+          "score": 0.018472,
+          "dense_rank": 19,
+          "sparse_rank": 26,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/app-reference/script-reference/trigger-events-reference.md",
+          "heading": null,
+          "score": 0.018357,
+          "dense_rank": 30,
+          "sparse_rank": 9,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 36.5,
+        "rerank": 385.0,
+        "generate": 2979.3,
+        "total": 3401.4,
+        "wall": 3404.0
+      },
+      "usage": {
+        "input_tokens": 5303,
+        "output_tokens": 518
+      },
+      "context_tokens": 2485,
+      "hop_coverage": 1.0,
+      "all_hops": 1.0,
+      "answer_evidence": 1.0,
+      "cited_hop_coverage": 1.0,
+      "refusal_outcome": "answered"
+    },
+    {
+      "id": "mu1",
+      "category": "multi-hop-unanswerable",
+      "question": "How do I connect Shopware 6 to HubSpot with the built-in HubSpot connector and sync my product custom fields to HubSpot contacts?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": -0.16070005297660828,
+      "refused": true,
+      "refused_by": "llm",
+      "answer": "The provided documentation does not cover connecting Shopware 6 to HubSpot or syncing custom fields to HubSpot contacts. It only describes how to define custom fields declaratively in Resources/config/custom-fields.xml for plugins and apps [1][5][6].",
+      "citations": [
+        {
+          "n": 1,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#declarative-custom-fields-via-resources-config-custom-fields-xml"
+        },
+        {
+          "n": 5,
+          "doc_path": "guides/plugins/apps/custom-data/custom-fields.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/apps/custom-data/custom-fields.html#defining-custom-fields-in-resources-config-custom-fields-xml"
+        },
+        {
+          "n": 6,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "url": "https://developer.shopware.com/docs/guides/plugins/plugins/framework/custom-field/add-custom-field.html#declarative-custom-fields-via-resources-config-custom-fields-xml"
+        }
+      ],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Declarative custom fields via Resources/config/custom-fields.xml",
+          "score": 0.02173,
+          "dense_rank": 6,
+          "sparse_rank": 16,
+          "rerank_score": -1.8034
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-custom-fields.md",
+          "heading": "Prerequisites",
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": -0.1607
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/index.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -3.3471
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/plugins/apps/custom-data/custom-fields.md",
+          "heading": "Overview",
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -1.1862
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/plugins/apps/custom-data/custom-fields.md",
+          "heading": "Defining custom fields in Resources/config/custom-fields.xml",
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": -2.5829
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/plugins/plugins/framework/custom-field/add-custom-field.md",
+          "heading": "Declarative custom fields via Resources/config/custom-fields.xml",
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": -0.9602
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/development/tooling/shopware-toolbox.md",
+          "heading": "Current features",
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/hosting/configurations/shopware/stock.md",
+          "heading": null,
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/plugins/plugins/administration/data-handling-processing/using-custom-fields.md",
+          "heading": "Using custom fields in your module",
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/tooling/shopware-toolbox.md",
+          "heading": "Current features",
+          "score": 0.014286,
+          "dense_rank": 10,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 29.4,
+        "rerank": 344.7,
+        "generate": 1798.1,
+        "total": 2172.5,
+        "wall": 2174.6
+      },
+      "usage": {
+        "input_tokens": 4723,
+        "output_tokens": 114
+      },
+      "context_tokens": 2006,
+      "hop_coverage": null,
+      "all_hops": null,
+      "answer_evidence": null,
+      "cited_hop_coverage": null,
+      "refusal_outcome": "correct_refusal"
+    },
+    {
+      "id": "mu2",
+      "category": "multi-hop-unanswerable",
+      "question": "How do I turn on Shopware's built-in A/B testing for product detail pages and send the variant results to Google Analytics 4?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": 0.06973874568939209,
+      "refused": true,
+      "refused_by": "llm",
+      "answer": "The provided documentation does not cover enabling Shopware's built-in A/B testing for product detail pages or sending variant results to Google Analytics 4. The excerpts only describe the ACCESSIBILITY_TWEAKS feature flag, k6 performance tests, Playwright and unit testing, and Store listing content rules.",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/hosting/performance/k6.md",
+          "heading": "Running the tests",
+          "score": 0.022207,
+          "dense_rank": 1,
+          "sparse_rank": 26,
+          "rerank_score": 0.0697
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/development/accessibility/storefront-accessibility.md",
+          "heading": "Best practices for accessibility (a11y) in Shopware extensions",
+          "score": 0.021639,
+          "dense_rank": 10,
+          "sparse_rank": 8,
+          "rerank_score": -2.1416
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/development/testing/e2e-playwright/test.md",
+          "heading": null,
+          "score": 0.018293,
+          "dense_rank": 22,
+          "sparse_rank": 22,
+          "rerank_score": -3.131
+        },
+        {
+          "rank": 4,
+          "doc_path": "guides/development/testing/index.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -3.7796
+        },
+        {
+          "rank": 5,
+          "doc_path": "guides/development/testing/index.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -4.6719
+        },
+        {
+          "rank": 6,
+          "doc_path": "guides/development/testing/store/content-and-translations.md",
+          "heading": null,
+          "score": 0.015625,
+          "dense_rank": 4,
+          "sparse_rank": null,
+          "rerank_score": -4.7804
+        },
+        {
+          "rank": 7,
+          "doc_path": "guides/hosting/performance/k6.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "guides/development/testing/store/index.md",
+          "heading": null,
+          "score": 0.015152,
+          "dense_rank": 6,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "guides/development/testing/store/index.md",
+          "heading": null,
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "guides/development/testing/e2e-playwright/index.md",
+          "heading": null,
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 19.9,
+        "rerank": 340.2,
+        "generate": 1573.1,
+        "total": 1933.4,
+        "wall": 1942.2
+      },
+      "usage": {
+        "input_tokens": 4520,
+        "output_tokens": 127
+      },
+      "context_tokens": 1922,
+      "hop_coverage": null,
+      "all_hops": null,
+      "answer_evidence": null,
+      "cited_hop_coverage": null,
+      "refusal_outcome": "correct_refusal"
+    },
+    {
+      "id": "mu3",
+      "category": "multi-hop-unanswerable",
+      "question": "Which Administration setting enables the built-in Salesforce CRM sync, and how often does it push new customers and their orders?",
+      "answerable_truth": false,
+      "relevant_docs": [],
+      "first_relevant_rank": null,
+      "hit@1": 0.0,
+      "hit@3": 0.0,
+      "hit@5": 0.0,
+      "hit@10": 0.0,
+      "rr@10": 0.0,
+      "doc_recall@5": null,
+      "evidence@k": null,
+      "top_rerank_score": -7.483149528503418,
+      "refused": true,
+      "refused_by": "llm",
+      "answer": "The provided documentation does not cover a built-in Salesforce CRM sync or any Administration setting for it, so I cannot say which setting enables it or how often it pushes customers and orders.",
+      "citations": [],
+      "citation_hit": null,
+      "retrieved": [
+        {
+          "rank": 1,
+          "doc_path": "guides/plugins/apps/mcp-server.md",
+          "heading": null,
+          "score": 0.023216,
+          "dense_rank": 6,
+          "sparse_rank": 2,
+          "rerank_score": -7.4831
+        },
+        {
+          "rank": 2,
+          "doc_path": "guides/plugins/apps/mcp-server.md",
+          "heading": "mcp.xml structure",
+          "score": 0.022035,
+          "dense_rank": 4,
+          "sparse_rank": 18,
+          "rerank_score": -10.0594
+        },
+        {
+          "rank": 3,
+          "doc_path": "guides/plugins/apps/app-sdks/javascript/05-http-client.md",
+          "heading": "Abstraction of Sync API",
+          "score": 0.019931,
+          "dense_rank": 17,
+          "sparse_rank": 12,
+          "rerank_score": -10.0703
+        },
+        {
+          "rank": 4,
+          "doc_path": "resources/references/adr/2026-06-29-administration-shared-cache-service.md",
+          "heading": "Decision",
+          "score": 0.016393,
+          "dense_rank": 1,
+          "sparse_rank": null,
+          "rerank_score": -10.27
+        },
+        {
+          "rank": 5,
+          "doc_path": "resources/references/app-reference/webhook-events-reference.md",
+          "heading": null,
+          "score": 0.016129,
+          "dense_rank": 2,
+          "sparse_rank": null,
+          "rerank_score": -10.0526
+        },
+        {
+          "rank": 6,
+          "doc_path": "resources/references/adr/2026-06-29-administration-shared-cache-service.md",
+          "heading": null,
+          "score": 0.015873,
+          "dense_rank": 3,
+          "sparse_rank": null,
+          "rerank_score": -8.4928
+        },
+        {
+          "rank": 7,
+          "doc_path": "resources/references/app-reference/script-reference/trigger-events-reference.md",
+          "heading": null,
+          "score": 0.015385,
+          "dense_rank": 5,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 8,
+          "doc_path": "resources/references/adr/2026-09-24-mcp-stateless-era-degradation-policy.md",
+          "heading": "Per feature",
+          "score": 0.014925,
+          "dense_rank": 7,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 9,
+          "doc_path": "resources/references/app-reference/script-reference/webhook-events-reference.md",
+          "heading": null,
+          "score": 0.014706,
+          "dense_rank": 8,
+          "sparse_rank": null,
+          "rerank_score": null
+        },
+        {
+          "rank": 10,
+          "doc_path": "resources/references/adr/2026-06-29-administration-shared-cache-service.md",
+          "heading": "Decision",
+          "score": 0.014493,
+          "dense_rank": 9,
+          "sparse_rank": null,
+          "rerank_score": null
+        }
+      ],
+      "timings_ms": {
+        "retrieve": 17.2,
+        "rerank": 331.0,
+        "generate": 1467.6,
+        "total": 1815.9,
+        "wall": 1818.1
+      },
+      "usage": {
+        "input_tokens": 5195,
+        "output_tokens": 80
+      },
+      "context_tokens": 2321,
+      "hop_coverage": null,
+      "all_hops": null,
+      "answer_evidence": null,
+      "cited_hop_coverage": null,
+      "refusal_outcome": "correct_refusal"
+    }
+  ]
+}

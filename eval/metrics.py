@@ -51,6 +51,19 @@ def doc_recall_at_k(ranked_doc_paths: Sequence[str], relevant: Iterable[str], k:
     return len(rel & set(ranked_doc_paths[:k])) / len(rel)
 
 
+def hop_coverage(doc_paths: Iterable[str], hops: Sequence[Sequence[str]]) -> float | None:
+    """Multi-hop questions: share of the hops whose information reached the answerer.
+
+    A hop is a list of interchangeable documents (any one of them is enough);
+    a two-hop question needs one document from each hop. Pass the documents the
+    LLM actually saw (or cited) - their order does not matter.
+    """
+    if not hops:
+        return None
+    seen = set(doc_paths)
+    return sum(any(d in seen for d in hop) for hop in hops) / len(hops)
+
+
 def average_precision(relevance: Sequence[bool]) -> float:
     """Average precision over a ranked list of binary judgements.
 

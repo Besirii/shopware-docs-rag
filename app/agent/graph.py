@@ -35,11 +35,11 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 
 from app.agent.prompts import BUDGET_NOTICE, NOT_EXECUTED, SYSTEM_PROMPT
-from app.agent.tools import DocsTools, Source, tool_specs
+from app.agent.tools import DocsTools, Source, preview, tool_specs
 from app.config import Settings
 from app.generation import snippet, validate_citations
 from app.retrieval import Retriever
-from app.schemas import AgentResponse, AgentStep, AgentTimings, Citation, Usage
+from app.schemas import AgentResponse, AgentSource, AgentStep, AgentTimings, Citation, Usage
 
 log = logging.getLogger("rag.agent")
 
@@ -122,7 +122,8 @@ class AgentRunner:
         self.tools = DocsTools(retriever, top_k=settings.agent_search_top_k)
         self.graph = build_graph(chat_model.bind_tools(tool_specs()), self.tools, settings.not_found_message)
 
-    def run(self, question: str, max_tool_calls: int | None = None, include_trace: bool = True) -> AgentResponse:
+    def run(self, question: str, max_tool_calls: int | None = None, include_trace: bool = True,
+            include_sources: bool = False) -> AgentResponse:
         budget = max_tool_calls or self.s.agent_max_tool_calls
         t0 = time.perf_counter()
         initial: AgentState = {"messages": [HumanMessage(question.strip())], "sources": {}, "steps": [],
@@ -132,7 +133,7 @@ class AgentRunner:
             state = self.graph.invoke(initial, config={"recursion_limit": 2 * budget + 6})
         except GraphRecursionError as e:
             raise AgentError("agent did not finish within the step limit") from e
-        response = finalize(state, self.s.not_found_message, self.model_name, include_trace)
+        response = finalize(state, self.s.not_found_message, self.model_name, include_trace, include_sources)
         response.timings_ms.total = round((time.perf_counter() - t0) * 1000, 1)
         log.info(json.dumps({
             "event": "agent", "tool_calls": response.tool_calls, "model_calls": response.model_calls,
@@ -151,9 +152,10 @@ def _norm(text: str) -> str:
 
 
 def is_refusal(answer: str, not_found: str) -> bool:
-    """The model replied (roughly) with the not-found sentence and nothing more."""
+    """The answer opens with the not-found sentence (often followed by what was searched),
+    or is (roughly) just that sentence. Mentioning it mid-answer for a missing part is not a refusal."""
     a, nf = _norm(answer), _norm(not_found)
-    return nf in a and len(a) <= len(nf) + 20
+    return a.startswith(nf) or (nf in a and len(a) <= len(nf) + 20)
 
 
 def citation(src: Source) -> Citation:
@@ -162,7 +164,15 @@ def citation(src: Source) -> Citation:
                     snippet=snippet(src["text"]), doc_path=src["doc_path"])
 
 
-def finalize(state: AgentState, not_found: str, model_name: str, include_trace: bool = True) -> AgentResponse:
+def source_view(src: Source) -> AgentSource:
+    """A source as the model saw it: full text only if it was read, else the search preview."""
+    return AgentSource(n=src["n"], chunk_id=src["chunk_id"], doc_path=src["doc_path"], title=src["title"],
+                       url=src["url"], heading=src["headings"][-1] if src["headings"] else None, read=src["read"],
+                       text=src["text"].strip() if src["read"] else preview(src["text"]))
+
+
+def finalize(state: AgentState, not_found: str, model_name: str, include_trace: bool = True,
+             include_sources: bool = False) -> AgentResponse:
     """Turn the final state into the API response: clean citations, totals, trace."""
     last = state["messages"][-1]
     stopped_by = "budget" if isinstance(last, AIMessage) and last.tool_calls else "answer"
@@ -170,12 +180,13 @@ def finalize(state: AgentState, not_found: str, model_name: str, include_trace: 
     text = last.text.strip() if isinstance(last, AIMessage) and stopped_by == "answer" else ""
     by_n = {src["n"]: src for src in state["sources"].values()}
 
-    if not text or is_refusal(text, not_found):
+    if not text:
         answer, answerable, numbers = not_found, False, []
     else:
         # Numbers are handed out as 1..N, so "valid" means 1 <= n <= N - same check as /ask.
+        # A refusal keeps its explanation (what was searched, related pages) and the sources it cites.
         answer, numbers = validate_citations(text, [], len(by_n))
-        answerable = True
+        answerable = not is_refusal(text, not_found)
 
     ai_messages = [m for m in state["messages"] if isinstance(m, AIMessage)]
     usage = Usage(
@@ -195,4 +206,5 @@ def finalize(state: AgentState, not_found: str, model_name: str, include_trace: 
         usage=usage,
         llm_model=meta.get("model_name") or meta.get("model") or model_name,
         steps=steps if include_trace else None,
+        sources=[source_view(by_n[n]) for n in sorted(by_n)] if include_sources else None,
     )

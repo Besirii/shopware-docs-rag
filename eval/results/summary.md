@@ -20,3 +20,23 @@ Dataset: `eval/questions.jsonl` (47 questions, sha256 `9ccaa05d9097bb10`) · doc
 | BM25 only (heading chunks) | 0.55 | 0.90 | 0.98 | 0.69 | 244 ms |
 | fixed chunks + hybrid | 0.64 | 0.98 | 1.00 | 0.81 | 254 ms |
 | fixed chunks + hybrid + reranker | 0.76 | 0.95 | 1.00 | 0.85 | 1220 ms |
+
+## Agent vs. single search
+
+**Multi-hop questions** (each needs 2 different doc pages):
+
+| Mode | All parts found | Parts found | Key facts in context | Key facts in answer | Parts cited | Faithfulness | Refusal acc. | Tool calls | Tokens in / out | Cost / question | p50 latency |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Single search (`/ask`) | 40% <sub>[13-67]</sub> | 70% | 59% | 57% <sub>[46-67]</sub> | 70% | – | 100% | 1 search | 5,026 / 712 | $0.0009 | 4.2 s |
+| Agent (`/agent`) | 100% <sub>[100-100]</sub> | 100% | 88% | 86% <sub>[75-95]</sub> | 97% | – | 100% | 5.7 | 18,568 / 1,504 | $0.0026 | 10.0 s |
+
+Dataset: `eval/questions_multihop.jsonl` (18 questions, sha256 `d1ec6426d67acb82`) · LLM `claude-haiku-5-5` · judge `none`
+
+**Original single-topic questions:**
+
+| Mode | All parts found | Parts found | Key facts in context | Key facts in answer | Parts cited | Faithfulness | Refusal acc. | Tool calls | Tokens in / out | Cost / question | p50 latency |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Single search (`/ask`) | 100% <sub>[100-100]</sub> | 100% | 90% | 87% <sub>[80-93]</sub> | 100% | – | 98% | 1 search | 4,608 / 380 | $0.0007 | 2.5 s |
+| Agent (`/agent`) | 100% <sub>[100-100]</sub> | 100% | 92% | 92% <sub>[86-98]</sub> | 98% | – | 100% | 3.6 | 10,429 / 828 | $0.0015 | 5.2 s |
+
+Dataset: `eval/questions.jsonl` (47 questions, sha256 `9ccaa05d9097bb10`) · LLM `claude-haiku-5-5` · judge `none`

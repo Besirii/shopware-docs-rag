@@ -12,19 +12,32 @@ import json
 import sys
 from pathlib import Path
 
-from eval.run_eval import EXPERIMENTS, MAIN, RESULTS_DIR
+from eval.run_eval import COMPARE, EXPERIMENTS, MAIN, RESULTS_DIR
 
 DOC = Path(__file__).resolve().parent.parent / "docs" / "DESIGN.md"
 START, END = "<!-- EVAL_TABLE_START -->", "<!-- EVAL_TABLE_END -->"
+AGENT_START, AGENT_END = "<!-- AGENT_TABLE_START -->", "<!-- AGENT_TABLE_END -->"
+MAIN_DATASET, MULTIHOP_DATASET = "questions.jsonl", "questions_multihop.jsonl"
 
 
-def latest_results(prefer_judged: bool = True) -> dict[str, dict]:
-    """Most recent result per experiment (a judged run beats a newer retrieval-only run)."""
+def _is_main_run(data: dict) -> bool:
+    return data.get("tag") != "compare" and EXPERIMENTS[data["experiment"]].get("kind") != "agent"
+
+
+def _is_compare_run(data: dict) -> bool:
+    # /ask rows only from comparison runs (same LLM as the agent), never from the main-table runs.
+    return data["experiment"] in COMPARE and (data.get("tag") is not None or data["experiment"] == "agent")
+
+
+def latest_results(prefer_judged: bool = True, dataset: str = MAIN_DATASET, keep=_is_main_run) -> dict[str, dict]:
+    """Most recent result per experiment on one dataset (a judged run beats a newer retrieval-only run)."""
     best: dict[str, dict] = {}
     for path in sorted(RESULTS_DIR.glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
         name = data.get("experiment")
         if name not in EXPERIMENTS:
+            continue
+        if Path((data.get("dataset") or {}).get("path", "")).name != dataset or not keep(data):
             continue
         cur = best.get(name)
         judged = data.get("judge_model") is not None
@@ -128,6 +141,62 @@ def cost_section(results: dict[str, dict], name: str = "2b_hybrid_weighted") -> 
     return "\n".join(lines)
 
 
+def _ci_pct(s: dict, key: str) -> str:
+    ci = (s.get("ci95") or {}).get(key)
+    return f" <sub>[{ci[0] * 100:.0f}-{ci[1] * 100:.0f}]</sub>" if ci else ""
+
+
+def cost_per_question(r: dict) -> float | None:
+    """Mean API cost of the generating model per question (judge excluded), from measured tokens."""
+    price = CLAUDE_PRICES.get(r.get("llm_model") or "")
+    tokens = r["summary"].get("tokens_mean") or {}
+    if price is None or tokens.get("input") is None:
+        return None
+    return (tokens["input"] or 0) / 1e6 * price[0] + (tokens["output"] or 0) / 1e6 * price[1]
+
+
+def comparison_table(results: dict[str, dict]) -> str:
+    """Single search (/ask) vs. the agent on the same questions with the same LLM."""
+    head = ("| Mode | All parts found | Parts found | Key facts in context | Key facts in answer | Parts cited | "
+            "Faithfulness | Refusal acc. | Tool calls | Tokens in / out | Cost / question | p50 latency |")
+    lines = [head, "|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for name in COMPARE:
+        r = results.get(name)
+        if r is None:
+            continue
+        s = r["summary"]
+        mode = "Agent (`/agent`)" if name == "agent" else "Single search (`/ask`)"
+        tools = (s.get("agent") or {}).get("tool_calls_mean")
+        tok = s.get("tokens_mean") or {}
+        cost = cost_per_question(r)
+        lat = (s.get("latency_ms") or {}).get("total", {}).get("p50")
+        lines.append(
+            f"| {mode} | {_f(s.get('all_hops'), pct=True)}{_ci_pct(s, 'all_hops')} | {_f(s.get('hop_coverage'), pct=True)} | "
+            f"{_f(s.get('evidence@k'), pct=True)} | {_f(s.get('answer_evidence'), pct=True)}{_ci_pct(s, 'answer_evidence')} | "
+            f"{_f(s.get('cited_hop_coverage'), pct=True)} | {_f(s.get('faithfulness'))} | "
+            f"{_f((s.get('refusal') or {}).get('accuracy'), pct=True)} | {'1 search' if tools is None else f'{tools:.1f}'} | "
+            f"{tok.get('input') or 0:,.0f} / {tok.get('output') or 0:,.0f} | {'–' if cost is None else f'${cost:.4f}'} | "
+            f"{'–' if lat is None else f'{lat / 1000:.1f} s'} |"
+        )
+    any_r = next(iter(results.values()))
+    ds = any_r["dataset"]
+    models = sorted({r.get("llm_model") or "?" for r in results.values()})
+    judges = sorted({r.get("judge_model") or "none" for r in results.values()})
+    lines += ["", f"Dataset: `eval/{Path(ds['path']).name}` ({ds['n']} questions, sha256 `{ds['sha256']}`) · "
+                  f"LLM {', '.join(f'`{m}`' for m in models)} · judge {', '.join(f'`{j}`' for j in judges)}"]
+    return "\n".join(lines)
+
+
+def comparison_section() -> str:
+    parts = []
+    for dataset, title in ((MULTIHOP_DATASET, "**Multi-hop questions** (each needs 2 different doc pages):"),
+                           (MAIN_DATASET, "**Original single-topic questions:**")):
+        results = latest_results(dataset=dataset, keep=_is_compare_run)
+        if results:
+            parts += [title, comparison_table(results)]
+    return "\n\n".join(parts) or "_no comparison runs yet - run `python -m eval.run_eval --experiments compare`_"
+
+
 def _replace_block(text: str, start: str, end: str, body: str) -> str:
     if start not in text or end not in text:
         return text
@@ -150,14 +219,16 @@ def main() -> None:
     if not results:
         sys.exit("no results in eval/results - run `python -m eval.run_eval` first")
     table = render(results)
-    (RESULTS_DIR / "summary.md").write_text(table + "\n", encoding="utf-8")
-    print(table)
+    compare = comparison_section()
+    (RESULTS_DIR / "summary.md").write_text(f"{table}\n\n## Agent vs. single search\n\n{compare}\n", encoding="utf-8")
+    print(f"{table}\n\nAgent vs. single search:\n\n{compare}")
     if args.update_docs:
         text = DOC.read_text(encoding="utf-8")
         if START not in text or END not in text:
             sys.exit(f"{DOC} is missing the {START} / {END} markers")
         text = _replace_block(text, START, END, table)
         text = _replace_block(text, "<!-- COST_START -->", "<!-- COST_END -->", cost_section(results))
+        text = _replace_block(text, AGENT_START, AGENT_END, compare)
         DOC.write_text(text, encoding="utf-8")
         print(f"\nupdated {DOC.name}")
 

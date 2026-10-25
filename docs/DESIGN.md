@@ -216,6 +216,78 @@ report costs nothing. The judge model is fixed per run and stored in the result 
 
 ---
 
+## Agent vs. single search
+
+`/ask` runs one hybrid search and answers from the top 6 sections. `/agent` lets the LLM run its
+own searches (`search_docs`), read the sections it will use in full (`read_section`) and stop when
+it has enough, within a budget of 8 tool calls. Both use the same index, the same hybrid search and,
+in these runs, the same LLM, so the difference is the agentic loop alone.
+
+The comparison uses a second question set, `eval/questions_multihop.jsonl`: 15 questions that each
+need **two different doc pages** (e.g. "add a custom field *and* show it in the storefront", "create
+a Store API route *and* rate-limit it") plus 3 unanswerable ones. Every question lists its `hops`
+(one or more interchangeable pages per part), and no single page contains all of its key facts -
+checked against the pinned docs commit. The metrics are deterministic:
+
+- **All parts found** - share of questions where *every* hop reached the LLM (the multi-hop success
+  rate); **Parts found** is the average share of hops.
+- **Key facts in context / in answer** - share of the question's key identifiers and commands
+  (`evidence`) that appear in what the LLM saw, and in what it wrote.
+- **Parts cited** - share of hops backed by a citation of one of their pages.
+
+<!-- AGENT_TABLE_START -->
+**Multi-hop questions** (each needs 2 different doc pages):
+
+| Mode | All parts found | Parts found | Key facts in context | Key facts in answer | Parts cited | Faithfulness | Refusal acc. | Tool calls | Tokens in / out | Cost / question | p50 latency |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Single search (`/ask`) | 40% <sub>[13-67]</sub> | 70% | 59% | 57% <sub>[46-67]</sub> | 70% | – | 100% | 1 search | 5,026 / 712 | $0.0009 | 4.2 s |
+| Agent (`/agent`) | 100% <sub>[100-100]</sub> | 100% | 88% | 86% <sub>[75-95]</sub> | 97% | – | 100% | 5.7 | 18,568 / 1,504 | $0.0026 | 10.0 s |
+
+Dataset: `eval/questions_multihop.jsonl` (18 questions, sha256 `d1ec6426d67acb82`) · LLM `claude-haiku-5-5` · judge `none`
+
+**Original single-topic questions:**
+
+| Mode | All parts found | Parts found | Key facts in context | Key facts in answer | Parts cited | Faithfulness | Refusal acc. | Tool calls | Tokens in / out | Cost / question | p50 latency |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| Single search (`/ask`) | 100% <sub>[100-100]</sub> | 100% | 90% | 87% <sub>[80-93]</sub> | 100% | – | 98% | 1 search | 4,608 / 380 | $0.0007 | 2.5 s |
+| Agent (`/agent`) | 100% <sub>[100-100]</sub> | 100% | 92% | 92% <sub>[86-98]</sub> | 98% | – | 100% | 3.6 | 10,429 / 828 | $0.0015 | 5.2 s |
+
+Dataset: `eval/questions.jsonl` (47 questions, sha256 `9ccaa05d9097bb10`) · LLM `claude-haiku-5-5` · judge `none`
+<!-- AGENT_TABLE_END -->
+
+### What the numbers say
+
+- **Multi-part questions are where one search breaks.** A single search put both required pages in
+  front of the LLM for only 6 of 15 questions. The agent searched once per part and found both
+  every time. Typical misses of the single search: for the custom-field question it retrieved the
+  *Administration* custom-field page instead of the plugin one, and for "Store API route + rate
+  limit" its top 6 had the rate-limiter page but not the Store API route page.
+- **More of the answer is right, and backed by a source.** Key identifiers in the answer rose from
+  57% to 86%, and the share of parts backed by a citation from 70% to 97%.
+- **No regression on simple questions.** On the original 47 questions both find the right page,
+  key facts in the answer go from 87% to 92% (overlapping intervals, so no real difference), and the
+  agent avoided the one false refusal of the single search (q20). One answer moved away from the
+  reference (q41): the agent also read the custom-entity docs and answered "apps can create tables,
+  but only for their own custom entities", where the reference says apps cannot change the schema.
+- **It costs 2-4x.** On multi-part questions the agent used 5.7 tool calls, 3.7x the input tokens
+  and 2.4x the latency (10 s vs 4 s at p50); on simple ones 2.3x tokens and 2x latency. With
+  `claude-haiku-5-5` that is $0.0026 instead of $0.0009 per question.
+- **Refusals are unchanged.** Both refused all unanswerable questions. The agent opens a refusal with
+  the not-found sentence and then says what it searched; the first run scored those as answers
+  because only the bare sentence counted as a refusal. That detection was fixed and the agent
+  re-run - the table shows the re-run.
+
+**Caveats.** The 15 multi-part questions were written for this comparison, so they show the case the
+agent is built for, not average traffic. All metrics are deterministic string checks, there is no
+LLM judge in these runs yet, and each configuration ran once.
+
+**Next steps.** A judged run (faithfulness) with a stronger judge; a reviewer node that checks every
+claim against the sections the agent read, measured on the same set; and routing - single search
+by default, the agent only for multi-part questions or when the first search looks weak - to keep
+most of the gain at a fraction of the cost.
+
+---
+
 ## Latency and cost per question
 
 <!-- COST_START -->
