@@ -116,6 +116,22 @@ class Settings(BaseSettings):
     judge_provider: LLMProvider | None = None
     judge_model: str | None = None
 
+    # ------------------------------------------------------------------- agent
+    # POST /agent: the model plans its own searches with tool calls. Empty = same
+    # provider/model as generation. Tool calling needs a capable model - a small
+    # Claude (claude-haiku-5-5) is the cheap, reliable choice; 3B local models
+    # often skip the tools or call them with broken arguments.
+    agent_provider: LLMProvider | None = None
+    agent_model: str | None = None
+    # Only needed when the agent uses a different provider than generation
+    # (otherwise LLM_API_KEY is reused; empty = the SDK's own env variable).
+    agent_api_key: SecretStr | None = None
+    # Hard cap on tool calls per question (search_docs + read_section together).
+    agent_max_tool_calls: int = 8
+    # Sections returned by one search_docs call.
+    agent_search_top_k: int = 5
+    agent_max_tokens: int = 2000
+
     # --------------------------------------------------------------------- api
     admin_token: SecretStr | None = None
     log_level: str = "INFO"
@@ -128,7 +144,7 @@ class Settings(BaseSettings):
         return value
 
     @field_validator("docs_commit", "llm_model", "llm_base_url", "judge_model", "anthropic_workspace_id",
-                     mode="before")
+                     "agent_provider", "agent_model", "agent_api_key", mode="before")
     @classmethod
     def _empty_to_none(cls, value: object) -> object:
         return None if isinstance(value, str) and not value.strip() else value
@@ -144,6 +160,28 @@ class Settings(BaseSettings):
     @property
     def resolved_llm_model(self) -> str:
         return self.llm_model or DEFAULT_LLM_MODELS[self.llm_provider]
+
+    @property
+    def resolved_agent_provider(self) -> LLMProvider:
+        return self.agent_provider or self.llm_provider
+
+    @property
+    def resolved_agent_model(self) -> str:
+        if self.agent_model:
+            return self.agent_model
+        if self.resolved_agent_provider == self.llm_provider:
+            return self.resolved_llm_model
+        return DEFAULT_LLM_MODELS[self.resolved_agent_provider]
+
+    @property
+    def resolved_agent_api_key(self) -> str | None:
+        if self.agent_api_key:
+            return self.agent_api_key.get_secret_value()
+        if self.resolved_agent_provider == self.llm_provider and self.llm_api_key:
+            return self.llm_api_key.get_secret_value()
+        if self.resolved_agent_provider == "openai" and self.openai_api_key:
+            return self.openai_api_key.get_secret_value()
+        return None
 
     @property
     def resolved_judge_provider(self) -> LLMProvider:

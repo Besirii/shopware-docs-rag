@@ -1,4 +1,4 @@
-"""FastAPI app: POST /ask, GET /health, POST /ingest (admin)."""
+"""FastAPI app: POST /ask, POST /agent, GET /health, POST /ingest (admin)."""
 
 from __future__ import annotations
 
@@ -15,10 +15,11 @@ from fastapi import BackgroundTasks, FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 
+from app.agent import AgentError, build_agent
 from app.config import get_settings
 from app.llm import LLMError
 from app.pipeline import RAGPipeline
-from app.schemas import AskRequest, AskResponse
+from app.schemas import AgentRequest, AgentResponse, AskRequest, AskResponse
 
 
 class JsonFormatter(logging.Formatter):
@@ -51,6 +52,8 @@ async def lifespan(app: FastAPI):
     t0 = time.perf_counter()
     # Load every model once at startup so the first request is not slow.
     app.state.pipeline = RAGPipeline.from_settings(settings)
+    # The agent reuses the pipeline's retriever (same index, same embedders). None = disabled.
+    app.state.agent = build_agent(settings, app.state.pipeline)
     app.state.ingest = {"status": "idle"}
     app.state.ingest_lock = threading.Lock()
     logging.getLogger("rag").info(json.dumps({"event": "startup", "seconds": round(time.perf_counter() - t0, 1),
@@ -75,6 +78,19 @@ def ask(req: AskRequest) -> AskResponse:
         raise HTTPException(status_code=502, detail=f"LLM error: {e}") from e
 
 
+@app.post("/agent", response_model=AgentResponse, response_model_exclude_none=True)
+def agent(req: AgentRequest) -> AgentResponse:
+    """Agentic mode: the model runs its own searches (tool calls) before answering."""
+    runner = app.state.agent
+    if runner is None:
+        raise HTTPException(status_code=503,
+                            detail="agent disabled: set AGENT_PROVIDER (or LLM_PROVIDER) to anthropic, openai or ollama")
+    try:
+        return runner.run(req.question, req.max_tool_calls, req.include_trace)
+    except AgentError as e:
+        raise HTTPException(status_code=502, detail=f"agent error: {e}") from e
+
+
 @app.get("/", include_in_schema=False)
 def index() -> FileResponse:
     """Minimal demo UI (single static page, no build step)."""
@@ -84,6 +100,9 @@ def index() -> FileResponse:
 @app.get("/health")
 def health() -> JSONResponse:
     report = app.state.pipeline.health()
+    s = get_settings()
+    report["agent"] = {"enabled": app.state.agent is not None, "provider": s.resolved_agent_provider,
+                       "model": s.resolved_agent_model if app.state.agent is not None else None}
     return JSONResponse(report, status_code=200 if report["status"] == "ok" else 503)
 
 

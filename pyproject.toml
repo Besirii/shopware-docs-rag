@@ -21,6 +21,11 @@ dependencies = [
     "markdown-it-py>=3.0",
     "python-frontmatter>=1.1",
     "tiktoken>=0.7",
+    # Agent (POST /agent): LangGraph state machine + LangChain chat models with tool calling
+    "langgraph>=1.0",
+    "langchain-anthropic>=1.0",
+    "langchain-openai>=1.0",
+    "langchain-ollama>=1.0",
 ]
 
 [dependency-groups]

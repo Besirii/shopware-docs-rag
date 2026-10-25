@@ -76,3 +76,49 @@ class AskResponse(BaseModel):
     refused_by: Literal["threshold", "llm"] | None = None
     top_rerank_score: float | None = None
     contexts: list[RetrievedContext] | None = None
+
+
+# ------------------------------------------------------------------- agent
+
+
+class AgentRequest(BaseModel):
+    question: str = Field(min_length=3, max_length=2000)
+    max_tool_calls: int | None = Field(default=None, ge=1, le=15,
+                                       description="tool-call budget for this question; null = server default")
+    include_trace: bool = Field(default=True, description="return every tool call the agent made")
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [{"question": "How do I add a custom field to products and show it in the storefront?"}]
+        }
+    }
+
+
+class AgentStep(BaseModel):
+    """One tool call, in order. This is the audit trail of how the answer was found."""
+
+    step: int
+    tool: str
+    args: dict
+    sources: list[int] = Field(default_factory=list, description="source numbers the tool returned or read")
+    ms: float = 0.0
+    error: str | None = None
+
+
+class AgentTimings(BaseModel):
+    model: float = 0.0
+    tools: float = 0.0
+    total: float = 0.0
+
+
+class AgentResponse(BaseModel):
+    answer: str
+    answerable: bool
+    citations: list[Citation]
+    tool_calls: int
+    model_calls: int
+    stopped_by: Literal["answer", "budget"]
+    timings_ms: AgentTimings
+    usage: Usage
+    llm_model: str | None = None
+    steps: list[AgentStep] | None = None

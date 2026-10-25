@@ -1,7 +1,7 @@
-# Windows equivalent of the Makefile:  .\tasks.ps1 <target> [-Question "..."] [-Model qwen2.5:3b]
+# Windows equivalent of the Makefile:  .\tasks.ps1 <target> ["question"] [-Model qwen2.5:3b]
 param(
     [Parameter(Position = 0)][string]$Target = "help",
-    [string]$Question = "How do I register an event subscriber in a plugin?",
+    [Parameter(Position = 1)][string]$Question = "How do I register an event subscriber in a plugin?",
     [string]$Model = "qwen2.5:3b",
     [string]$Api = "http://localhost:8000"
 )
@@ -30,8 +30,19 @@ switch ($Target) {
         ""
         $r.citations | ForEach-Object { "[{0}] {1} - {2}" -f $_.n, $_.title, $_.url }
     }
+    "agent" {
+        $body = @{ question = $Question } | ConvertTo-Json
+        $r = Invoke-RestMethod -Method Post -Uri "$Api/agent" -ContentType "application/json; charset=utf-8" -Body $body
+        $r.steps | ForEach-Object { "{0}. {1} {2} -> {3} {4}" -f $_.step, $_.tool, ($_.args | ConvertTo-Json -Compress), ($_.sources -join ","), $_.error }
+        ""
+        $r.answer
+        ""
+        $r.citations | ForEach-Object { "[{0}] {1} - {2}" -f $_.n, $_.title, $_.url }
+        ""
+        "{0} tool calls, {1} model calls, {2:N1}s ({3})" -f $r.tool_calls, $r.model_calls, ($r.timings_ms.total / 1000), $r.llm_model
+    }
     default {
         "Targets: up, up-ollama, pull-model, down, logs, ingest, ingest-local, eval, eval-retrieval,"
-        "         eval-judge, report, calibrate, test, lint, health, ask -Question '...'"
+        "         eval-judge, report, calibrate, test, lint, health, ask -Question '...', agent -Question '...'"
     }
 }

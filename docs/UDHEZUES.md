@@ -155,3 +155,84 @@ uv run python -m eval.run_eval --no-generate     # metrikat falas
 uv run python -m eval.report --update-docs       # rifresko tabelat te docs/DESIGN.md
 uv run pytest                                    # testet
 ```
+
+## 9. Agjenti (`POST /agent`)
+
+`/ask` bën një kërkim të vetëm dhe ia jep LLM-së 6 seksionet më të mira. Kjo mjafton për pyetje
+me një temë. Pyetja "si shtoj një custom field te produkti dhe e shfaq në storefront?" prek DAL-in,
+administratën dhe Twig-un, dhe një kërkim i vetëm rrallë i gjen të treja bashkë. Agjenti kërkon
+vetë sa herë i duhet (brenda një buxheti), lexon seksionet që do të përdorë dhe përgjigjet me të
+njëjtat citime të verifikueshme si `/ask`.
+
+```
+START → agent ──(kërkon tools, ka buxhet)──→ tools ──→ agent → ...
+          │
+          └──(shkroi përgjigjen, ose s'ka më buxhet)──→ END → finalize (citimet, totalet, trace-i)
+```
+
+### Rendi i leximit
+
+1. **`app/agent/prompts.py`** – çfarë i thuhet modelit: si të kërkojë, si të citojë, kur të ndalet.
+2. **`app/agent/tools.py`** – `search_docs` dhe `read_section` mbi `Retriever`-in ekzistues.
+3. **`app/agent/graph.py`** – `AgentState`, dy nyjet (`agent`, `tools`), `route` dhe `finalize`.
+4. **`app/agent/models.py`** – si ndërtohet `ChatAnthropic` / `ChatOpenAI` / `ChatOllama` nga `.env`.
+5. **`app/main.py`** – endpoint-i `/agent` dhe `build_agent` në `lifespan`.
+6. **`tests/test_agent.py`** – `ScriptedModel` luan rolin e LLM-së, kështu që testet nuk kanë nevojë
+   për API.
+
+### Vendimet, dhe pse (këto do të të pyesin në intervistë)
+
+**Grafi i shkruar me dorë, jo `create_react_agent`.** Agjenti i gatshëm i LangGraph bën të njëjtin
+cikël, por buxheti, numërimi i burimeve dhe trace-i do të ishin të fshehura brenda tij. Me dy nyje
+të shkruara vetë, secila pjesë shihet dhe testohet. Faza 2 (planner, writer, reviewer) shton nyje
+të reja dhe nuk e rishkruan grafin.
+
+**`search_docs` kthen vetëm preview, `read_section` tekstin e plotë.** Kështu disa kërkime mbeten
+të lira në tokens, dhe modeli lexon plotësisht vetëm atë që do të përdorë. Trace-i tregon cilat
+burime u lexuan vërtet.
+
+**Numrat e burimeve nuk ndryshojnë.** Një seksion që del në dy kërkime ruan të njëjtin numër. Numrat
+jepen 1..N, prandaj `validate_citations` nga `/ask` ripërdoret pa ndryshim: çdo `[n]` që tools nuk e
+dhanë kurrë fshihet nga përgjigjja.
+
+**Gabimet e modelit nuk e rrëzojnë agjentin.** Tool i panjohur, argument që mungon, burim që s'ekziston:
+modeli merr një tekst "Error: ..." dhe korrigjohet në hapin tjetër. Edhe këto thirrje numërohen te
+buxheti, që një model i ngatërruar të mos rrotullohet pafund.
+
+**Buxheti dhe rregulli i Anthropic-ut.** Çdo `tool_use` duhet të marrë një `tool_result`, përndryshe
+kërkesa tjetër te API-ja refuzohet. Prandaj thirrjet mbi buxhet nuk injorohen: marrin përgjigjen
+"Not executed". Rezultati i fundit merr edhe shënimin "s'ke më thirrje, shkruaj përgjigjen". Nëse
+modeli kërkon përsëri tools, cikli ndalet me `stopped_by: "budget"`.
+
+**Kërkimet bëhen gjithmonë në anglisht.** Indeksi është vetëm në anglisht, por agjenti e përkthen
+vetë pyetjen kur kërkon. Kështu një pyetje në shqip ose gjermanisht funksionon edhe pse `/ask` nuk
+e përballon. Këtë duhet ta masësh me eval para se ta pretendosh.
+
+**Gjendja është vetëm dict dhe list.** Mesazhet, burimet dhe trace-i mund të ruhen si JSON. Mbi këtë
+ndërtohet Faza 3 (çdo run ruhet në Postgres për auditim).
+
+### Si ta provosh
+
+Në `.env` (Claude Haiku është i lirë dhe i besueshëm me tool calling; `qwen2.5:3b` funksionon, por shpesh
+i anashkalon tools ose i thërret me argumente të gabuara):
+
+```bash
+AGENT_PROVIDER=anthropic
+AGENT_MODEL=claude-haiku-5-5
+AGENT_API_KEY=sk-ant-...
+```
+
+```bash
+docker compose up -d --build                     # rindërto imazhin: ka varësi të reja
+.\tasks.ps1 agent -Question "How do I add a custom field to products and show it in the storefront?"
+uv run python -m app.agent "Si e regjistroj një event subscriber në plugin?"   # pa Docker për API-në
+```
+
+Përgjigjja ka `steps`: çdo thirrje tool-i me argumentet, burimet dhe kohën. Lexoje: aty shihet nëse
+agjenti kërkoi mirë apo humbi kohë.
+
+### Ushtrime
+
+1. Ulë `AGENT_MAX_TOOL_CALLS` në 2 dhe bëj një pyetje me tri pjesë. Çfarë ndodh me përgjigjen?
+2. Krahaso `/ask` dhe `/agent` te 5 pyetje nga `eval/questions.jsonl`: saktësia, koha, tokens.
+3. Shto një tool `list_page_sections(doc_path)` që kthen titujt e një faqeje. Kur do ta përdorte modeli?
