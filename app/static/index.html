@@ -16,7 +16,9 @@
   .sub { color: var(--muted); margin: 0 0 24px; font-size: .95rem; }
   form { display: flex; gap: 8px; flex-wrap: wrap; }
   textarea { flex: 1 1 100%; min-height: 72px; padding: 12px; font: inherit; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); resize: vertical; }
-  select, button { font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
+  select, button, input { font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
+  input { flex: 1 1 180px; min-width: 0; }
+  ol.steps { padding-left: 22px; margin: 6px 0 0; color: var(--muted); font-size: .9rem; }
   button { background: var(--accent); color: #fff; border: none; cursor: pointer; min-width: 96px; }
   button:disabled { opacity: .6; cursor: wait; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-top: 20px; }
@@ -39,12 +41,14 @@
   <p class="sub">Answers only from the official developer documentation, with a source for every claim.</p>
   <form id="f">
     <textarea id="q" placeholder="e.g. How do I register an event subscriber in a plugin?" required minlength="3"></textarea>
-    <select id="mode" title="retrieval mode">
+    <select id="mode" title="hybrid etc. = one search (/ask); agent = the model plans its own searches (/agent)">
       <option value="hybrid">hybrid</option>
+      <option value="agent">agent (multi-step)</option>
       <option value="hybrid_rerank">hybrid + rerank</option>
       <option value="dense">dense</option>
       <option value="bm25">bm25</option>
     </select>
+    <input id="key" type="password" placeholder="Access key (if required)" autocomplete="off">
     <button id="b" type="submit">Ask</button>
   </form>
   <div id="out"></div>
@@ -67,18 +71,43 @@ function render(md, cites) {
   }).join("");
 }
 
+// The access key (only needed on a protected deployment) is remembered in this browser.
+const keyInput = document.getElementById("key");
+try { keyInput.value = localStorage.getItem("apiKey") || ""; } catch (_) {}
+
+function meta(d, agent) {
+  const t = d.timings_ms, tok = `${d.usage.input_tokens}/${d.usage.output_tokens} tokens`;
+  return agent
+    ? `agent · ${d.llm_model || "–"} · ${d.tool_calls} tool calls · ${d.model_calls} model calls · ${(t.total / 1000).toFixed(1)} s · ${tok}`
+    : `${d.mode} · ${d.llm_model || "–"} · retrieve ${Math.round(t.retrieve)} ms · rerank ${Math.round(t.rerank)} ms · generate ${Math.round(t.generate)} ms · ${tok}`;
+}
+
+function steps(d) {
+  if (!d.steps || !d.steps.length) return "";
+  return `<div class="card"><strong>How the agent searched</strong><ol class="steps">${d.steps.map(s => {
+    const what = s.tool === "search_docs" ? `search “${esc(String(s.args.query || ""))}”` : `read source [${esc(String(s.args.source))}]`;
+    return `<li>${what}${s.error ? ` – ${esc(s.error)}` : s.sources.length ? ` → [${s.sources.join("], [")}]` : ""}</li>`;
+  }).join("")}</ol></div>`;
+}
+
 document.getElementById("f").addEventListener("submit", async e => {
   e.preventDefault();
   const b = document.getElementById("b"), out = document.getElementById("out");
-  b.disabled = true; b.textContent = "…";
+  const mode = document.getElementById("mode").value, agent = mode === "agent";
+  const question = document.getElementById("q").value, key = keyInput.value.trim();
+  try { localStorage.setItem("apiKey", key); } catch (_) {}
+  b.disabled = true; b.textContent = agent ? "researching…" : "…";
   try {
-    const r = await fetch("/ask", {method: "POST", headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({question: document.getElementById("q").value, mode: document.getElementById("mode").value})});
-    const d = await r.json();
+    const headers = {"Content-Type": "application/json"};
+    if (key) headers["X-API-Key"] = key;
+    const r = await fetch(agent ? "/agent" : "/ask", {method: "POST", headers,
+      body: JSON.stringify(agent ? {question} : {question, mode})});
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 401) throw new Error("This deployment needs an access key - enter it next to the Ask button.");
     if (!r.ok) throw new Error(d.detail ? JSON.stringify(d.detail) : r.statusText);
     const cites = d.citations || [];
-    out.innerHTML = `<div class="card answer">${d.answerable ? render(d.answer, cites) : `<p class="refused">${esc(d.answer)}</p>`}
-      <div class="meta">${d.mode} · ${d.llm_model || "–"} · retrieve ${Math.round(d.timings_ms.retrieve)} ms · rerank ${Math.round(d.timings_ms.rerank)} ms · generate ${Math.round(d.timings_ms.generate)} ms · ${d.usage.input_tokens}/${d.usage.output_tokens} tokens</div></div>` +
+    out.innerHTML = `<div class="card answer">${d.answerable ? render(d.answer, cites) : `<div class="refused">${render(d.answer, cites)}</div>`}
+      <div class="meta">${meta(d, agent)}</div></div>` + steps(d) +
       (cites.length ? `<div class="card"><strong>Sources</strong><ol class="cites">${cites.map(c =>
         `<li value="${c.n}"><a href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.title)}${c.heading ? " › " + esc(c.heading) : ""}</a><div class="snippet">${esc(c.snippet)}</div></li>`).join("")}</ol></div>` : "");
   } catch (err) {

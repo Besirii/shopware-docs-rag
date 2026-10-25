@@ -141,3 +141,23 @@ def test_demo_page_is_served(client_factory):
     with client_factory() as client:
         r = client.get("/")
     assert r.status_code == 200 and "Shopware 6 Docs RAG" in r.text and "/ask" in r.text
+
+
+def test_api_key_protects_llm_endpoints(client_factory, settings):
+    from pydantic import SecretStr
+
+    settings.api_key = SecretStr("demo-key")
+    with client_factory() as client:
+        assert client.post("/ask", json={"question": "theme compile"}).status_code == 401
+        assert client.post("/ask", json={"question": "theme compile"}, headers={"X-API-Key": "wrong"}).status_code == 401
+        assert client.post("/agent", json={"question": "theme compile"}).status_code == 401
+        ok = client.post("/ask", json={"question": "theme compile"}, headers={"X-API-Key": "demo-key"})
+        assert ok.status_code == 200 and ok.json()["answerable"] is True
+        assert client.get("/health").status_code == 200  # health and the demo page stay public
+        assert client.get("/").status_code == 200
+
+
+def test_empty_api_key_in_env_means_open(settings):
+    from app.config import Settings
+
+    assert Settings(_env_file=None, api_key="").api_key is None

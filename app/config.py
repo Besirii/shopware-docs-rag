@@ -134,6 +134,9 @@ class Settings(BaseSettings):
 
     # --------------------------------------------------------------------- api
     admin_token: SecretStr | None = None
+    # When set, POST /ask and POST /agent require it in the X-API-Key header. Set it on any
+    # public deployment: both endpoints spend LLM tokens on your account.
+    api_key: SecretStr | None = None
     log_level: str = "INFO"
 
     @field_validator("docs_include", "docs_exclude", mode="before")
@@ -144,7 +147,7 @@ class Settings(BaseSettings):
         return value
 
     @field_validator("docs_commit", "llm_model", "llm_base_url", "judge_model", "anthropic_workspace_id",
-                     "agent_provider", "agent_model", "agent_api_key", mode="before")
+                     "agent_provider", "agent_model", "agent_api_key", "api_key", "admin_token", mode="before")
     @classmethod
     def _empty_to_none(cls, value: object) -> object:
         return None if isinstance(value, str) and not value.strip() else value

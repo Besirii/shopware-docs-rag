@@ -11,8 +11,9 @@ from contextlib import asynccontextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
-from fastapi import BackgroundTasks, FastAPI, Header, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, Header, HTTPException, Security
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.security import APIKeyHeader
 from pydantic import BaseModel
 
 from app.agent import AgentError, build_agent
@@ -69,7 +70,21 @@ app = FastAPI(
 )
 
 
-@app.post("/ask", response_model=AskResponse, response_model_exclude_none=True)
+_api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False,
+                               description="Required when the server has API_KEY set")
+
+
+def require_api_key(key: str | None = Security(_api_key_header)) -> None:
+    """Guard for the endpoints that spend LLM tokens. Open when API_KEY is not configured (local dev)."""
+    expected = get_settings().api_key
+    if expected is None:
+        return
+    if not key or not secrets.compare_digest(key, expected.get_secret_value()):
+        raise HTTPException(status_code=401, detail="missing or invalid X-API-Key")
+
+
+@app.post("/ask", response_model=AskResponse, response_model_exclude_none=True,
+          dependencies=[Depends(require_api_key)])
 def ask(req: AskRequest) -> AskResponse:
     # Sync endpoint on purpose: model inference is CPU-bound, FastAPI runs it in a threadpool.
     try:
@@ -78,7 +93,8 @@ def ask(req: AskRequest) -> AskResponse:
         raise HTTPException(status_code=502, detail=f"LLM error: {e}") from e
 
 
-@app.post("/agent", response_model=AgentResponse, response_model_exclude_none=True)
+@app.post("/agent", response_model=AgentResponse, response_model_exclude_none=True,
+          dependencies=[Depends(require_api_key)])
 def agent(req: AgentRequest) -> AgentResponse:
     """Agentic mode: the model runs its own searches (tool calls) before answering."""
     runner = app.state.agent

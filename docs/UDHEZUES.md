@@ -275,3 +275,72 @@ Brenda çdo pyetjeje ke `steps` dhe `sources_seen`: aty sheh pse agjenti e gjeti
 e vogël nuk provon asgjë. Një diferencë e madhe te "All parts found", p.sh. 40% kundrejt 90%, ka
 kuptim. Shiko edhe kostën: nëse agjenti kushton 5 herë më shumë, kjo duhet thënë bashkë me
 përmirësimin.
+
+## 11. Deploy në AWS (Faza 5)
+
+Arkitektura dhe arsyet e çdo vendimi janë te `infra/README.md`. Këtu janë hapat në Windows, me
+radhë. Kjo kushton para: rreth **$2 në ditë** sa kohë që punon. Ndize kur të duhet dhe fike me
+`terraform destroy`.
+
+### Një herë: mjetet
+
+```powershell
+winget install Hashicorp.Terraform
+winget install Amazon.AWSCLI
+# mbyll dhe rihap terminalin, pastaj:
+aws configure          # Access key i një IAM user-i me AdministratorAccess, region: eu-central-1
+```
+
+**Qdrant Cloud** (falas): krijo llogari te cloud.qdrant.io → *Create cluster* → **Free**, AWS,
+`eu-central-1`. Ruaj URL-në e cluster-it dhe API key-n.
+
+### Hapat
+
+```powershell
+# 1. Indeksi në Qdrant Cloud (nga kompjuteri yt, ~7 min)
+docker compose run --rm -e QDRANT_URL="https://...:6333" -e QDRANT_API_KEY="..." api python -m ingest --chunking heading
+
+# 2. Repository dhe parametrat e sekreteve
+cd infra
+copy terraform.tfvars.example terraform.tfvars     # plotëso alert_email dhe qdrant_url
+terraform init
+terraform apply -target="aws_ecr_repository.api" -target="aws_ssm_parameter.external"
+
+# 3. Çelësat e vërtetë (nuk kalojnë kurrë nga Terraform)
+aws ssm put-parameter --overwrite --type SecureString --name /shopware-docs-rag/LLM_API_KEY --value "sk-ant-api03-..."
+aws ssm put-parameter --overwrite --type SecureString --name /shopware-docs-rag/QDRANT_API_KEY --value "..."
+
+# 4. Imazhi i parë
+.\push-image.ps1
+
+# 5. Gjithçka tjetër (~5-10 min, CloudFront është më i ngadalti)
+terraform apply
+terraform output url
+terraform output -raw api_key
+```
+
+Hap URL-në, shkruaj api key-n te fusha pranë butonit *Ask*, zgjidh **agent (multi-step)** dhe pyet.
+Herën e parë API-ja shkarkon modelet, ndaj prit 2-3 minuta pas `apply`.
+
+**Deploy automatik.** Vlerat e `terraform output github_variables` vendosi te GitHub → Settings →
+Secrets and variables → Actions → **Variables**. Pas kësaj çdo push te `main` ndërton imazhin, e
+dërgon në ECR, rinis shërbimin dhe përditëson faqen.
+
+**Fike:** `terraform destroy`.
+
+### Pyetjet që do të të bëjnë, dhe përgjigjet
+
+- *Pse s'ka NAT gateway?* Kushton rreth $35 në muaj vetëm për ekzistencë. Task-u ka IP publike për
+  thirrjet dalëse, kurse hyrjet i mbyllin security groups: vetëm ALB-ja arrin task-un, dhe vetëm
+  CloudFront arrin ALB-në.
+- *Si e ndalon dikë që të thërrasë ALB-në direkt?* Me dy shtresa: security group pranon vetëm IP-të
+  e CloudFront-it (prefix list e AWS-it), dhe ALB-ja kalon vetëm kërkesat me header-in sekret që
+  shton CloudFront. Pa të, kthen 403.
+- *Ku janë sekretet?* Në SSM Parameter Store. Terraform krijon vetëm parametrin, vlerën e vendos ti
+  me CLI, ndaj çelësi nuk shfaqet as në kod, as në state file.
+- *Si bën deploy GitHub pa çelësa AWS?* Me OIDC: GitHub merr kredenciale të përkohshme për një rol që
+  lejon vetëm këtë repo dhe branch-in `main`, dhe vetëm push-in e këtij imazhi, rinisjen e këtij
+  shërbimi dhe përditësimin e kësaj faqeje.
+- *Pse health check te `/docs` dhe jo `/health`?* `/health` kthen 503 kur çelësi i LLM-së është i
+  gabuar. Kjo duhet të shihet në monitorim, por nuk duhet që ECS të vrasë container-a të shëndetshëm
+  në cikël.

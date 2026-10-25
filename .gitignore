@@ -22,3 +22,10 @@ eval/.cache/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Terraform (infra/): local state and your variable values stay on your machine
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/terraform.tfvars
+infra/tfplan

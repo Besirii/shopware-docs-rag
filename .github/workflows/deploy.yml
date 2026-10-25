@@ -1,0 +1,51 @@
+name: deploy
+
+# Builds the API image, pushes it to ECR, rolls it out on ECS and publishes the demo page.
+# Authenticates with GitHub OIDC (no AWS keys stored in GitHub). Does nothing until the AWS stack
+# exists and the repository variables are set - see infra/README.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: ${{ vars.AWS_DEPLOY_ROLE_ARN != '' }}
+    runs-on: ubuntu-latest
+    env:
+      ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+      ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
+      ECS_SERVICE: ${{ vars.ECS_SERVICE }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push the image
+        run: |
+          docker build -t "$ECR_REPOSITORY:${GITHUB_SHA::12}" -t "$ECR_REPOSITORY:latest" .
+          docker push --all-tags "$ECR_REPOSITORY"
+
+      - name: Roll out on ECS
+        run: |
+          aws ecs update-service --cluster "$ECS_CLUSTER" --service "$ECS_SERVICE" --force-new-deployment > /dev/null
+          aws ecs wait services-stable --cluster "$ECS_CLUSTER" --services "$ECS_SERVICE"
+
+      - name: Publish the demo page
+        run: |
+          aws s3 cp app/static/index.html "s3://${{ vars.WEB_BUCKET }}/index.html" --content-type "text/html; charset=utf-8"
+          aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/" "/index.html" > /dev/null

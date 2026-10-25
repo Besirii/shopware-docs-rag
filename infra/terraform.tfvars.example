@@ -1,0 +1,10 @@
+# Copy to terraform.tfvars (git-ignored) and fill in.
+alert_email = "you@example.com"
+qdrant_url  = "https://xxxx.eu-central-1-0.aws.cloud.qdrant.io:6333"
+
+# Optional overrides
+# aws_region                  = "eu-central-1"
+# monthly_budget_usd          = 30
+# llm_model                   = "claude-haiku-5-5"
+# deploy_branch               = "main"
+# create_github_oidc_provider = false # if your account already has the GitHub OIDC provider
